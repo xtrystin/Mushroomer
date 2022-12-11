@@ -1,0 +1,32 @@
+﻿@*@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+*@
+@page "/"
+
+@inject IJSRuntime JS
+
+<h1>Display Google Map</h1>
+<div id="map" style="height:500px;width:100%;">
+</div>
+
+<p>
+    <button @onclick="ConvertArray">Convert Array</button>
+</p>
+
+@code{
+    private async Task ConvertArray()
+    {
+
+            //await JSRuntime.InvokeVoidAsync("initialize", null); 
+        //await JS.InvokeVoidAsync("displayTickerAlert1", 4, 100);
+        await JS.InvokeVoidAsync("showAlert", "test");
+
+    }
+}

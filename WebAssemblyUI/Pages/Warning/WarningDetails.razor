@@ -1,0 +1,195 @@
+﻿@page "/warning/{id}"
+@using UI.ApiLibrary.ApiEndpoints
+@using UI.ApiLibrary.Dto
+@inject IWarningsEndpoint WarningsEndpoint
+@inject IJSRuntime JSRuntime
+
+<h3>Warning Details</h3>
+    
+<div class="container-fluid">
+    @if (Warning is null)
+    {
+        <div class="row">
+            <p>Please wait, loading...</p>  <!-- todo: skeleton loading-->    
+        </div>
+    }
+    else
+    {
+        if (Editable)
+        {
+            <EditForm Model="Warning" OnValidSubmit="ExecuteEdit" class="">
+                 <DataAnnotationsValidator />
+
+                  <div class="mb-3 row">
+                    <label for="Id" class="col-sm-2 col-form-label">Id</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext" id="Id">@Id</p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="Title" class="col-sm-2 col-form-label">Title: </label>
+                    <div class="col-sm-10">
+                        <InputText id="Title" class="form-control" @bind-Value="Warning.Title" />
+                        <ValidationMessage For="@(() => Warning.Title)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="Description" class="col-sm-2 col-form-label">Description: </label>
+                    <div class="col-sm-10">
+                        <InputText id="Description" class="form-control" @bind-Value="Warning.Description" />
+                        <ValidationMessage For="@(() => Warning.Description)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="MushroomName" class="col-sm-2 col-form-label">MushroomName: </label>
+                    <div class="col-sm-10">
+                        <InputText id="MushroomName" class="form-control" @bind-Value="Warning.MushroomName" />
+                        <ValidationMessage For="@(() => Warning.MushroomName)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="Province" class="col-sm-2 col-form-label">Province: </label>
+                    <div class="col-sm-10">
+                        <InputText id="Province" class="form-control" @bind-Value="Warning.Province" />
+                        <ValidationMessage For="@(() => Warning.Province)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="Date" class="col-sm-2 col-form-label">Date: </label>
+                    <div class="col-sm-10">
+                        <InputDate id="Date" class="form-control" @bind-Value="Warning.Date" />
+                        <ValidationMessage For="@(() => Warning.Date)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="IsActive" class="col-sm-2 col-form-label">IsActive: </label>
+                    <div class="col-sm-10">
+                        <InputCheckbox id="IsActive" class="form-check-input" type="checkbox" @bind-Value="Warning.IsActive" />
+                        <ValidationMessage For="@(() => Warning.IsActive)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="Latitude" class="col-sm-2 col-form-label">Latitude: </label>
+                    <div class="col-sm-10">
+                        <InputNumber id="Latitude" class="form-control" @bind-Value="Warning.Latitude" />
+                        <ValidationMessage For="@(() => Warning.Latitude)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="Longitude" class="col-sm-2 col-form-label">Longitude: </label>
+                    <div class="col-sm-10">
+                        <InputNumber id="Id" class="form-control" @bind-Value="Warning.Longitude" />
+                        <ValidationMessage For="@(() => Warning.Longitude)" />
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-12 text-rigth">
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                    </div>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <div class="mb-3 row">
+                <label for="Id" class="col-sm-2 col-form-label">Id</label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext" id="Id">@Id</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="Title" class="col-sm-2 col-form-label">Title</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="Title">@Warning.Title</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="Description" class="col-sm-2 col-form-label">Description</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="Description">@Warning.Description</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="MushroomName" class="col-sm-2 col-form-label">MushroomName</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="MushroomName">@Warning.MushroomName</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="Province" class="col-sm-2 col-form-label">Province</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="Province">@Warning.Province</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="Date" class="col-sm-2 col-form-label">Date</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="Date">@Warning.Date</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="IsActive" class="col-sm-2 col-form-label">IsActive</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="IsActive">@Warning.IsActive</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="Latitude" class="col-sm-2 col-form-label">Latitude</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="Latitude">@Warning.Latitude</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="Longitude" class="col-sm-2 col-form-label">Longitude</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="Longitude">@Warning.Longitude</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+            <a href="@($"https://www.google.com/maps/place/{Warning.Latitude.ToString().Replace(',', '.')},{Warning.Longitude.ToString().Replace(',', '.')}")">See on the map</a>
+            </div>
+        
+            <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
+            <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
+        
+            <div id="map" style="height:500px;width:100%;"></div>
+         }
+        
+    }
+</div>
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    public WarningDto Warning { get; set; }
+    public bool Editable { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Warning = await WarningsEndpoint.Get(Id);
+            await JSRuntime.InvokeVoidAsync("googleMap", null); 
+        }
+        catch (Exception ex)
+        {
+            //todo
+        }
+    }
+
+    private void Edit() => Editable = true;
+
+    private void ExecuteEdit()
+    {
+        Editable = false;
+    }
+
+    private void Delete()
+    {
+        throw new NotImplementedException();
+    }
+}
