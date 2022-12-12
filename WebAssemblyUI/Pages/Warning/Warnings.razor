@@ -5,9 +5,17 @@
 @inject NavigationManager NavManager
 @inject IWarningsEndpoint WarningsEndpoint
 
-
-<h3>Warnings</h3>
-
+<div class="row g-3">
+    <div class="col-auto">
+        <h3>Warnings</h3>
+    </div>
+    <div class="col-auto ">
+        <button type="button" class="btn btn-outline-success" @onclick="AddWarning">
+            +Add
+        </button>
+     </div>
+</div>
+<br />
 <div class="container-fluid">
     @if (warnings is null)
     {
@@ -83,6 +91,8 @@
 
 
 @code {
+    //todo: move add button to the left
+    //todo: move editform to standalone component
     private List<WarningDto> warnings;
 
     protected override async Task OnInitializedAsync()
@@ -95,5 +105,10 @@
         {
             //todo
         }
+    }
+
+    private void AddWarning()
+    {
+        NavManager.NavigateTo("/warnings/add");
     }
 }

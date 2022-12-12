@@ -49,4 +49,49 @@ public class WarningsEndpoint : IWarningsEndpoint
             throw new Exception(response.ReasonPhrase);
         }
     }
+
+    public async Task Update(WarningDto warning)
+    {
+        string apiEndpoint = _api + $"/api/Warnings";
+
+        using var response = await _httpClient.PutAsJsonAsync(apiEndpoint, warning);
+        if (response.IsSuccessStatusCode)
+        {
+            //log success
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase);
+        }
+    }
+
+    public async Task Add(WarningDto warning)
+    {
+        string apiEndpoint = _api + $"/api/Warnings";
+
+        using var response = await _httpClient.PostAsJsonAsync(apiEndpoint, warning);
+        if (response.IsSuccessStatusCode)
+        {
+            //log success
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase);
+        }
+    }
+
+    public async Task Delete(Guid id)
+    {
+        string apiEndpoint = _api + $"/api/Warnings/{id}";
+
+        using var response = await _httpClient.DeleteAsync(apiEndpoint);
+        if (response.IsSuccessStatusCode)
+        {
+            //log success
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase);
+        }
+    }
 }

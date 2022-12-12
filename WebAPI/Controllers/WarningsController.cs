@@ -1,4 +1,5 @@
-﻿using Application.Dto;
+﻿using Application.Commands;
+using Application.Dto;
 using Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -41,20 +42,35 @@ public class WarningsController : ControllerBase
 
     // POST api/<WarningsController>
     [HttpPost]
-    public IActionResult Post([FromBody] string value)
+    public async Task<IActionResult> Post([FromBody] WarningDto warning)
     {
-        return BadRequest();
+        var request = new AddWarningCommand { Warning = warning };
+
+        var result = await _mediator.Send(request);
+
+        return Ok();
     }
 
     // PUT api/<WarningController>/5
-    [HttpPut("{id}")]
-    public void Put(Guid id, [FromBody] string value)
+    //todo: [HttpPut("{id}")]
+    [HttpPut]
+    public async Task<IActionResult> Put([FromBody] WarningDto warning)
     {
+        var request = new UpdateWarningCommand { Warning = warning };
+
+        var result = await _mediator.Send(request);
+
+        return Ok();
     }
 
     // DELETE api/<WarningController>/5
     [HttpDelete("{id}")]
-    public void Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
+        var request = new DeleteWarningCommand { Id = id };
+
+        var result = await _mediator.Send(request);
+
+        return Ok();
     }
 }

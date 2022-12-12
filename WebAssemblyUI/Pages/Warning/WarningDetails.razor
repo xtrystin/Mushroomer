@@ -3,6 +3,7 @@
 @using UI.ApiLibrary.Dto
 @inject IWarningsEndpoint WarningsEndpoint
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavManager
 
 <h3>Warning Details</h3>
     
@@ -83,11 +84,9 @@
                     </div>
                 </div>
 
-
-                <div class="row">
-                    <div class="col-md-12 text-rigth">
-                        <button type="submit" class="btn btn-success">Save Changes</button>
-                    </div>
+                <br />
+                <div class="col-md-12 text-rigth">
+                    <button type="submit" class="btn btn-outline-success">Save Changes</button>
                 </div>
             </EditForm>
         }
@@ -164,9 +163,10 @@
 
 @code {
     [Parameter]
-    public string Id { get; set; }
-    public WarningDto Warning { get; set; }
-    public bool Editable { get; set; }
+    public string Id {  get;  set; }
+
+    private WarningDto Warning;
+    private bool Editable;
 
     protected override async Task OnInitializedAsync()
     {
@@ -185,11 +185,31 @@
 
     private void ExecuteEdit()
     {
-        Editable = false;
+        //todo: add error message box
+        //todo: change id to private
+        try
+        {
+            WarningsEndpoint.Update(Warning);
+            Editable = false;    
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 
-    private void Delete()
+    private async Task Delete()
     {
-        throw new NotImplementedException();
+        try
+        {
+            await WarningsEndpoint.Delete(Warning.Id);
+            //todo: inform about success
+            NavManager.NavigateTo("/warnings");
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }

@@ -1,5 +1,7 @@
 using Application.Queries;
+using Domain.Repository;
 using Infrastructure.Dapper.Queries;
+using Infrastructure.Dapper.Repository;
 using MediatR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -18,6 +20,7 @@ builder.Services.AddCors(policy =>
 });
 
 //builder.Services.AddDbContext
+builder.Services.AddScoped<IWarningRepository, WarningRepository>();    //todo: move it to extension method?
 
 builder.Services.AddMediatR(typeof(GetAllWarningsQueryHandler), typeof(GetAllWarningsQuery)); //todo: make it more generic
 builder.Services.AddControllers();
