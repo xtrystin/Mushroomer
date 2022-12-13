@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TRMApi.Controllers
+namespace AuthService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

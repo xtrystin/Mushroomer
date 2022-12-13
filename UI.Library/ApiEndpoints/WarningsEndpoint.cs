@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
-using UI.ApiLibrary.ApiEndpoints;
 using UI.ApiLibrary.Dto;
 
-namespace UI.ApiLibrary;
+namespace UI.ApiLibrary.ApiEndpoints;
 
 public class WarningsEndpoint : IWarningsEndpoint
 {
