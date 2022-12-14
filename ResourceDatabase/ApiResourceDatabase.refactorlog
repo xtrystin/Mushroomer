@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="40d2fb6f-12de-4c6d-95e7-4b6a5b2f8309" ChangeDateTime="12/14/2022 20:29:11">
+    <Property Name="ElementName" Value="[dbo].[Table1].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Table1]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ID_post" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fd8728a4-6fe5-4154-805b-bde2a8d2d07f" ChangeDateTime="12/14/2022 20:42:08">
+    <Property Name="ElementName" Value="[dbo].[Table2].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Table2]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ID_user" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c38f00d8-8aa0-441a-aa04-252b949bbbd4" ChangeDateTime="12/14/2022 21:00:15">
+    <Property Name="ElementName" Value="[dbo].[Table1].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Table1]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ID_comments" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2aea5118-9222-4239-ba8e-b659f59d6d23" ChangeDateTime="12/14/2022 21:05:37">
+    <Property Name="ElementName" Value="[dbo].[User_LikedPost].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[User_LikedPost]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ID_user" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2b9c8fb7-1080-4e72-b064-02d6c847814f" ChangeDateTime="12/14/2022 21:08:34">
+    <Property Name="ElementName" Value="[dbo].[Comments].[ID_comments]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Comments]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ID_comment" />
+  </Operation>
+</Operations>
