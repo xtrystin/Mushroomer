@@ -12,4 +12,23 @@ public class WarningDto
 
     public DateTime Date { get; set; }
     public bool IsActive { get; set; }
+
+    public WarningDto(Guid id, string description, string province,
+        string mushroomName, double latitude, double longitude,
+        DateTime date, bool isActive, string title)
+    {
+        Id = id;
+        Description = description;
+        Province = province;
+        MushroomName = mushroomName;
+        this.Latitude = latitude;
+        this.Longitude = longitude;
+        Date = date;
+        IsActive = isActive;
+        Title = title;
+    }
+
+    public WarningDto()
+    {
+    }
 }

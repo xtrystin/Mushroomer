@@ -60,8 +60,4 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="dbo\Tables" />
   </ItemGroup>
-  <ItemGroup>
-    <Build Include="dbo\Tables\Warnings.sql" />
-    <Build Include="dbo\Stored Procedures\sp_Warning_GettAll.sql" />
-  </ItemGroup>
 </Project>
