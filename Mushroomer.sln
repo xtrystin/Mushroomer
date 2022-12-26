@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{886EECF1-0A6D-45A1-89EE-B23E8525A455}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ApiResourceDatabase", "ResourceDatabase\ApiResourceDatabase.sqlproj", "{E013584D-6864-4D41-B33D-CDF2B9DC9435}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ApiResourceDatabase", "src\ResourceDatabase\ApiResourceDatabase.sqlproj", "{E013584D-6864-4D41-B33D-CDF2B9DC9435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
