@@ -134,5 +134,17 @@
     <Build Include="Stored Procedures\sp_Users_addUser.sql" />
     <Build Include="Stored Procedures\sp_Users_getFriends.sql" />
     <Build Include="Stored Procedures\sp_Warning_getFiltered.sql" />
+    <Build Include="Stored Procedures\sp_Users_removeUser.sql" />
+    <Build Include="Stored Procedures\sp_Posts_addPost.sql" />
+    <Build Include="Stored Procedures\sp_Posts_removePost.sql" />
+    <Build Include="Stored Procedures\sp_Comments_addComment.sql" />
+    <Build Include="Stored Procedures\sp_LikedComment_addLike.sql" />
+    <Build Include="Stored Procedures\sp_LikedPost_addLike.sql" />
+    <Build Include="Stored Procedures\sp_LikedPost_removeLike.sql" />
+    <Build Include="Stored Procedures\sp_LikedComment_removeLike.sql" />
+    <Build Include="Stored Procedures\sp_Friend_addFriend.sql" />
+    <Build Include="Stored Procedures\sp_Friend_removeFriend.sql" />
+    <Build Include="Stored Procedures\sp_Warnings_addWarning.sql" />
+    <Build Include="Stored Procedures\sp_Warnings_removeWarning.sql" />
   </ItemGroup>
 </Project>

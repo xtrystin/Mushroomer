@@ -4,7 +4,7 @@
     [contents]     NTEXT          NULL,
     [score]        INT            DEFAULT 0 NOT NULL,
     [date_created] DATETIME2 (3)  DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    [type]         CHAR (1)       DEFAULT 'n' NULL,
+    [type]         CHAR (1)       DEFAULT 'n' NOT NULL,
     [image]        IMAGE          NULL,
     [shop_link]    NVARCHAR (128) NULL,
     [ID_author]    INT            NOT NULL,
