@@ -3,35 +3,35 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csproj", "{02C579B3-E86D-4D0F-972E-C94E5CD39ECC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "src\API\WebAPI\WebAPI.csproj", "{02C579B3-E86D-4D0F-972E-C94E5CD39ECC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{E32010CB-B853-46EB-88B3-8A6EC5AD9AC9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI", "WebUI\WebUI.csproj", "{D5B06E7D-26F7-4420-8943-543DF3045779}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUI", "src\UI\WebUI\WebUI.csproj", "{D5B06E7D-26F7-4420-8943-543DF3045779}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{43725461-12C9-47DF-869B-61E263250B77}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthService", "AuthService\AuthService.csproj", "{0D85021F-E08E-4991-A6E0-6503E43C47CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthService", "src\AuthService\AuthService.csproj", "{0D85021F-E08E-4991-A6E0-6503E43C47CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAssemblyUI", "WebAssemblyUI\WebAssemblyUI.csproj", "{3DEC1D1E-8BA9-4775-A336-9111ADF91B17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAssemblyUI", "src\UI\WebAssemblyUI\WebAssemblyUI.csproj", "{3DEC1D1E-8BA9-4775-A336-9111ADF91B17}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{ADC23D65-34A9-4CDE-A686-CF141C5F7BED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\API\Services\Warning\Domain\Domain.csproj", "{ADC23D65-34A9-4CDE-A686-CF141C5F7BED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{D7307DDC-461B-4555-B5B4-3F96E11EA1DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "src\API\Services\Warning\Application\Application.csproj", "{D7307DDC-461B-4555-B5B4-3F96E11EA1DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{CD33D94B-E1D6-4956-8E1D-0B5FC1AD3D0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "src\API\Services\Warning\Infrastructure\Infrastructure.csproj", "{CD33D94B-E1D6-4956-8E1D-0B5FC1AD3D0E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{8E2FFB8E-BD31-4938-9B0E-1D37C777B1AD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Warning", "Warning", "{4BCDE318-ECDD-4B0F-AF27-F4B0213EE841}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI.ApiLibrary", "UI.Library\UI.ApiLibrary.csproj", "{04F8E764-2328-442C-871E-BD1145171018}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI.ApiLibrary", "src\UI\UI.Library\UI.ApiLibrary.csproj", "{04F8E764-2328-442C-871E-BD1145171018}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{B14C5ACD-9D9B-47E1-A461-8532A0F381A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\API\Services\Common\Common.csproj", "{B14C5ACD-9D9B-47E1-A461-8532A0F381A7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{886EECF1-0A6D-45A1-89EE-B23E8525A455}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ApiResourceDatabase", "ResourceDatabase\ApiResourceDatabase.sqlproj", "{E013584D-6864-4D41-B33D-CDF2B9DC9435}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ApiResourceDatabase", "src\ResourceDatabase\ApiResourceDatabase.sqlproj", "{E013584D-6864-4D41-B33D-CDF2B9DC9435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
