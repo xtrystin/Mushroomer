@@ -42,7 +42,7 @@ public class WarningsController : ControllerBase
 
     // POST api/<WarningsController>
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] WarningDto warning)
+    public async Task<IActionResult> Post([FromBody] WarningDto warning)    //todo: set id to be nullable in post and not in put
     {
         var request = new AddWarningCommand { Warning = warning };
 

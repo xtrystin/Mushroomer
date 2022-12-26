@@ -4,7 +4,7 @@ using Domain.Repository;
 
 namespace Infrastructure.Dapper.Repository;
 
-public class WarningRepository : IWarningRepository
+public class WarningDapperRepository : IWarningRepository
 {
     public Task AddWarningAsync(Warning warning)
     {
