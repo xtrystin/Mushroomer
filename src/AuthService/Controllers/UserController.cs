@@ -1,4 +1,6 @@
 ﻿using AuthService.Data;
+using AuthService.Microserives;
+using AuthService.Microservices.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,14 +15,17 @@ namespace AuthService.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<UserController> _logger;
+        private readonly IUserMicroservice _userMicroservice;
 
         public UserController(ApplicationDbContext context,
             UserManager<IdentityUser> userManager,
-            ILogger<UserController> logger)
+            ILogger<UserController> logger,
+            IUserMicroservice userMicroservice)
         {
             _context = context;
             _userManager = userManager;
             _logger = logger;
+            _userMicroservice = userMicroservice;
         }
 
         //[HttpGet]
@@ -63,6 +68,15 @@ namespace AuthService.Controllers
                         {
                             return BadRequest();
                         }
+
+                        UserDto userDto = new UserDto
+                        {
+                            Id = new Guid(existingUser.Id),
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            EmailAddress = user.EmailAddress
+                        };
+                        await _userMicroservice.Post(userDto);
 
                         return Ok();
                     }

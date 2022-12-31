@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using AuthService.Data;
+using AuthService.Microserives;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ builder.Services.AddCors(policy =>
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
+
+// Register custom services
+builder.Services.AddScoped<IUserMicroservice, UserMicroservice>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -75,6 +79,7 @@ builder.Services.AddAuthentication(options =>
                 }
                 );
 
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
