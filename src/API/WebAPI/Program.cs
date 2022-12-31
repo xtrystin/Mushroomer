@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
+using WebAPI.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,8 +74,17 @@ builder.Services.AddAuthentication(options =>
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.FromMinutes(5)
                     };
-                }
-                );
+    });
+
+// Register httpClients
+builder.Services.AddHttpClient<PostController>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["MicroservicesUrl:Post"]);
+});
+
+//// Add Ocelot
+//builder.Configuration.AddJsonFile("ocelot.json", false, true);
+//builder.Services.AddOcelot(builder.Configuration);
 
 var app = builder.Build();
 
