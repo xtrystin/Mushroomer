@@ -11,10 +11,10 @@ public class Post
     private DateTime _createdDate;
     private DateTime _lastModificationDate;
     private readonly List<Comment> _comments;   // todo: move to new entity CommentList
-    //private Guid _authorId;
+    private User _author;
 
 
-    public Post(PostId id, PostTitle title, PostContent content, DateTime date, List<Comment> comments /*Guid authorId*/)
+    public Post(PostId id, PostTitle title, PostContent content, DateTime date, List<Comment> comments, User author)
     {
         Id = id;
         _title = title;
@@ -22,7 +22,7 @@ public class Post
         _createdDate = date;
         _lastModificationDate = date;
         _comments = comments;
-        //_authorId = authorId;
+        _author = author;
     }
 
     public Post()
@@ -44,7 +44,7 @@ public class Post
 
     public void AddComment(Comment comment) 
     {
-        _comments.Add( comment );
+        _comments.Add(comment);
     }
 
     public void DeleteComment(Comment comment)
@@ -57,6 +57,12 @@ public class Post
         _comments.First(x => x.Id == commentId).ModifyContent(content);
     }
 
-    public List<Comment> GetComments()
+    public List<Comment> GetComments()  //todo add notFound exception 
         => _comments;
+
+    public void Like(Guid UserId)
+    {
+        // check if user has already liked this post
+
+    }
 }

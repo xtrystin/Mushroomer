@@ -7,16 +7,20 @@ namespace Post.Application.Command.Handler;
 public class AddCommentCommandHandler : IRequestHandler<AddCommentCommand>
 {
     private readonly IPostRepository _postRepository;
+    private readonly IUserRepository _userRepository;
 
-    public AddCommentCommandHandler(IPostRepository postRepository)
+    public AddCommentCommandHandler(IPostRepository postRepository, IUserRepository userRepository)
     {
         _postRepository = postRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<Unit> Handle(AddCommentCommand request, CancellationToken cancellationToken)
     {
         var post = await _postRepository.GetAsync(request.PostId);
-        var comment = new Comment(default, request.Content, DateTime.Now, request.PostId, post);    //todo: Guid.NewGuid does not work in DB
+        var user = await _userRepository.GetAsync(request.AuthorId);
+
+        var comment = new Comment(default, request.Content, DateTime.Now, request.PostId, post, user);    //todo: Guid.NewGuid does not work in DB
 
         post.AddComment(comment);
         await _postRepository.UpdateAsync(post);

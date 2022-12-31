@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Post.Domain.Entity;
 using Post.Domain.ValueObject;
 
-namespace Post.Infrastructure.EF.Config;
+namespace Post.Infrastructure.EF.Config.WritingConfig;
 
 public class PostConfig : IEntityTypeConfiguration<Domain.Entity.Post>
 {
@@ -25,7 +25,7 @@ public class PostConfig : IEntityTypeConfiguration<Domain.Entity.Post>
         builder.Property(typeof(PostTitle), "_title")
             .HasConversion(titleConvverter)
             .HasColumnName("Title");
-            //.HasColumnType("nvarchar(10000)") //todo: optimalization, now is nvarchar(unlimited)
+        //.HasColumnType("nvarchar(10000)") //todo: optimalization, now is nvarchar(unlimited)
 
         builder.Property(typeof(PostContent), "_content")
             .HasConversion(contentConvverter)
@@ -38,6 +38,12 @@ public class PostConfig : IEntityTypeConfiguration<Domain.Entity.Post>
             .HasColumnName("LaastModificationDate");
 
         builder.HasMany(typeof(Comment), "_comments");
+
+        builder.Property<Guid>("AuthorId")
+            .HasColumnName("AuthorId");
+        builder.HasOne("_author")
+            .WithMany("_posts")
+            .HasForeignKey("AuthorId");
 
         builder.ToTable("Post");
     }

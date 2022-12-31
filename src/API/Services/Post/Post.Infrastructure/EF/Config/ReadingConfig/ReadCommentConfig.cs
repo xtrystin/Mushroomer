@@ -24,8 +24,12 @@ public class ReadCommentConfig
             .HasColumnName("LastModificationDate");
 
         builder.HasOne(p => p.Post)
-         .WithMany(p => p.Comments)
-        .HasForeignKey(p => p.PostId);
+            .WithMany(p => p.Comments)
+            .HasForeignKey(p => p.PostId);
+
+        builder.HasOne(x => x.Author)
+            .WithMany("_comments")
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.ToTable("Comment");
         //todo: declare foreignKey

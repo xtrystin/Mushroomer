@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Post.Application.Command;
 using Post.Application.Dto;
 using Post.Application.Query;
+using System.Security.Claims;
 
 namespace Post.API.Controllers
 {
@@ -38,14 +39,17 @@ namespace Post.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]AddPostCommand request)
         {
+            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
             await _mediator.Send(request);
+            
             return Ok();
         }
 
         [HttpPost("{id:guid}/comment")]
-        public async Task<IActionResult> PostComment([FromRoute]Guid id, [FromBody]string content)
+        public async Task<IActionResult> PostComment([FromRoute]Guid id, [FromBody]string content, Guid authorId)
         {
-            var request = new AddCommentCommand { PostId= id, Content = content };
+            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
+            var request = new AddCommentCommand { PostId= id, Content = content, AuthorId = authorId };
             await _mediator.Send(request);
 
             return Ok();

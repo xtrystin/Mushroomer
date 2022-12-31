@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Post.Infrastructure.EF.Context;
 
@@ -11,9 +12,11 @@ using Post.Infrastructure.EF.Context;
 namespace Post.Infrastructure.Migrations
 {
     [DbContext(typeof(PostDbContext))]
-    partial class PostDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221231192756_AddsAuthorToPost")]
+    partial class AddsAuthorToPost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,10 +31,6 @@ namespace Post.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("newsequentialid()");
-
-                    b.Property<Guid>("AuthorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("AuthorId");
 
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
@@ -50,8 +49,6 @@ namespace Post.Infrastructure.Migrations
                         .HasColumnName("LastModificationDate");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
 
                     b.HasIndex("PostId");
 
@@ -101,8 +98,7 @@ namespace Post.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Id");
 
-                    b.Property<string>("_email")
-                        .IsRequired()
+                    b.Property<string>("_emailAddress")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("EmailAddress");
 
@@ -123,12 +119,6 @@ namespace Post.Infrastructure.Migrations
 
             modelBuilder.Entity("Post.Domain.Entity.Comment", b =>
                 {
-                    b.HasOne("Post.Domain.Entity.User", "_author")
-                        .WithMany("_comments")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Post.Domain.Entity.Post", "Post")
                         .WithMany("_comments")
                         .HasForeignKey("PostId")
@@ -136,8 +126,6 @@ namespace Post.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
-
-                    b.Navigation("_author");
                 });
 
             modelBuilder.Entity("Post.Domain.Entity.Post", b =>
@@ -158,8 +146,6 @@ namespace Post.Infrastructure.Migrations
 
             modelBuilder.Entity("Post.Domain.Entity.User", b =>
                 {
-                    b.Navigation("_comments");
-
                     b.Navigation("_posts");
                 });
 #pragma warning restore 612, 618

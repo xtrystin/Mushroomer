@@ -15,5 +15,5 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, IEnumer
         _dbReadContext = dbReadContext;
     }
     public async Task<IEnumerable<PostReadModel>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
-        => await _dbReadContext.Posts.ToListAsync();
+        => await _dbReadContext.Posts.Include(x => x.Author).ToListAsync();
 }

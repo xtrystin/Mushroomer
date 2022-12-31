@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Post.Domain.Entity;
 
-namespace Post.Infrastructure.EF.Config;
+namespace Post.Infrastructure.EF.Config.WritingConfig;
 
 public class CommentConfig : IEntityTypeConfiguration<Comment>
 {
@@ -26,6 +26,13 @@ public class CommentConfig : IEntityTypeConfiguration<Comment>
         builder.HasOne(p => p.Post)
             .WithMany("_comments")
             .HasForeignKey(p => p.PostId);
+
+        builder.Property<Guid>("AuthorId")
+            .HasColumnName("AuthorId");
+        builder.HasOne("_author")
+            .WithMany("_comments")
+            .OnDelete(DeleteBehavior.NoAction)
+            .HasForeignKey("AuthorId");
 
         builder.ToTable("Comment");
         //todo: declare foreignKey

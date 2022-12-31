@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Post.Application.Dto;
+using Post.Application.ReadModel;
 using Post.Infrastructure.EF.Config.ReadingConfig;
 
 namespace Post.Infrastructure.EF.Context;
@@ -16,5 +17,6 @@ public sealed class ReadPostDbContext : DbContext
     {
         new ReadPostConfig().Configure(modelBuilder.Entity<PostReadModel>());
         new ReadCommentConfig().Configure(modelBuilder.Entity<CommentReadModel>());
+        new ReadUserConfig().Configure(modelBuilder.Entity<UserReadModel>());
     }
 }

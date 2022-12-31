@@ -16,6 +16,6 @@ namespace Post.Infrastructure.EF.Query
         }
 
         public async Task<PostReadModel> Handle(GetPostQuery request, CancellationToken cancellationToken)    // todo: handle null?
-            => await _dbReadContext.Posts.FirstOrDefaultAsync(x => x.Id == request.Id);
+            => await _dbReadContext.Posts.Include(x => x.Author).FirstOrDefaultAsync(x => x.Id == request.Id);
     }
 }

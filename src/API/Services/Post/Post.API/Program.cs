@@ -16,6 +16,7 @@ builder.Services.AddMediatR(typeof(GetPostQueryHandler), typeof(GetPostQuery));
 
 // Register repo
 builder.Services.AddScoped<IPostRepository, PostRepository>();    //todo: move it to extension method?
+builder.Services.AddScoped<IUserRepository, UserRepository>();    //todo: move it to extension method?
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

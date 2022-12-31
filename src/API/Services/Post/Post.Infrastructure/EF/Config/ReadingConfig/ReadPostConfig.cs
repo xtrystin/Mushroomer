@@ -29,6 +29,9 @@ public class ReadPostConfig : IEntityTypeConfiguration<PostReadModel>
 
         builder.HasMany(x => x.Comments)
             .WithOne();
+        
+        builder.HasOne(x => x.Author)
+            .WithMany("_posts");
 
         builder.ToTable("Post");
     }

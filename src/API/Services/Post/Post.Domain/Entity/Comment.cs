@@ -9,12 +9,12 @@ public class Comment
     private string _content;
     private DateTime _createdDate;
     private DateTime _lastModificationDate;
-    //private Guid/User AuthorId
-    
+    private User _author;
+
     public PostId PostId { get; private set; }
     public Post Post { get; private set; }
 
-    public Comment(Guid id, string content, DateTime createdDate, PostId postId, Post post)
+    public Comment(Guid id, string content, DateTime createdDate, PostId postId, Post post, User author)
     {
         Id = id;
         _content = content;
@@ -22,6 +22,7 @@ public class Comment
         PostId = postId;
         Post = post;
         _lastModificationDate = createdDate;
+        _author = author;
     }
 
     public Comment()
