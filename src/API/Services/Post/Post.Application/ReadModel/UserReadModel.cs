@@ -12,4 +12,5 @@ public class UserReadModel      // todo: refactor
     public string Email { get; set; }
     private readonly List<PostReadModel> _posts;
     private readonly List<CommentReadModel> _comments;
+    private readonly List<PostUserReactionReadModel> _postReactions;
 }

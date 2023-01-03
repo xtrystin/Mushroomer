@@ -63,5 +63,25 @@ namespace Post.API.Controllers
 
             return result;
         }
+
+        [HttpPost("{id:guid}/reaction")]
+        public async Task<IActionResult> PostReaction([FromRoute] Guid id, bool like, Guid userId)
+        {
+            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
+            var request = new AddReactionToPostCommand { PostId = id, UserId = userId, Like = like };
+            await _mediator.Send(request);
+
+            return Ok();
+        }
+
+        [HttpGet("{id:guid}/reactionForUser")]
+        public async Task<bool?> GetReactionForUser([FromRoute] Guid id, Guid userId)
+        {
+            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
+            var request = new GetReactionQuery { PostId = id, UserId= userId };
+            var result = await _mediator.Send(request);
+
+            return result;
+        }
     }
 }

@@ -18,5 +18,6 @@ public sealed class ReadPostDbContext : DbContext
         new ReadPostConfig().Configure(modelBuilder.Entity<PostReadModel>());
         new ReadCommentConfig().Configure(modelBuilder.Entity<CommentReadModel>());
         new ReadUserConfig().Configure(modelBuilder.Entity<UserReadModel>());
+        new ReadPostUserReactionConfig().Configure(modelBuilder.Entity<PostUserReactionReadModel>());
     }
 }

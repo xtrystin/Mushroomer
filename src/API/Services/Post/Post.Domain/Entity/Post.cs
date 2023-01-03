@@ -1,4 +1,5 @@
-﻿using Post.Domain.ValueObject;
+﻿using Post.Domain.Exception;
+using Post.Domain.ValueObject;
 
 namespace Post.Domain.Entity;
 
@@ -12,6 +13,7 @@ public class Post
     private DateTime _lastModificationDate;
     private readonly List<Comment> _comments;   // todo: move to new entity CommentList
     private User _author;
+    private List<PostUserReaction> _reactions;
 
 
     public Post(PostId id, PostTitle title, PostContent content, DateTime date, List<Comment> comments, User author)
@@ -60,9 +62,45 @@ public class Post
     public List<Comment> GetComments()  //todo add notFound exception 
         => _comments;
 
-    public void Like(Guid UserId)
+    public void Like(User user)
     {
-        // check if user has already liked this post
+        var reaction = _reactions.FirstOrDefault(x => x.PostId == Id && x.UserId == user.Id);
 
+        if (reaction is not null && reaction.Like is true)
+        {
+            throw new UserAlreadyReactedToPost("You have already liked this post");
+        }
+        else if (reaction is not null)
+        {
+            reaction.Like = true;
+        }
+        else
+        {
+            var newreaction = new PostUserReaction { Id = default, UserId = user.Id, 
+                PostId = Id, Like = true, User = user, Post = this};
+            
+            _reactions.Add(newreaction);
+        }
+    }
+
+    public void DisLike(User user)
+    {
+        var reaction = _reactions.FirstOrDefault(x => x.PostId == Id && x.UserId == user.Id);
+
+        if (reaction is not null && reaction.Like is false)
+        {
+            throw new UserAlreadyReactedToPost("You have already disliked this post");
+        }
+        else if (reaction is not null)
+        {
+            reaction.Like = false;
+        }
+        else
+        {
+            var newreaction = new PostUserReaction { Id = default, UserId = user.Id, 
+                PostId = Id, Like = false, User = user, Post = this};
+            
+            _reactions.Add(newreaction);
+        }
     }
 }

@@ -30,7 +30,7 @@ public class PostRepository : IPostRepository
 
     public async Task<Domain.Entity.Post> GetAsync(PostId id)
     {
-        return await _posts.Include("_comments").FirstOrDefaultAsync(post => post.Id == id);
+        return await _posts.Include("_comments").Include("_reactions").FirstOrDefaultAsync(post => post.Id == id);
     }
 
     public async Task UpdateAsync(Domain.Entity.Post post)

@@ -45,6 +45,8 @@ public class PostConfig : IEntityTypeConfiguration<Domain.Entity.Post>
             .WithMany("_posts")
             .HasForeignKey("AuthorId");
 
+        builder.HasMany(typeof(PostUserReaction), "_reactions");
+
         builder.ToTable("Post");
     }
 }

@@ -28,6 +28,8 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.HasMany("_comments")
             .WithOne("_author");
 
+        builder.HasMany(typeof(PostUserReaction), "_postReactions");
+
         builder.ToTable("User");
     }
 }

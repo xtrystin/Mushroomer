@@ -18,5 +18,6 @@ public sealed class PostDbContext : DbContext
         new PostConfig().Configure(modelBuilder.Entity<Domain.Entity.Post>());
         new CommentConfig().Configure(modelBuilder.Entity<Domain.Entity.Comment>());
         new UserConfig().Configure(modelBuilder.Entity<Domain.Entity.User>());
+        new PostUserReactionConfig().Configure(modelBuilder.Entity<Domain.Entity.PostUserReaction>());
     }
 }

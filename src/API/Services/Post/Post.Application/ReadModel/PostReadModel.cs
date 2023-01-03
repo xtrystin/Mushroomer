@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Post.Application.Dto;
 
-public class PostReadModel
+public class PostReadModel      //todo refactor: public/private
 {
     public Guid Id { get; set; }
     public string Title { get; set; }
@@ -11,10 +11,15 @@ public class PostReadModel
     public DateTime CreatedDate { get; set; }
     public DateTime LastModificationDate { get; set; }
     public string AuthorEmail => Author.Email;
+    public int LikeNumber => Reactions.Count(x => x.Like == true);
+    public int DisLikeNumber => Reactions.Count(x => x.Like == false);
 
     [JsonIgnore]
     public IEnumerable<CommentReadModel> Comments { get; set; }
 
     [JsonIgnore]
     public UserReadModel Author { get; set; }
+
+    [JsonIgnore]
+    public List<PostUserReactionReadModel> Reactions { get; set; }
 }

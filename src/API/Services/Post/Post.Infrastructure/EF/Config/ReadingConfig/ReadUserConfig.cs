@@ -28,6 +28,8 @@ public class ReadUserConfig : IEntityTypeConfiguration<UserReadModel>
         builder.HasMany("_comments")
             .WithOne("Author");
 
+        builder.HasMany(typeof(PostUserReactionReadModel), "_postReactions");
+
         builder.ToTable("User");
     }
 }

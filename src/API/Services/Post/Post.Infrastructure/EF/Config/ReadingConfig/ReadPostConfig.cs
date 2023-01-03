@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Post.Application.Dto;
-using Post.Domain.ValueObject;
+using Post.Application.ReadModel;
 
 namespace Post.Infrastructure.EF.Config.ReadingConfig;
 
@@ -32,6 +31,8 @@ public class ReadPostConfig : IEntityTypeConfiguration<PostReadModel>
         
         builder.HasOne(x => x.Author)
             .WithMany("_posts");
+
+        builder.HasMany(x => x.Reactions);
 
         builder.ToTable("Post");
     }

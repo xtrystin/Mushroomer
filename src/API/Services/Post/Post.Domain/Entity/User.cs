@@ -11,6 +11,7 @@ public class User
     private string _email;
     private readonly List<Post> _posts;
     private readonly List<Comment> _comments;
+    private List<PostUserReaction> _postReactions;
 
     public User(Guid id, string firstName, string lastName, string email, List<Post> posts)
     {
