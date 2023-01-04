@@ -8,9 +8,6 @@ public class CommentReadModel
     public string Content { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime LastModificationDate { get; set; }
+    public string AuthorEmail { get; set; }
 
-    [JsonIgnore]
-    public Guid PostId { get; set; }
-    [JsonIgnore]
-    public PostReadModel Post { get; set; }
 }
