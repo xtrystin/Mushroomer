@@ -53,7 +53,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.Application", "src\API
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.API", "src\API\Services\User\User.API\User.API.csproj", "{7228747D-51E6-48E7-A432-8C06642F11D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Infrastructure", "src\API\Services\User\User.Infrastructure\User.Infrastructure.csproj", "{DF406E71-0B89-47E8-AA69-E90EF47E009F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.Infrastructure", "src\API\Services\User\User.Infrastructure\User.Infrastructure.csproj", "{DF406E71-0B89-47E8-AA69-E90EF47E009F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

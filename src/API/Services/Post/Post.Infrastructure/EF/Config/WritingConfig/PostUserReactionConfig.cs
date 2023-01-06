@@ -24,12 +24,12 @@ public class PostUserReactionConfig : IEntityTypeConfiguration<PostUserReaction>
 
         builder.HasOne(x => x.Post)
             .WithMany("_reactions")
-            .OnDelete(DeleteBehavior.NoAction)
+            .OnDelete(DeleteBehavior.Cascade)
             .HasForeignKey(x => x.PostId);
         
         builder.HasOne(x => x.User)
             .WithMany("_postReactions")
-            .OnDelete(DeleteBehavior.NoAction)
+            .OnDelete(DeleteBehavior.NoAction)  //todo cascade?
             .HasForeignKey(x => x.UserId);
 
         builder.ToTable("PostUserReaction");

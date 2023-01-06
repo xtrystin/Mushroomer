@@ -15,7 +15,11 @@ public class GetCommentsForPostQueryHandler : IRequestHandler<GetCommentsForPost
         _dbReadContext = dbReadContext;
     }
 
-    public async Task<IEnumerable<CommentReadModel>> Handle(GetCommentsForPostQuery request, CancellationToken cancellationToken) 
-        => (await _dbReadContext.Posts.Where(x => x.Id == request.PostId).
-            Include(x => x.Comments).Include(x => x.Author).FirstAsync()).Comments;
+    public async Task<IEnumerable<CommentReadModel>> Handle(GetCommentsForPostQuery request, CancellationToken cancellationToken)
+    {
+        var a =
+        (await _dbReadContext.Posts.Where(x => x.Id == request.PostId).
+            Include(x => x.Author).Include(x => x.Comments).ThenInclude(x => x.Author).FirstAsync()).Comments;
+        return a;
+    }
 }

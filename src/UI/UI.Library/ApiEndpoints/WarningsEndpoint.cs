@@ -14,7 +14,7 @@ public class WarningsEndpoint : IWarningsEndpoint
     {
         _httpClient = httpClient;
         _config = config;
-        _api = _config["resourceApi"];
+        _api = _config["apiGateway"];
     }
 
     public async Task<List<WarningDto>> GetAll()

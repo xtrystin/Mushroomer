@@ -2,7 +2,7 @@
 @using UI.ApiLibrary.ApiEndpoints
 @using UI.ApiLibrary.Dto
 @inject IWarningsEndpoint WarningsEndpoint
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime JSRuntime    
 @inject NavigationManager NavManager
 
 <h3>Warning Details</h3>
@@ -163,7 +163,7 @@
 
 @code {
     [Parameter]
-    public string Id {  get;  set; }
+    public string Id { get;  set; }
 
     private WarningDto Warning;
     private bool Editable;
@@ -173,7 +173,7 @@
         try
         {
             Warning = await WarningsEndpoint.Get(Id);
-            await JSRuntime.InvokeVoidAsync("googleMap", null); 
+            await JSRuntime.InvokeVoidAsync("googleMap", null);     //todo remove this
         }
         catch (Exception ex)
         {

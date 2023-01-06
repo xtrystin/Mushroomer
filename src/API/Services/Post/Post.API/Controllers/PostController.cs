@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Post.API.Dto;
 using Post.Application.Command;
 using Post.Application.Dto;
 using Post.Application.Query;
+using System.Net;
 using System.Security.Claims;
 
 namespace Post.API.Controllers
@@ -19,12 +21,15 @@ namespace Post.API.Controllers
         }
 
         [HttpGet("{id:guid}")]
+       // [ProducesResponseType(typeof(PostReadModel), 200)]
+        //[ProducesResponseType(404)]
         public async Task<PostReadModel> Get([FromRoute]Guid id)
         {
             var request = new GetPostQuery { Id = id };
             var result = await _mediator.Send(request);
 
             return result;
+           // return result is null ? Ok(result) : NotFound();  //todo
         }
 
         [HttpGet]
@@ -45,11 +50,30 @@ namespace Post.API.Controllers
             return Ok();
         }
 
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> EditPost([FromRoute]Guid id, EditPostCommandDto requestDto, Guid userId)
+        {
+            var request = new EditPostCommand() { PostId = id, Title = requestDto.Title, 
+                Content = requestDto.Content, UserId = userId};
+            await _mediator.Send(request);
+
+            return Ok();
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete([FromRoute]Guid id, Guid userId)
+        {
+            var request = new DeletePostCommand() { PostId = id, UserId = userId };
+            await _mediator.Send(request);
+
+            return Ok();
+        }
+
         [HttpPost("{id:guid}/comment")]
         public async Task<IActionResult> PostComment([FromRoute]Guid id, [FromBody]string content, Guid authorId)
         {
             //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
-            var request = new AddCommentCommand { PostId= id, Content = content, AuthorId = authorId };
+            var request = new AddCommentCommand { PostId = id, Content = content, AuthorId = authorId };
             await _mediator.Send(request);
 
             return Ok();
@@ -75,7 +99,7 @@ namespace Post.API.Controllers
         }
 
         [HttpGet("{id:guid}/reactionForUser")]
-        public async Task<bool?> GetReactionForUser([FromRoute] Guid id, Guid userId)
+        public async Task<bool?> GetReactionForUser([FromRoute] Guid id, Guid userId)   //todo: can return true, false or 204 for no reaction
         {
             //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
             var request = new GetReactionQuery { PostId = id, UserId= userId };

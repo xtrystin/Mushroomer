@@ -16,13 +16,13 @@ public class Post
     private List<PostUserReaction> _reactions;
 
 
-    public Post(PostId id, PostTitle title, PostContent content, DateTime date, List<Comment> comments, User author)
+    public Post(PostId id, PostTitle title, PostContent content, List<Comment> comments, User author)
     {
         Id = id;
         _title = title;
         _content = content;
-        _createdDate = date;
-        _lastModificationDate = date;
+        _createdDate = DateTime.Now;
+        _lastModificationDate = _createdDate;
         _comments = comments;
         _author = author;
     }
@@ -43,6 +43,9 @@ public class Post
         _content = content;
         _lastModificationDate = DateTime.Now;
     }
+
+    public bool IsAuthor(Guid userId)
+        => _author.Id == userId;
 
     public void AddComment(Comment comment) 
     {

@@ -1,8 +1,7 @@
 ﻿namespace WebAPI.Model.Post;
 
-public class AddPostCommand
+public class EditPostCommandDto
 {
     public string Title { get; set; }
     public string Content { get; set; }
-    public Guid AuthorId { get; set; }
 }

@@ -1,0 +1,53 @@
+﻿@page "/post/add"
+@using UI.ApiLibrary.ApiEndpoints
+@using UI.ApiLibrary.Dto
+@using UI.ApiLibrary.Dto.Post;
+@inject IPostEndpoint PostEndpoint
+@inject NavigationManager NavManager
+@attribute [Authorize]
+
+<h3>Add your new post!</h3>
+
+<div class="container-fluid">
+    <EditForm Model="Post" OnValidSubmit="ExecuteAdd" class="">
+        <DataAnnotationsValidator />
+
+        <div class="form-group row">
+            <label for="Title" class="col-sm-2 col-form-label">Title: </label>
+            <div class="col-sm-10">
+                <InputText id="Title" class="form-control" @bind-Value="Post.Title" />
+                <ValidationMessage For="@(() => Post.Title)" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Content" class="col-sm-2 col-form-label">Content: </label>
+            <div class="col-sm-10">
+                <InputText id="Content" class="form-control" @bind-Value="Post.Content" />
+                <ValidationMessage For="@(() => Post.Content)" />
+            </div>
+        </div>
+        <br />
+        <div class="col-md-12 text-rigth">
+            <button type="submit" class="btn btn-outline-success">Save Changes</button>
+        </div>
+    </EditForm>
+</div>>
+@code {
+    private AddPostDto Post = new();
+
+    private async Task ExecuteAdd()
+    {
+        try
+        {
+            await PostEndpoint.Add(Post);
+            //todo: inform about success
+            NavManager.NavigateTo("/posts");
+
+        }
+        catch (Exception ex)
+        {
+            //todo show error message
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

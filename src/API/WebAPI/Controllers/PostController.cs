@@ -1,10 +1,12 @@
 ﻿using Azure.Core;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
 using WebAPI.Model.Post;
+using System.Net.Http.Json;
 
 namespace WebAPI.Controllers
 {
@@ -25,8 +27,14 @@ namespace WebAPI.Controllers
 
         private void AddJwtToHttpClientHeader()
         {
-            var jwt = HttpContext.Request.Headers.Authorization;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", jwt); // todo: use middleware to set authorization header
+            var jwtBearer = HttpContext.Request.Headers.Authorization;
+            if (jwtBearer.Count == 0)
+            {
+                return;
+            }
+
+            var jwt = jwtBearer.ToString().Replace("bearer ", "");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer",jwt); // todo: use middleware to set authorization header
         }
 
         [HttpGet("{id:guid}")]
@@ -68,12 +76,14 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] AddPostCommand request)
+        public async Task<IActionResult> Post([FromBody] AddPostDto request)
         {
             AddJwtToHttpClientHeader();
             var url = _config["MicroservicesUrl:Post"] + $"/post";
-
-            var response = await _httpClient.PostAsJsonAsync(url, request);
+            var authorId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            AddPostCommand post = new() { Title = request.Title, Content= request.Content, AuthorId = authorId }; 
+            
+            var response = await _httpClient.PostAsJsonAsync(url, post);
             if (response.IsSuccessStatusCode)
             {
                 return Ok();
@@ -81,6 +91,44 @@ namespace WebAPI.Controllers
             else
             {
                 throw new Exception(response.ReasonPhrase);  
+            }
+        }
+
+        [HttpPatch("{id:guid}")]
+        [Authorize]
+        public async Task<IActionResult> EditPost([FromRoute] Guid id, EditPostCommandDto request)
+        {
+            AddJwtToHttpClientHeader();
+            var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var url = _config["MicroservicesUrl:Post"] + $"/post/{id}?userId={userId}";
+
+            var response = await _httpClient.PatchAsJsonAsync(url, request);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok();
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+
+        [HttpDelete("{id:guid}")]
+        [Authorize]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            AddJwtToHttpClientHeader();
+            var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var url = _config["MicroservicesUrl:Post"] + $"/post/{id}?userId={userId}";
+
+            var response = await _httpClient.DeleteAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok();
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
             }
         }
 
@@ -141,18 +189,23 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id:guid}/reactionForUser")]
+        [Authorize]
         public async Task<bool?> GetReactionForUser([FromRoute] Guid id)
         {
             AddJwtToHttpClientHeader();
 
-            var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var url = _config["MicroservicesUrl:Post"] + $"/post/{id}/reactionForUser?userId={userId}";
 
             var response = await _httpClient.GetAsync(url);
-            if (response.IsSuccessStatusCode)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                var result = await response.Content.ReadFromJsonAsync<bool?>();
+                var result = await response.Content?.ReadFromJsonAsync<bool?>();
                 return result;
+            }
+            else if(response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                return null;
             }
             else
             {
