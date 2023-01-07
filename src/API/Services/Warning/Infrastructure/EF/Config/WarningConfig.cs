@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,6 +13,9 @@ public class WarningConfig : IEntityTypeConfiguration<Warning>
 
         //builder.Property(x => x.Title).IsRequired().HasColumnName("Title");
         //builder.Property(x => x.Description).HasColumnName("Description");
+
+
+        builder.HasMany(typeof(WarningUserReaction), "_reactions");
 
         builder.ToTable("Warning");
     }

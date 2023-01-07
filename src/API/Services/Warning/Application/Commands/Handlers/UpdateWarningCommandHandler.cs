@@ -15,14 +15,13 @@ public class UpdateWarningCommandHandler : IRequestHandler<UpdateWarningCommand>
     public async Task<Unit> Handle(UpdateWarningCommand request, CancellationToken cancellationToken)
     {
         //todo: validation
-        var requestWarning = request.Warning;
 
-        var warning = await _warningRepository.GetWarningAsync(request.Warning.Id);
-        warning.Modify(requestWarning.Title, requestWarning.Description, requestWarning.Province,
-            requestWarning.MushroomName, requestWarning.Latitude, requestWarning.Longitude,
-            requestWarning.Date);
+        var warning = await _warningRepository.GetWarningAsync(request.Id);
+        warning.Modify(request.Title, request.Description, request.Province,
+            request.MushroomName, request.Latitude, request.Longitude,
+            request.Date);   
 
-        if (requestWarning.IsActive)
+        if (request.IsActive)
         {
             warning.Activate();
         }

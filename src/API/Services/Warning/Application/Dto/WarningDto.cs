@@ -1,4 +1,7 @@
-﻿namespace Application.Dto;
+﻿using Domain.Entity;
+using System.Text.Json.Serialization;
+
+namespace Application.Dto;
 
 public class WarningDto
 {
@@ -13,9 +16,15 @@ public class WarningDto
     public DateTime Date { get; set; }
     public bool IsActive { get; set; }
 
+    public int ApproveNumber => _reactions.Count(x => x.Approve == true);
+    public int DisapproveNumber => _reactions.Count(x => x.Approve == false);
+
+    [JsonIgnore]
+    public List<WarningUserReaction> _reactions { get; set; }   //todo naming violation
+
     public WarningDto(Guid id, string description, string province,
         string mushroomName, double latitude, double longitude,
-        DateTime date, bool isActive, string title)
+        DateTime date, bool isActive, string title, List<WarningUserReaction> reactions)
     {
         Id = id;
         Description = description;
@@ -26,6 +35,7 @@ public class WarningDto
         Date = date;
         IsActive = isActive;
         Title = title;
+        _reactions= reactions;
     }
 
     public WarningDto()

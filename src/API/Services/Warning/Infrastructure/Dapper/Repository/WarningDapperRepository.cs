@@ -1,5 +1,5 @@
 ﻿using Application.Dto;
-using Domain;
+using Domain.Entity;
 using Domain.Repository;
 
 namespace Infrastructure.Dapper.Repository;

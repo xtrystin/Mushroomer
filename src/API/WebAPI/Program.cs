@@ -24,6 +24,7 @@ builder.Services.AddCors(policy =>
 
 builder.Services.AddMSSqlServer(builder.Configuration);
 builder.Services.AddScoped<IWarningRepository, WarningRepository>();    //todo: move it to extension method?
+builder.Services.AddScoped<IUserRepository, UserRepository>();    //todo: move it to extension method?
 
 builder.Services.AddMediatR(typeof(GetAllWarningsQueryHandler), typeof(GetAllWarningsQuery)); //todo: make it more generic
 builder.Services.AddControllers();

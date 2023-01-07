@@ -1,6 +1,6 @@
 ﻿using Application.Dto;
 using Application.Queries;
-using Domain;
+using Domain.Entity;
 using Infrastructure.EF.Context;
 using Infrastructure.EF.Mapper;
 using MediatR;
@@ -19,7 +19,7 @@ public class GetWarningQueryHandler : IRequestHandler<GetWarningQuery, WarningDt
 
     public async Task<WarningDto> Handle(GetWarningQuery request, CancellationToken cancellationToken)
     {
-        var warning = await _warnings.Where(x => x.Id == request.Id).FirstOrDefaultAsync();
+        var warning = await _warnings.Include(x => x._reactions).Where(x => x.Id == request.Id).FirstOrDefaultAsync();
         //todoL if null return notFound
 
         return WarningMapper.MapToDto(warning);

@@ -12,4 +12,7 @@ public class WarningDto
 
     public DateTime Date { get; set; }
     public bool IsActive { get; set; }
+    
+    public int ApproveNumber { get; set; }
+    public int DisapproveNumber { get; set; }
 }

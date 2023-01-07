@@ -1,4 +1,4 @@
-﻿using Domain;
+﻿using Domain.Entity;
 using Domain.Repository;
 using MediatR;
 
@@ -16,11 +16,10 @@ public class AddWarningCommandHandler : IRequestHandler<AddWarningCommand>
     public async Task<Unit> Handle(AddWarningCommand request, CancellationToken cancellationToken)
     {
         //todo create factory method in doamin to create
-        var requestWarning = request.Warning;
         
-        var warning = new Warning(Guid.NewGuid(), requestWarning.Description, requestWarning.Province,
-            requestWarning.MushroomName, requestWarning.Latitude, requestWarning.Longitude, requestWarning.Date,
-            requestWarning.IsActive, requestWarning.Title);
+        var warning = new Warning(Guid.NewGuid(), request.Description, request.Province,
+            request.MushroomName, request.Latitude, request.Longitude, request.Date,
+            request.IsActive, request.Title);
 
         await _warningRepository.AddWarningAsync(warning);
         return Unit.Value;

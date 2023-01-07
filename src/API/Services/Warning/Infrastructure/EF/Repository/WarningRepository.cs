@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.Entity;
 using Domain.Repository;
 using Infrastructure.EF.Context;
 using Microsoft.EntityFrameworkCore;
@@ -30,12 +31,12 @@ public class WarningRepository : IWarningRepository
 
     public async Task<IEnumerable<Warning>> GetAllWarningsAsync()
     {
-        return await _warnings.ToListAsync();
+        return await _warnings.Include(x => x._reactions).ToListAsync();
     }
 
     public async Task<Warning> GetWarningAsync(Guid id)
     {
-        return await _warnings.FirstOrDefaultAsync(x => x.Id == id);
+        return await _warnings.Include(x => x._reactions).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task UpdateWarningAsync(Warning warning)

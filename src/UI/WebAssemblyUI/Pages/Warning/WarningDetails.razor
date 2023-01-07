@@ -4,6 +4,7 @@
 @inject IWarningsEndpoint WarningsEndpoint
 @inject IJSRuntime JSRuntime    
 @inject NavigationManager NavManager
+@inject IWarningsEndpoint WarningEndpoint;
 
 <h3>Warning Details</h3>
     
@@ -134,6 +135,30 @@
                 <p class="form-control-plaintext" id="IsActive">@Warning.IsActive</p>
                 </div>
             </div>
+            <div class="form-group row">
+                <label for="Approves" class="col-sm-2 col-form-label">Approves: </label>
+                <div class="col-auto">
+                    <p class="form-control-plaintext" id="IsActive">@Warning.ApproveNumber</p>
+                </div>
+                @if (IsUserLoggedIn)
+                {
+                    <div class="col-auto" title=@ApproveButtonTitile>
+                        <button type="button" class="btn btn-outline-success btn-sm col-auto" disabled=@IsApproveButtonDisabled @onclick="Approve">Approve</button>
+                    </div>
+                }
+            </div>
+            <div class="form-group row">
+                <label for="Disapproves" class="col-sm-2 col-form-label">Disapproves: </label>
+                <div class="col-auto">
+                    <p class="form-control-plaintext" id="IsActive">@Warning.DisapproveNumber</p>
+                </div>
+                @if (IsUserLoggedIn)
+                {
+                    <div class="col-auto" title=@DisapproveButtonTitile>
+                        <button type="button" class="btn btn-outline-danger btn-sm col-auto" disabled=@IsDisApproveButtonDisabled @onclick="Dislike">Dislike</button>
+                    </div>
+                }
+            </div>
             <div class="mb-3 row">
                 <label for="Latitude" class="col-sm-2 col-form-label">Latitude</label>
                 <div class="col-sm-10">
@@ -163,17 +188,29 @@
 
 @code {
     [Parameter]
-    public string Id { get;  set; }
+    public string Id { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
 
     private WarningDto Warning;
     private bool Editable;
+    private bool IsUserLoggedIn;
+
+    private bool IsApproveButtonDisabled = false;
+    private bool IsDisApproveButtonDisabled = false;
+    private string ApproveButtonTitile = "";
+    private string DisapproveButtonTitile = "";
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             Warning = await WarningsEndpoint.Get(Id);
-            await JSRuntime.InvokeVoidAsync("googleMap", null);     //todo remove this
+            //await JSRuntime.InvokeVoidAsync("googleMap", null);     //todo remove this
+
+            IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+            await SetupButtonClickability();
         }
         catch (Exception ex)
         {
@@ -198,6 +235,32 @@
         }
     }
 
+    private async Task SetupButtonClickability()
+    {
+        //if (IsUserLoggedIn)
+        var hasliked = await WarningsEndpoint.GetReactionForUser(Warning.Id);
+        if (hasliked is true)
+        {
+            IsApproveButtonDisabled = true;
+            IsDisApproveButtonDisabled = false;
+
+            (ApproveButtonTitile, DisapproveButtonTitile) = ("You have already approved this warning", "Disapprove");
+        }
+        else if (hasliked is false)
+        {
+            IsApproveButtonDisabled = false;
+            IsDisApproveButtonDisabled = true;
+            (ApproveButtonTitile, DisapproveButtonTitile) = ("Approve", "You have already disapproved this warning");
+        }
+        else
+        {
+            IsApproveButtonDisabled = false;
+            IsDisApproveButtonDisabled = false;
+
+            (ApproveButtonTitile, DisapproveButtonTitile) = ("Approve", "Disapprove");
+        }
+    }
+
     private async Task Delete()
     {
         try
@@ -210,6 +273,49 @@
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
+        }
+    }
+
+    private async Task Approve()
+    {
+        try
+        {
+            await WarningEndpoint.PostReaction(Warning.Id, true);
+
+            if (IsDisApproveButtonDisabled)
+            {
+                Warning.DisapproveNumber--;
+            }
+
+            Warning.ApproveNumber++;
+            IsApproveButtonDisabled = true;
+            IsDisApproveButtonDisabled = false;
+            (ApproveButtonTitile, DisapproveButtonTitile) = ("You have already approved this warning", "Disapprove");
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    private async Task Dislike()
+    {
+        try
+        {
+            await WarningsEndpoint.PostReaction(Warning.Id, false);
+
+            if (IsApproveButtonDisabled)
+            {
+                Warning.ApproveNumber--;
+            }
+
+            Warning.DisapproveNumber++;
+            IsDisApproveButtonDisabled = true;
+            IsApproveButtonDisabled = false;
+            (ApproveButtonTitile, DisapproveButtonTitile) = ("Approve", "You have already disapproved this warning");
+        }
+        catch (Exception ex)
+        {
+            //todo: log error, display error message
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Domain.Repository;
+﻿using Domain.Entity;
+
+namespace Domain.Repository;
 
 public interface IWarningRepository
 {
