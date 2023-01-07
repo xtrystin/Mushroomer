@@ -1,0 +1,160 @@
+﻿@page "/mushroom/{id}"
+@using UI.ApiLibrary.ApiEndpoints
+@using UI.ApiLibrary.Dto
+@using UI.ApiLibrary.Dto.Mushroom;
+@inject IMushroomEndpoint MushroomEndpoint
+@inject NavigationManager NavManager
+
+<h3>Mushroom Details</h3>
+    
+<div class="container-fluid">
+    @if (Mushroom is null)
+    {
+        <div class="row">
+            <p>Please wait, loading...</p>  <!-- todo: skeleton loading-->    
+        </div>
+    }
+    else
+    {
+        if (Editable)
+        {
+            <EditForm Model="Mushroom" OnValidSubmit="ExecuteEdit" class="">
+                <DataAnnotationsValidator />
+
+                <div class="form-group row">
+                    <label for="Name" class="col-sm-2 col-form-label">Name: </label>
+                    <div class="col-sm-10">
+                        <InputText id="Title" class="form-control" @bind-Value="Mushroom.Name" />
+                        <ValidationMessage For="@(() => Mushroom.Name)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="Description" class="col-sm-2 col-form-label">Description: </label>
+                    <div class="col-sm-10">
+                        <InputText id="Description" class="form-control" @bind-Value="Mushroom.Description" />
+                        <ValidationMessage For="@(() => Mushroom.Description)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="IsPoisonous" class="col-sm-2 col-form-label">IsPoisonous: </label>
+                    <div class="col-sm-10">
+                        <InputCheckbox id="IsActive" class="form-check-input" type="checkbox" @bind-Value="Mushroom.IsPoisonous" />
+                        <ValidationMessage For="@(() => Mushroom.IsPoisonous)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="PhotoUrl" class="col-sm-2 col-form-label">PhotoUrl: </label>
+                    <div class="col-sm-10">
+                        <InputText id="Province" class="form-control" @bind-Value="Mushroom.PhotoUrl" />
+                        <ValidationMessage For="@(() => Mushroom.PhotoUrl)" />
+                    </div>
+                </div>
+
+                <br />
+                <div class="col-md-12 text-rigth">
+                    <button type="submit" class="btn btn-outline-success">Save Changes</button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <div class="mb-3 row">
+                <label for="Id" class="col-sm-2 col-form-label">Id</label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext" id="Id">@Id</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="Title" class="col-sm-2 col-form-label">Name</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="Title">@Mushroom.Name</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="Description" class="col-sm-2 col-form-label">Description</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="Description">@Mushroom.Description</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="IsPoisonous" class="col-sm-2 col-form-label">IsPoisonous</label>
+                <div class="col-sm-10">
+                <p class="form-control-plaintext" id="MushroomName">@Mushroom.IsPoisonous</p>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="Province" class="col-sm-2 col-form-label">CreatedDate</label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext" id="Province">@Mushroom.CreatedDate</p>
+                </div>
+            </div>
+            @if (string.IsNullOrEmpty(Mushroom.PhotoUrl) is false)
+            {
+                 <div class="mb-3 row">
+                    <label for="Date" class="col-sm-2 col-form-label">Photo</label>
+                    <div class="col-sm-10">
+                        <img src="@($"{Mushroom.PhotoUrl}")" class="img-fluid" width="1200" height="900" alt="@Mushroom.Name" />
+                    </div>
+                 </div>
+            }
+        
+            <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
+            <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
+         }
+        
+    }
+</div>
+
+
+
+@code {
+    [Parameter]
+    public string Id { get;  set; }
+
+    private Mushroom Mushroom;
+    private bool Editable;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Mushroom = await MushroomEndpoint.Get(Id);
+        }
+        catch (Exception ex)
+        {
+            //todo
+        }
+    }
+
+    private void Edit() => Editable = true;
+    
+    private async Task ExecuteEdit()
+    {
+        //todo: add error message box
+        //todo: change id to private
+        try
+        {
+            await MushroomEndpoint.Update(Mushroom);
+            Editable = false;    
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private async Task Delete()
+    {
+        try
+        {
+            await MushroomEndpoint.Delete(Mushroom.Id);
+            //todo: inform about success
+            NavManager.NavigateTo("/mushrooms");
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

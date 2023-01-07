@@ -55,6 +55,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.API", "src\API\Service
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.Infrastructure", "src\API\Services\User\User.Infrastructure\User.Infrastructure.csproj", "{DF406E71-0B89-47E8-AA69-E90EF47E009F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mushroom", "Mushroom", "{82F1266C-EBA5-433B-A193-D84A3B16A993}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mushroom.API", "src\API\Services\Mushroom\WebApplication1\Mushroom.API.csproj", "{A7144770-EBC3-4E5B-B3FB-B8B070C3CB48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +143,10 @@ Global
 		{DF406E71-0B89-47E8-AA69-E90EF47E009F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF406E71-0B89-47E8-AA69-E90EF47E009F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF406E71-0B89-47E8-AA69-E90EF47E009F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7144770-EBC3-4E5B-B3FB-B8B070C3CB48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7144770-EBC3-4E5B-B3FB-B8B070C3CB48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7144770-EBC3-4E5B-B3FB-B8B070C3CB48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7144770-EBC3-4E5B-B3FB-B8B070C3CB48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,6 +174,8 @@ Global
 		{01F7EC04-AA02-40CD-AD0D-42C1AC79378D} = {BF7F33E2-3E53-4CE8-88D6-CBC3A97FCBE3}
 		{7228747D-51E6-48E7-A432-8C06642F11D5} = {BF7F33E2-3E53-4CE8-88D6-CBC3A97FCBE3}
 		{DF406E71-0B89-47E8-AA69-E90EF47E009F} = {BF7F33E2-3E53-4CE8-88D6-CBC3A97FCBE3}
+		{82F1266C-EBA5-433B-A193-D84A3B16A993} = {8E2FFB8E-BD31-4938-9B0E-1D37C777B1AD}
+		{A7144770-EBC3-4E5B-B3FB-B8B070C3CB48} = {82F1266C-EBA5-433B-A193-D84A3B16A993}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22057A08-34B4-47D1-B82C-907E984BCAE5}
