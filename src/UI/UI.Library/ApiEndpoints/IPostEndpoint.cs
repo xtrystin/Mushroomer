@@ -10,6 +10,7 @@ public interface IPostEndpoint
     Task Edit(Guid id, EditPostCommandDto editPostDto);
     Task Delete(Guid id);
     Task<IEnumerable<CommentReadModel>> GetCommentsForPost(Guid postId);
+    Task<IEnumerable<CommentReadModel>> GetCommentsForUser(Guid userId);
     Task AddCommentToPost(AddCommentDto comment);
     Task<bool?> GetReactionForUser(Guid postId);
     public Task PostReaction(Guid postId, bool like);

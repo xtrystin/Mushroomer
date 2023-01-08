@@ -8,6 +8,7 @@ namespace Post.Infrastructure.EF.Context;
 public sealed class ReadPostDbContext : DbContext
 {
     public DbSet<PostReadModel> Posts { get; set; }
+    public DbSet<CommentReadModel> Comments { get; set; }
 
     public ReadPostDbContext(DbContextOptions<ReadPostDbContext> options) : base(options)
     {

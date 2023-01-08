@@ -29,7 +29,7 @@ public class UserRepository : IUserRepository
 
     public async Task<Domain.Entity.User> GetAsync(UserId id)
     {
-        return await _users.FirstOrDefaultAsync(user => user.Id == id);
+        return await _users.Include("_friends").Include("_friendToUsers").FirstOrDefaultAsync(user => user.Id == id);
     }
 
     public async Task UpdateAsync(Domain.Entity.User user)

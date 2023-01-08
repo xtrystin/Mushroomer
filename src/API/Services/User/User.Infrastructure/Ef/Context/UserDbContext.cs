@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using User.Infrastructure.Ef.Config;
+using User.Domain.Entity;
+using User.Infrastructure.Ef.Config.WritecConfig;
 
 namespace User.Infrastructure.Ef.Context;
 
@@ -14,5 +15,6 @@ public class UserDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         new UserConfig().Configure(modelBuilder.Entity<Domain.Entity.User>());
+        new UserFriendConfig().Configure(modelBuilder.Entity<UserFriend>());
     }
 }

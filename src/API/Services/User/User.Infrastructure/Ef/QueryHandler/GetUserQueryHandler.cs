@@ -15,5 +15,6 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, UserReadModel>
         _dbContext = dbContext;
     }
     public async Task<UserReadModel> Handle(GetUserQuery request, CancellationToken cancellationToken)  
-        => await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == request.Id);     //todo: handler null
+        => await _dbContext.Users.Include(x => x.Friends).ThenInclude(x => x.Friend).                           //todo: do not include friendToUsers
+        Include(x => x.FriendToUsers).ThenInclude(x => x.User).FirstOrDefaultAsync(x => x.Id == request.Id);     //todo: handler null
 }

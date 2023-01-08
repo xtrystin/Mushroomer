@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using User.Application.ReadModel;
 using User.Domain.ValueObject;
 
-namespace User.Infrastructure.Ef.Config;
+namespace User.Infrastructure.Ef.Config.ReadConfig;
 
 public class ReadUserConfig : IEntityTypeConfiguration<UserReadModel>
 {
@@ -22,6 +22,17 @@ public class ReadUserConfig : IEntityTypeConfiguration<UserReadModel>
 
         builder.Property(x => x.EmailAddress)
             .HasColumnName("EmailAddress");
+
+        builder.Property(x => x.ProfileDescription)
+            .IsRequired(false)
+            .HasColumnName("ProfileDescription");
+
+        builder.Property(x => x.PhotoUrl)
+            .IsRequired(false)
+            .HasColumnName("PhotoUrl");
+
+        builder.Property(x => x.CreatedDate)
+            .HasColumnName("CreatedDate");
 
         builder.ToTable("User");
     }

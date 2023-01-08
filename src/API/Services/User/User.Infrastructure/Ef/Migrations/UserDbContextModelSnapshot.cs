@@ -27,6 +27,10 @@ namespace User.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("_createdDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedDate");
+
                     b.Property<string>("_emailAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
@@ -42,9 +46,70 @@ namespace User.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("LastName");
 
+                    b.Property<string>("_photoUrl")
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("PhotoUrl");
+
+                    b.Property<string>("_profileDescription")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("ProfileDescription");
+
                     b.HasKey("Id");
 
                     b.ToTable("User", (string)null);
+                });
+
+            modelBuilder.Entity("User.Domain.Entity.UserFriend", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<Guid?>("FriendId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("FriendId");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FriendId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserFriend", (string)null);
+                });
+
+            modelBuilder.Entity("User.Domain.Entity.UserFriend", b =>
+                {
+                    b.HasOne("User.Domain.Entity.User", "Friend")
+                        .WithMany("_friendToUsers")
+                        .HasForeignKey("FriendId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("User.Domain.Entity.User", "User")
+                        .WithMany("_friends")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Friend");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("User.Domain.Entity.User", b =>
+                {
+                    b.Navigation("_friendToUsers");
+
+                    b.Navigation("_friends");
                 });
 #pragma warning restore 612, 618
         }

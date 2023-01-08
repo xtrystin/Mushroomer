@@ -39,16 +39,53 @@
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Mushrooms
             </NavLink>
         </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="users">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Users
+            </NavLink>
+        </div>
+        @if (firstOpening)
+        {
+            // if created to prevent error:  Microsoft.AspNetCore.Components.WebAssembly.Rendering.WebAssemblyRenderer[100] Unhandled exception rendering component: Cannot wait on monitors on this runtime. System.PlatformNotSupportedException: Cannot wait on monitors on this runtime.
+        }
+        else if (IsUserLoggedIn().Result)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@($"userprofile/{UserId}")">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> My Profile
+                </NavLink>
+            </div>
+            
+        }
     </nav>
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+    //private bool IsUserLoggedIn;
+    private string UserId;
+    private bool firstOpening = true;
 
+    private bool collapseNavMenu = true;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        UserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        firstOpening = false;
+
+    }
+
+    private async Task<bool> IsUserLoggedIn()
+    {
+        UserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return (await AuthState).User.Identity.IsAuthenticated;
     }
 }

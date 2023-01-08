@@ -19,6 +19,7 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IWarningsEndpoint, WarningsEndpoint>();
 builder.Services.AddScoped<IPostEndpoint, PostEndpoint>();
 builder.Services.AddScoped<IMushroomEndpoint, MushroomEndpoint>();
+builder.Services.AddScoped<IUserEndpoint, UserEndpoint>();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

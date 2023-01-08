@@ -15,7 +15,7 @@ public class AddUserCommandHandler : IRequestHandler<AddUserCommand>
     public async Task<Unit> Handle(AddUserCommand request, CancellationToken cancellationToken)
     {
         var user = new Domain.Entity.User(request.Id, request.FirstName, 
-            request.LastName, request.EmailAddress);
+            request.LastName, request.EmailAddress, null, null, DateTime.Now);
 
         await _userRepository.AddAsync(user);
         return Unit.Value;

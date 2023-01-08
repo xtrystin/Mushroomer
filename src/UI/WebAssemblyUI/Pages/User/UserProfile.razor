@@ -1,0 +1,129 @@
+﻿@page "/userprofile/{UserId}"
+@using UI.ApiLibrary.ApiEndpoints;
+@using UI.ApiLibrary.Dto.Post;
+@using UI.ApiLibrary.Dto.User;
+@inject IUserEndpoint UserEndpoint
+@inject IPostEndpoint PostEndpoint
+
+
+@if (User is null)
+{
+    <p>Loading...</p>
+    // todo skeleton loader
+}
+else
+{
+
+    <div class="d-flex flex-row p-3">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" width="100" height="100" class="rounded-circle mr-3">
+        <div class="w-100 ms-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex flex-row align-items-center"> <span class="mr-2"><h3>@User.FirstName @User.LastName </h3><strong>@User.EmailAddress</strong></span> <small class="c-badge"></small> </div>
+                <small>Joined: @User.CreatedDate</small>
+            </div>
+            <p class="text-justify comment-text mb-0">@User.ProfileDescription</p>
+            @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
+        </div>
+    </div>
+    <br />
+    <div class="row g-3 d-flex justify-content-center">
+        <div class="col-auto">
+            <button type="button" class="btn btn-outline-secondary" @onclick="ShowPosts">
+                Show user's posts
+            </button>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-outline-secondary" @onclick="ShowComments">
+                Show user's comments
+            </button>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-outline-secondary" @onclick="ShowFriends">
+                Show user's friends
+            </button>
+        </div>
+    </div>
+    <br />
+    @if (IsPostMode)
+    {
+        <WebAssemblyUI.Pages.Post.Posts UserEmail="@User.EmailAddress" />
+    }
+    else if (IsCommentMode)
+    {
+        <h3>User's Comments</h3>
+        <UserComments CommentsList="@Comments" />
+    }
+    else if (IsFriendMode)
+    {
+        <h3>User's Friends</h3>
+        @if (User.FriendsList is null || User.FriendsList.Count == 0)
+        {
+            <p>Friends list is empty</p>
+        }
+        @foreach (var friend in User.FriendsList)
+        {//todo change to real photoUrl
+            <div class="d-flex flex-row p-3">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" width="60" height="60" class="rounded-circle mr-3">
+                <div class="w-100 ms-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex flex-row align-items-center"> <span class="mr-2"><h6>@friend.FirstName @friend.LastName </h6><strong>@friend.EmailAddress</strong></span> </div>
+                        <small>Friend since: @friend.FriendshipStartedDate</small>
+                    </div>
+                    @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>Click a button to view content :)</p>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public string UserId { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
+    private UI.ApiLibrary.Dto.User.UserReadModel User;
+    private IEnumerable<CommentReadModel> Comments;
+
+    private bool IsPostMode = false;
+    private bool IsCommentMode = false;
+    private bool IsFriendMode = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = await UserEndpoint.Get(new Guid(UserId));
+
+        //User = new()
+        //{
+        //    Id = new Guid("dbe969e9-9294-40f3-a616-af280164ec91"),
+        //    FirstName = "Alex",
+        //    LastName = "Json",
+        //    EmailAddress = UserEmail,
+        //    CreatedDate = DateTime.Now.AddDays(-10),
+        //    ProfileDescription = "This is first account created on this website. Hello there. Aenean varius luctus nisl ut laoreet. Sed fermentum lectus a nulla ultricies, at pulvinar odio viverra. Ut ut orci a sapien volutpat pulvinar. Proin ligula nunc, luctus id tempus eget, maximus vitae ante. Aliquam efficitur metus diam. Duis mattis, eros quis placerat faucibus.",
+        //    PhotoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/640px-User_icon_2.svg.png"
+        //};
+    }
+
+    private void ShowPosts()
+    {
+        (IsPostMode, IsCommentMode, IsFriendMode) = (true, false, false);
+    }
+
+    private async Task ShowComments()
+    {
+        Comments = await PostEndpoint.GetCommentsForUser(User.Id);
+        (IsPostMode, IsCommentMode, IsFriendMode) = (false, true, false);
+    }
+
+    private void ShowFriends()
+    {
+        (IsPostMode, IsCommentMode, IsFriendMode) = (false, false, true);
+    }
+}

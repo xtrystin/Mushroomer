@@ -119,6 +119,23 @@ public class PostEndpoint : IPostEndpoint
         }
     }
 
+    public async Task<IEnumerable<CommentReadModel>> GetCommentsForUser(Guid userId)
+    {
+        var url = _api + $"/api/Post/comment/user/{userId}";
+
+        var response = await _httpClient.GetAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<CommentReadModel>>();
+            return result;
+        }
+        else
+        {
+            // log error
+            throw new Exception(response.ReasonPhrase);
+        }
+    }
+
     public async Task AddCommentToPost(AddCommentDto comment)
     {
         var url = _api + $"/api/Post/{comment.PostId}/comment";

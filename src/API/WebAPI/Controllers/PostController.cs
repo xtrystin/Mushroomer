@@ -1,12 +1,9 @@
-﻿using Azure.Core;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Text.Json;
 using WebAPI.Model.Post;
-using System.Net.Http.Json;
 
 namespace WebAPI.Controllers
 {
@@ -58,7 +55,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<IEnumerable<PostReadModel>> Get()
         {
-            var jwt = HttpContext.Request.Headers.Authorization;
+            var jwt = HttpContext.Request.Headers.Authorization;    //todo refactor
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", jwt); // todo: use middleware to set authorization header
 
             var response = await _httpClient.GetAsync("https://localhost:7174/api/Post");     //todo: dispatcher
@@ -156,6 +153,24 @@ namespace WebAPI.Controllers
         {
             AddJwtToHttpClientHeader();
             var url = _config["MicroservicesUrl:Post"] + $"/post/{id}/comment";
+
+            var response = await _httpClient.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<IEnumerable<CommentReadModel>>();
+                return result;
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+
+        [HttpGet("comment/user/{id:guid}")]
+        public async Task<IEnumerable<CommentReadModel>> GetCommentsForUser([FromRoute] Guid id)
+        {
+            AddJwtToHttpClientHeader();
+            var url = _config["MicroservicesUrl:Post"] + $"/post/comment/user/{id}";
 
             var response = await _httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)

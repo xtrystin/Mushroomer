@@ -87,6 +87,14 @@ namespace Post.API.Controllers
 
             return result;
         }
+        [HttpGet("comment/user/{id:guid}")]
+        public async Task<IEnumerable<CommentReadModel>> GetCommentsForUser([FromRoute] Guid id)
+        {
+            var request = new GetCommentsForUserQuery { UserId = id };
+            var result = await _mediator.Send(request);
+
+            return result;
+        }
 
         [HttpPost("{id:guid}/reaction")]
         public async Task<IActionResult> PostReaction([FromRoute] Guid id, bool like, Guid userId)

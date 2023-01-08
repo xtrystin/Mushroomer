@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using User.Application.ReadModel;
-using User.Infrastructure.Ef.Config;
+using User.Infrastructure.Ef.Config.ReadConfig;
 
 namespace User.Infrastructure.Ef.Context;
 
@@ -15,5 +15,6 @@ public class ReadUserDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         new ReadUserConfig().Configure(modelBuilder.Entity<UserReadModel>());
+        new ReadUserFriendConfig().Configure(modelBuilder.Entity<UserFriendReadModel>());
     }
 }

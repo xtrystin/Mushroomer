@@ -86,6 +86,9 @@
 
 
 @code {
+    [Parameter]
+    public string? UserEmail { get; set; }
+
     //todo: move add button to the left
     //todo: move editform to standalone component
     private IEnumerable<PostReadModel> posts;
@@ -95,6 +98,12 @@
         try
         {
             posts = await PostEndpoint.GetAll();
+
+            if (UserEmail is not null)    //todo refactor
+            {
+                posts = posts.Where(x => x.AuthorEmail == UserEmail);
+            }
+
         }
         catch (Exception ex)
         {

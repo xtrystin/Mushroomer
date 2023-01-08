@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using User.Domain.Entity;
 using User.Domain.ValueObject;
 
-namespace User.Infrastructure.Ef.Config;
+namespace User.Infrastructure.Ef.Config.WritecConfig;
 
 public class UserConfig : IEntityTypeConfiguration<Domain.Entity.User>
 {
@@ -16,27 +17,52 @@ public class UserConfig : IEntityTypeConfiguration<Domain.Entity.User>
 
         var lastNameConverter = new ValueConverter<LastName, string>(lastname => lastname.Value,
             value => new LastName(value));
-        
+
         var emailAddressConverter = new ValueConverter<EmailAddress, string>(email => email.Value,
             value => new EmailAddress(value));
+
+        var profileDescriptionConverter = new ValueConverter<ProfileDescription, string>(profileDescription => profileDescription.Value,
+            value => new ProfileDescription(value));
+
+        var photoUrlConverter = new ValueConverter<PhotoUrl, string>(photoUrl => photoUrl.Value,
+            value => new PhotoUrl(value));
 
         builder.Property(x => x.Id)
             .HasConversion(id => id.Value, value => new UserId(value));
 
         builder.Property(typeof(FirstName), "_firstName")
+            .IsRequired()
             .HasConversion(firstNameConverter)
             .HasColumnName("FirstName")
             .HasColumnType("nvarchar(100)");
-        
+
         builder.Property(typeof(LastName), "_lastName")
+            .IsRequired()
             .HasConversion(lastNameConverter)
             .HasColumnName("LastName")
             .HasColumnType("nvarchar(100)");
-        
+
         builder.Property(typeof(EmailAddress), "_emailAddress")
+            .IsRequired()
             .HasConversion(emailAddressConverter)
             .HasColumnName("EmailAddress")
             .HasColumnType("nvarchar(100)");
+
+        builder.Property(typeof(ProfileDescription), "_profileDescription")
+            .HasConversion(profileDescriptionConverter)
+            .IsRequired(false)
+            .HasColumnName("ProfileDescription")
+            .HasColumnType("nvarchar(1000)");
+
+        builder.Property(typeof(PhotoUrl), "_photoUrl")
+            .HasConversion(photoUrlConverter)
+            .IsRequired(false)
+            .HasColumnName("PhotoUrl")
+            .HasColumnType("nvarchar(200)");
+
+        builder.Property(typeof(DateTime), "_createdDate")
+            .IsRequired()
+            .HasColumnName("CreatedDate");
 
         builder.ToTable("User");
     }

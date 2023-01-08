@@ -11,6 +11,9 @@ public class CommentReadModel
     public DateTime LastModificationDate { get; set; }
     public string AuthorEmail => Author.Email;
 
+    [JsonPropertyName("authorId")]
+    public Guid CommentAuthorId => Author.Id;
+
     [JsonIgnore]
     public Guid PostId { get; set; }
     [JsonIgnore]
