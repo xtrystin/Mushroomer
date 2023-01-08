@@ -128,12 +128,12 @@
 
     private void SortByIsPoisonous()
     {
-        mushrooms = mushrooms.OrderBy(x => x.IsPoisonous).ToList();
+        mushrooms = mushrooms.OrderByDescending(x => x.IsPoisonous).ToList();
     }    
     
     private void SortByIsEdible()
     {
-        mushrooms = mushrooms.OrderByDescending(x => x.IsPoisonous).ToList();
+        mushrooms = mushrooms.OrderBy(x => x.IsPoisonous).ToList();
     }
 
     private void SortByName()
