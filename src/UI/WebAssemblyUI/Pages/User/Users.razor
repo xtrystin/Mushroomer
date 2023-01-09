@@ -38,24 +38,50 @@ else
             </a>
             <div class="w-100 ms-2">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-row align-items-center"> <span class="mr-2"><a href="@($"userprofile/{user.Id}")" style="color: black; text-decoration:none;"><h5>@user.FirstName @user.LastName </h5></a><strong>@user.EmailAddress</strong></span> </div>
-                    <small>Joined: @user.CreatedDate</small>
+                    <div class="d-flex flex-row align-items-center"> <span class="mr-2">
+                        <a href="@($"userprofile/{user.Id}")" style="color: black; text-decoration:none;"><h5>@user.FirstName @user.LastName </h5></a><strong>@user.EmailAddress</strong></span>
+                        <small>Joined: @user.CreatedDate</small>
+                        @if (IsUserLoggedIn && user.Id != CurrentUserId)
+                        {
+                            <div class="col-auto ms-4">
+                                <button type="button" class="btn btn-outline-primary" disabled="@(IsFriendOfCurrentUser(user.Id))" @onclick="() => AddToFriends(user.Id)">Add to friends</button>
+                             </div>
+                              <div class="col-auto ms-4">
+                                <button type="button" class="btn btn-outline-danger" disabled="@(!IsFriendOfCurrentUser(user.Id))" @onclick="() => RemoveFromFriends(user.Id)">Remove from friends</button>
+                             </div>
+                        }
+                    </div>
                 </div>
-                @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
+                @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class1="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
             </div>
         </div>
     }
 }
 
 @code {
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
     private IEnumerable<UserReadModel> UserList;
     private IEnumerable<UserReadModel> allUsers;
     private string SearchText = "";
+
+    private bool IsUserLoggedIn = false;
+    private Guid CurrentUserId;
+
+    private bool IsAddToFriendsButtonDisabled = false;
+    private bool IsRemoveFromFriendsButtonDisabled = false;
 
     protected override async Task OnInitializedAsync()
     {
         UserList = await UserEndpoint.GetAll();
         allUsers = UserList;
+
+        IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        if (IsUserLoggedIn)
+        {
+            CurrentUserId = new Guid((await AuthState).User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        }
     }
 
     private void ExecuteSearch()
@@ -76,4 +102,59 @@ else
     {
         UserList = allUsers;
     }
+
+    private async Task AddToFriends(Guid friendId)
+    {
+        try
+        {
+            await UserEndpoint.ChangeFriendship(friendId, true);
+
+            //todo: optimalization - take info from current allUsers instead of API request
+            //var currentUser = allUsers.FirstOrDefault(x => x.Id == CurrentUserId);
+            //var friendUser = allUsers.FirstOrDefault(x => x.Id == friendId);
+            //var friendFriendDto = new F
+
+            UserList = await UserEndpoint.GetAll();
+            allUsers = UserList;
+        }
+        catch (Exception)
+        {
+            //todo show error message
+          
+        }
+        
+    }
+
+    private async Task RemoveFromFriends(Guid friendId)
+    {
+        try
+        {
+            await UserEndpoint.ChangeFriendship(friendId, false);
+
+            //todo: optimalization - take info from current allUsers instead of API request
+            
+            UserList = await UserEndpoint.GetAll();
+            allUsers = UserList;
+        }
+        catch (Exception)
+        {
+            //todo show error message
+        }
+        
+    }
+
+    // todo: private IsAlreadyAFriend()
+    private bool IsFriendOfCurrentUser(Guid friendId)
+    {
+        //todo check if current user is friend
+        //@*disabled="@(!IsFriendOfCurrentUser(user.Id))"*@
+        var currentUser = allUsers.FirstOrDefault(x => x.Id == CurrentUserId);
+        if (currentUser.FriendsList.Any(x => x.Id == friendId))
+        {
+            return true;    
+        }
+
+        return false;
+    }
+
 }

@@ -4,6 +4,7 @@
 @using UI.ApiLibrary.Dto.User;
 @inject IUserEndpoint UserEndpoint
 @inject IPostEndpoint PostEndpoint
+@inject NavigationManager NavManager;
 
 
 @if (User is null)
@@ -63,11 +64,18 @@ else
         @foreach (var friend in User.FriendsList)
         {//todo change to real photoUrl
             <div class="d-flex flex-row p-3">
+                <a style="cursor:pointer;"  @onclick="() => NavigateToProfile(friend.Id)">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" width="60" height="60" class="rounded-circle mr-3">
+                </a>
                 <div class="w-100 ms-2">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex flex-row align-items-center"> <span class="mr-2"><h6>@friend.FirstName @friend.LastName </h6><strong>@friend.EmailAddress</strong></span> </div>
+                        <div class="d-flex flex-row align-items-center"><span class="mr-2">
+                            <a @onclick="() => NavigateToProfile(friend.Id)" style="cursor:pointer;"><h6>@friend.FirstName @friend.LastName </h6></a><strong>@friend.EmailAddress</strong></span>
+                        </div>
                         <small>Friend since: @friend.FriendshipStartedDate</small>
+                        <div class="col-auto ms-4">
+                            <button type="button" class="btn btn-outline-danger" @onclick="() => RemoveFromFriends(friend.Id)">Remove from friends</button>
+                        </div>
                     </div>
                     @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
                 </div>
@@ -125,5 +133,18 @@ else
     private void ShowFriends()
     {
         (IsPostMode, IsCommentMode, IsFriendMode) = (false, false, true);
+    }
+
+    private async Task RemoveFromFriends(Guid friendId)
+    {
+        await UserEndpoint.ChangeFriendship(friendId, false);
+        var deletedFriend = User.FriendsList.FirstOrDefault(x => x.Id == friendId);
+
+        User.FriendsList.Remove(deletedFriend);
+    }
+
+    private void NavigateToProfile(Guid userId)
+    {
+        NavManager.NavigateTo($"/redirect/userprofile/{userId}");
     }
 }

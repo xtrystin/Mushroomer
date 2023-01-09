@@ -55,7 +55,7 @@ public class UserEndpoint : IUserEndpoint
     {
         var url = _api + $"/api/user/friend?add={add}";
 
-        var response = await _httpClient.PostAsJsonAsync(url, add);
+        var response = await _httpClient.PostAsJsonAsync(url, friendId);
         if (response.IsSuccessStatusCode)
         {
             // log success

@@ -17,6 +17,10 @@
     </div>
 </div>
 <br />
+@if (posts?.Count() == 0)
+{
+    <p>No posts found.</p>
+}
 <div class="container-fluid">
     @if (posts is null)
     {

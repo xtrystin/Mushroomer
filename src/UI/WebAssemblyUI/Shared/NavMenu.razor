@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject NavigationManager NavManager
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">WebAssemblyUI</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -51,7 +53,7 @@
         else if (IsUserLoggedIn().Result)
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@($"userprofile/{UserId}")">
+                <NavLink class="nav-link" @onclick="() => NavigateToProfile(UserId)" style="cursor: pointer;">
                     <span class="oi oi-list-rich" aria-hidden="true"></span> My Profile
                 </NavLink>
             </div>
@@ -87,5 +89,10 @@
     {
         UserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return (await AuthState).User.Identity.IsAuthenticated;
+    }
+
+    private void NavigateToProfile(string userId)
+    {
+        NavManager.NavigateTo($"/redirect/userprofile/{userId}");
     }
 }

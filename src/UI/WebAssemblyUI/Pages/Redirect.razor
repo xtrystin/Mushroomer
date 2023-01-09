@@ -1,0 +1,19 @@
+﻿@*Page created for problem with Redirection/href to the same page: profileuser but with other UserId -> page is not refreshed*@
+
+@page "/redirect/{url}/{userId}"
+@inject NavigationManager NavManager
+
+<h3>Redirect</h3>
+<p>You should not be here. PLease go back to home page</p>
+@code {
+    [Parameter]
+    public string Url { get; set; }
+
+    [Parameter]
+    public string UserId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        NavManager.NavigateTo($"/{Url}/{UserId}");
+    }
+}
