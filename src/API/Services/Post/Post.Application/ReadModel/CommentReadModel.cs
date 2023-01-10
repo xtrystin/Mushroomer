@@ -14,7 +14,6 @@ public class CommentReadModel
     [JsonPropertyName("authorId")]
     public Guid CommentAuthorId => Author.Id;
 
-    [JsonIgnore]
     public Guid PostId { get; set; }
     [JsonIgnore]
     public PostReadModel Post { get; set; }

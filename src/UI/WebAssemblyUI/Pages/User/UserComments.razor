@@ -1,4 +1,6 @@
-﻿@using UI.ApiLibrary.Dto.Post;
+﻿@using UI.ApiLibrary.ApiEndpoints;
+@using UI.ApiLibrary.Dto.Post;
+@inject IPostEndpoint PostEndpoint
 
 
 
@@ -13,10 +15,10 @@ else
         <div class="row">
             <div class="col-auto">
                 <strong>Post </strong>
-                <a href="/post/67bc7bf9-f179-47a6-a2e5-0566b10db4ed" style="text-decoration: none; color: darkviolet">
-                   <i>This is my first post</i>    
+                <a href="/post/@comment.PostId" style="text-decoration: none; color: darkviolet">
+                   <i>@Posts.FirstOrDefault(x => x.Id == comment.PostId).Title</i>    
                 </a>
-                <strong>by </strong>water5@mail.com
+                <strong>by </strong>@Posts.FirstOrDefault(x => x.Id == comment.PostId).AuthorEmail
             </div>
 @*            <div class="col-auto">
                 <a href="/post/67bc7bf9-f179-47a6-a2e5-0566b10db4ed">Open</a>
@@ -41,4 +43,15 @@ else
     [Parameter]
     public IEnumerable<CommentReadModel> CommentsList { get; set; }
 
+    private List<PostReadModel> Posts = new();
+    protected override async Task OnInitializedAsync()
+    {
+        var uniquePostIds = CommentsList.DistinctBy(x => x.PostId).Select(x => x.PostId).ToList();
+        foreach (var postId in uniquePostIds)
+        {
+            var post = await PostEndpoint.Get(postId);
+            Posts.Add(post);                                //todo optimalization: add endpoint that accept list of posts insted of making X single calls
+        }
+
+    }
 }

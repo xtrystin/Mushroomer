@@ -10,5 +10,6 @@ public class CommentReadModel
     public DateTime LastModificationDate { get; set; }
     public string AuthorEmail { get; set; }
     public Guid  AuthorId { get; set; }
+    public Guid PostId { get; set; }
 
 }

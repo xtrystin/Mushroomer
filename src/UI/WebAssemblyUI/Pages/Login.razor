@@ -3,13 +3,13 @@
 
 <EditForm Model="model" OnValidSubmit="ExecuteLogin" class="">
 
-    <div class="row g-3">
-        <div class="col-auto">
+    <div class="row g-3 mt-1">
+        <div class="col-lg-auto col-sm-3 col-2">
         <label for="email" class="visually-hidden">Email</label>
         <InputText id="email" class="form-control" @bind-Value="model.Email" placeholder="Email Address" />
         </div>
 
-        <div class="col-auto">
+        <div class="col-lg-auto col-sm-3 col-2">
         <label for="password" class="visually-hidden">Password</label>
             <InputText type="password" class="form-control" @bind-Value="model.Password" placeholder="Password" />
         </div>
