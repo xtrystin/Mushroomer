@@ -1,0 +1,1 @@
+﻿EXEC sp_Users_addUser "a", "a", 'n', "desc";
