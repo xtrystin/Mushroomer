@@ -26,19 +26,32 @@
     <script>
         const defLatLng = new google.maps.LatLng(50.061066, 19.9107044);
 
+        var warningCircle = new google.maps.Circle({
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#FF0000",
+            fillOpacity: 0.35,
+            center: defLatLng,
+            radius: 5000,
+        });
+
         function googleMapShow(latitude = defLatLng.lat(), longitude = defLatLng.lng()) {
             var latlng = new google.maps.LatLng(latitude, longitude);
             var options = {
-                zoom: 6, center: latlng,
+                zoom: 10, center: latlng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             };
             var map = new google.maps.Map(document.getElementById("map"), options);
+
+            warningCircle.setMap(map);
+            warningCircle.setCenter(latlng);
         }
 
-        function googleMapSelect(latitude = defLatLng.lat(), longitude = defLatLng.lng()) {
+        function googleMapSelect(latitude = defLatLng.lat(), longitude = defLatLng.lng(), startWithCircle = false, zoomLevel = 6) {
             const latlng = new google.maps.LatLng(latitude, longitude);
             var options = {
-                zoom: 6, center: latlng,
+                zoom: zoomLevel, center: latlng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             };
             var map = new google.maps.Map(document.getElementById("map"), options);
@@ -47,6 +60,11 @@
                 content: "Click the map to get Lat/Lng!",
                 position: latlng,
             });
+
+            if (startWithCircle) {
+                warningCircle.setMap(map);
+                warningCircle.setCenter(latlng);
+            }
 
             infoWindow.open(map);
             // Configure the click listener.
@@ -61,6 +79,10 @@
                 longitudeInput.value = mapsMouseEvent.latLng.lng();
                 latitudeInput.dispatchEvent(event);
                 longitudeInput.dispatchEvent(event);
+
+                warningCircle.setMap(map);
+                warningCircle.setCenter(mapsMouseEvent.latLng);
+
             });
         }
     </script>

@@ -203,6 +203,7 @@
     private WarningDto Warning;
     private bool Editable;
     private bool IsUserLoggedIn;
+    private bool wasEditable = true;
 
     private bool IsApproveButtonDisabled = false;
     private bool IsDisApproveButtonDisabled = false;
@@ -244,14 +245,26 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+        {
         if (Editable){
-            object[] latLon = { Warning.Latitude, Warning.Longitude };
-            await JSRuntime.InvokeVoidAsync("googleMapSelect", latLon);
+            if (!wasEditable)
+            {
+                wasEditable = true;
+                object[] latLon = { Warning.Latitude, Warning.Longitude, true, 10};
+                await JSRuntime.InvokeVoidAsync("googleMapSelect", latLon); 
+            }
         }
         else{
-            object[] latLon = { Warning.Latitude, Warning.Longitude };
-            await JSRuntime.InvokeVoidAsync("googleMapShow", latLon);
+            if (wasEditable)
+            {
+                wasEditable = false;
+                object[] latLon = { Warning.Latitude, Warning.Longitude };
+                await JSRuntime.InvokeVoidAsync("googleMapShow", latLon);
+            }
         }
+        }
+        
     }
 
     private async Task SetupButtonClickability()
