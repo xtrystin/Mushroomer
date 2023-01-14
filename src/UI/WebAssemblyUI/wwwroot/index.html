@@ -10,7 +10,7 @@
     <link href="css/app.css" rel="stylesheet" />
     <link href="WebAssemblyUI.styles.css" rel="stylesheet" />
 
-     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"></script>
+     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
 </head>
 
 <body>
@@ -24,10 +24,21 @@
     <script src="_framework/blazor.webassembly.js"></script>
 
     <script>
-        function googleMapSelect() {
-            var latlng = new google.maps.LatLng(50.061066, 19.9107044);
+        const defLatLng = new google.maps.LatLng(50.061066, 19.9107044);
+
+        function googleMapShow(latitude = defLatLng.lat(), longitude = defLatLng.lng()) {
+            var latlng = new google.maps.LatLng(latitude, longitude);
             var options = {
-                zoom: 10, center: latlng,
+                zoom: 6, center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("map"), options);
+        }
+
+        function googleMapSelect(latitude = defLatLng.lat(), longitude = defLatLng.lng()) {
+            const latlng = new google.maps.LatLng(latitude, longitude);
+            var options = {
+                zoom: 6, center: latlng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             };
             var map = new google.maps.Map(document.getElementById("map"), options);
