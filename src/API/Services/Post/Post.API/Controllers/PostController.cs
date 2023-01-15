@@ -87,6 +87,7 @@ namespace Post.API.Controllers
 
             return result;
         }
+
         [HttpGet("comment/user/{id:guid}")]
         public async Task<IEnumerable<CommentReadModel>> GetCommentsForUser([FromRoute] Guid id)
         {
@@ -94,6 +95,20 @@ namespace Post.API.Controllers
             var result = await _mediator.Send(request);
 
             return result;
+        }
+
+        [HttpPatch("{id:guid}/comment/{commentId:guid}")]
+        public async Task ModifyComment([FromRoute] Guid id, [FromBody]string content, [FromRoute]Guid commentId, [FromQuery]Guid userId)
+        {
+            var request = new ModifyCommentCommand { PostId = id, CommentId = commentId, Content = content, UserId = userId };
+            await _mediator.Send(request);
+        }
+
+        [HttpDelete("{id:guid}/comment/{commentId:guid}")]
+        public async Task DeleteComment([FromRoute] Guid id, [FromRoute] Guid commentId)
+        {
+            var request = new DeleteCommentCommand { PostId = id, CommentId = commentId };
+            await _mediator.Send(request);
         }
 
         [HttpPost("{id:guid}/reaction")]

@@ -136,6 +136,39 @@ public class PostEndpoint : IPostEndpoint
         }
     }
 
+    public async Task ModifyComment(Guid postId, string content, Guid commentId)
+    {
+        var url = _api + $"/api/Post/{postId}/comment/{commentId}";
+        var stringContent = new StringContent(JsonSerializer.Serialize(content), Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PatchAsync(url, stringContent);
+        if (response.IsSuccessStatusCode)
+        {
+            // log success
+        }
+        else
+        {
+            // log error
+            throw new Exception(response.ReasonPhrase);
+        }
+    }
+
+    public async Task DeleteComment(Guid postId, Guid commentId)
+    {
+        var url = _api + $"/api/Post/{postId}/comment/{commentId}";
+
+        var response = await _httpClient.DeleteAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+            // log success
+        }
+        else
+        {
+            // log error
+            throw new Exception(response.ReasonPhrase);
+        }
+    }
+
     public async Task AddCommentToPost(AddCommentDto comment)
     {
         var url = _api + $"/api/Post/{comment.PostId}/comment";
