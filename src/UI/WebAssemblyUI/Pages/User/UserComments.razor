@@ -32,6 +32,28 @@ else
                     <div class="d-flex flex-row align-items-center"> <span class="mr-2"><strong>@comment.AuthorEmail</strong></span> <small class="c-badge"></small> </div> <small>@comment.CreatedDate</small>
                 </div>
                 <p class="text-justify comment-text mb-0">@comment.Content</p>
+                @if (IsUserLoggedIn)
+                {
+                    <button type="button" class="btn btn-outline-primary" @onclick="() => MarkCommentEditable(comment.Id)">Edit</button>
+                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await Delete(comment.PostId, comment.Id)">Delete</button>
+                    @if (EditableComments.Any(x => x == comment.Id))
+                    {
+                        <EditForm Model="comment" OnValidSubmit="() => ExecuteEdit(comment.PostId, comment.Content, comment.Id)" class="">
+                            <DataAnnotationsValidator />
+                            <div class="form-group row">
+                                <div class="col-auto">
+                                    <p class="text-justify comment-text mb-0">
+                                        <InputText id="Content" class="form-control" placeholder="Enter your comment" @bind-Value="comment.Content" />
+                                        <ValidationMessage For="@(() => comment.Content)" />
+                                    </p>
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-outline-success">Submit</button>
+                                </div>
+                            </div>
+                        </EditForm>
+                    }
+                }
         @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
             </div>
         </div>
@@ -43,15 +65,57 @@ else
     [Parameter]
     public IEnumerable<CommentReadModel> CommentsList { get; set; }
 
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
+    private bool IsUserLoggedIn;
+    List<Guid> EditableComments = new();
+
     private List<PostReadModel> Posts = new();
     protected override async Task OnInitializedAsync()
     {
         var uniquePostIds = CommentsList.DistinctBy(x => x.PostId).Select(x => x.PostId).ToList();
         foreach (var postId in uniquePostIds)
         {
+            IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+
             var post = await PostEndpoint.Get(postId);
             Posts.Add(post);                                //todo optimalization: add endpoint that accept list of posts insted of making X single calls
         }
 
+    }
+
+    private async Task Delete(Guid postId, Guid commentId)
+    {
+        try
+        {
+            await PostEndpoint.DeleteComment(postId, commentId);
+            CommentsList = CommentsList.Where(x => x.Id != commentId);     // todo: optimalization!!
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void MarkCommentEditable(Guid commentId)
+        => EditableComments.Add(commentId);
+
+    private async Task ExecuteEdit(Guid postId, string newContent, Guid commentId)
+    {
+        try
+        {
+            await PostEndpoint.ModifyComment(postId, newContent, commentId);
+
+            var comment = CommentsList.First(x => x.Id == commentId);
+            comment.Content = newContent;
+
+            EditableComments.Remove(commentId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }

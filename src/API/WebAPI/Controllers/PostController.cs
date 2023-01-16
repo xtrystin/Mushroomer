@@ -184,6 +184,43 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpPatch("{id:guid}/comment/{commentId:guid}")]
+        public async Task<IActionResult> ModifyComment([FromRoute] Guid id, [FromBody] string content, [FromRoute] Guid commentId)
+        {
+            AddJwtToHttpClientHeader();
+
+            var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var url = _config["MicroservicesUrl:Post"] + $"/post/{id}/comment/{commentId}?userId={userId}";
+
+            var response = await _httpClient.PatchAsJsonAsync(url, content);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok();
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+
+        [HttpDelete("{id:guid}/comment/{commentId:guid}")]
+        public async Task<IActionResult> DeleteComment([FromRoute] Guid id, [FromRoute] Guid commentId)
+        {
+            AddJwtToHttpClientHeader();
+            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
+            var url = _config["MicroservicesUrl:Post"] + $"/post/{id}/comment/{commentId}";
+
+            var response = await _httpClient.DeleteAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok();
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+
         [HttpPost("{id:guid}/reaction")]
         public async Task<IActionResult> PostReaction([FromRoute] Guid id, bool like)
         {

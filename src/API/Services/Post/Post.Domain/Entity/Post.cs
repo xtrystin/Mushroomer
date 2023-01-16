@@ -52,14 +52,33 @@ public class Post
         _comments.Add(comment);
     }
 
-    public void DeleteComment(Comment comment)
+    public void DeleteComment(Guid commentId)
     {
+        var comment = _comments.FirstOrDefault(x => x.Id == commentId);
         _comments.Remove(comment);
+    }
+
+    public void ModifyComment(Guid commentId, string content)
+    {
+        var comment = _comments.FirstOrDefault(x => x.Id == commentId);
+        comment.ModifyContent(content);
+    }
+
+    public bool IsCommentAuthor(Guid commentId, Guid userId)
+    {
+        var comment = _comments.FirstOrDefault(x => x.Id == commentId);
+        return comment.IsCommentAuthor(userId);
     }
 
     public void ChangeCommentContent(Guid commentId, string content)
     {
-        _comments.First(x => x.Id == commentId).ModifyContent(content);
+        _comments.FirstOrDefault(x => x.Id == commentId).ModifyContent(content);
+    }
+
+    public void RemoveComment(Guid commentId)
+    {
+        var comment = _comments.FirstOrDefault(x => x.Id == commentId);
+        _comments.Remove(comment);
     }
 
     public List<Comment> GetComments()  //todo add notFound exception 

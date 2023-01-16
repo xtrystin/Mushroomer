@@ -35,4 +35,7 @@ public class Comment
         _content = content;
         _lastModificationDate = DateTime.Now;
     }
+
+    public bool IsCommentAuthor(Guid userId)
+        => userId == _author.Id;
 }
