@@ -4,6 +4,7 @@
 @inject IWarningsEndpoint WarningsEndpoint
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
+@attribute [Authorize(Roles = "moderator, experienced")]
 
 <h3>Warning Add</h3>
 

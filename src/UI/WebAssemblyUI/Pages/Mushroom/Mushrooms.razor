@@ -10,11 +10,14 @@
     <div class="col-auto">
         <h3>Mushrooms</h3>
     </div>
-    <div class="col-auto ">
-        <button type="button" class="btn btn-outline-success" @onclick="AddMushroom">
-            +Add
-        </button>
-    </div>
+    @if (IsUserModerator)
+    {
+        <div class="col-auto ">
+            <button type="button" class="btn btn-outline-success" @onclick="AddMushroom">
+                +Add
+            </button>
+        </div>
+    }
     <div class="col-auto ">
         <button type="button" class="btn btn-outline-secondary" @onclick="SortByIsPoisonous">
             Show poisonous first
@@ -105,15 +108,20 @@
 
 
 @code {
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
     //todo: move add button to the left
     //todo: move editform to standalone component
     private List<Mushroom> mushrooms;
+    private bool IsUserModerator = false;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             mushrooms = await MushroomEndpoint.GetAll();
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
         }
         catch (Exception ex)
         {

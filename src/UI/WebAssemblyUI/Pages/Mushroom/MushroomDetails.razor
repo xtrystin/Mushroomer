@@ -97,9 +97,12 @@
                     </div>
                  </div>
             }
-        
-            <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
-            <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
+
+            @if (IsUserModerator)
+            {
+                <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
+                <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
+            }
          }
         
     }
@@ -111,14 +114,19 @@
     [Parameter]
     public string Id { get;  set; }
 
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
     private Mushroom Mushroom;
     private bool Editable;
+    private bool IsUserModerator = false;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             Mushroom = await MushroomEndpoint.Get(Id);
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
         }
         catch (Exception ex)
         {

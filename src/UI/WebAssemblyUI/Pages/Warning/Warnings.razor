@@ -9,11 +9,14 @@
     <div class="col-auto">
         <h3>Warnings</h3>
     </div>
-    <div class="col-auto ">
-        <button type="button" class="btn btn-outline-success" @onclick="AddWarning">
-            +Add
-        </button>
-     </div>
+    @if (IsUserExperienced || IsUserModerator)
+    {
+        <div class="col-auto ">
+            <button type="button" class="btn btn-outline-success" @onclick="AddWarning">
+                +Add
+            </button>
+        </div>
+    }
     <div class="col-md-auto ">
         <button type="button" class="btn btn-outline-secondary" @onclick="ShowApprovedOnly">
             Show approved only
@@ -110,10 +113,16 @@
 
 
 @code {
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
     //todo: move add button to the left
     //todo: move editform to standalone component
     private List<WarningDto> warnings;
     private List<WarningDto> allWarnings;
+
+    private bool IsUserModerator = false;
+    private bool IsUserExperienced = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,6 +130,9 @@
         {
             warnings = await WarningsEndpoint.GetAll();
             allWarnings = warnings;
+
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
+            IsUserExperienced = (await AuthState).User.IsInRole("experienced");
         }
         catch (Exception ex)
         {

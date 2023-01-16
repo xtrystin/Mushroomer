@@ -94,9 +94,12 @@ else
                             <a @onclick="() => NavigateToProfile(friend.Id)" style="cursor:pointer;"><h6>@friend.FirstName @friend.LastName </h6></a><strong>@friend.EmailAddress</strong></span>
                         </div>
                         <small>Friend since: @friend.FriendshipStartedDate</small>
-                        <div class="col-auto ms-4">
-                            <button type="button" class="btn btn-outline-danger" @onclick="() => RemoveFromFriends(friend.Id)">Remove from friends</button>
-                        </div>
+                        @if (IsUserAuthor)
+                        {
+                            <div class="col-auto ms-4">
+                                <button type="button" class="btn btn-outline-danger" @onclick="() => RemoveFromFriends(friend.Id)">Remove from friends</button>
+                            </div>
+                        }
                     </div>
                     @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
                 </div>
@@ -145,7 +148,7 @@ else
                 return true;
             }
         }
-
+        
         return false;
     }
 

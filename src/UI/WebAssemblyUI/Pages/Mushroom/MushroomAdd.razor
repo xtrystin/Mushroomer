@@ -4,6 +4,7 @@
 @using UI.ApiLibrary.Dto.Mushroom;
 @inject IMushroomEndpoint MushroomEndpoint
 @inject NavigationManager NavManager
+@attribute [Authorize(Roles = "moderator")]
 
 <h3>Add a new Mushroom</h3>
 

@@ -10,11 +10,14 @@
     <div class="col-auto">
         <h3>Posts</h3>
     </div>
-    <div class="col-auto ">
-        <button type="button" class="btn btn-outline-success" @onclick="AddPost">
-            +Add
-        </button>
-    </div>
+    @if (IsUserLoggedIn)
+    {
+        <div class="col-auto ">
+            <button type="button" class="btn btn-outline-success" @onclick="AddPost">
+                +Add
+            </button>
+        </div>
+    }
 </div>
 <br />
 @if (posts?.Count() == 0)
@@ -93,9 +96,13 @@
     [Parameter]
     public string? UserEmail { get; set; }
 
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
     //todo: move add button to the left
     //todo: move editform to standalone component
     private IEnumerable<PostReadModel> posts;
+    private bool IsUserLoggedIn = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -107,6 +114,8 @@
             {
                 posts = posts.Where(x => x.AuthorEmail == UserEmail);
             }
+
+            IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
 
         }
         catch (Exception ex)

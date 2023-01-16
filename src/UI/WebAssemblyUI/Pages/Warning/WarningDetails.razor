@@ -180,10 +180,14 @@
 			<a href="@($"https://www.google.com/maps/place/{Warning.Latitude.ToString().Replace(',', '.')},{Warning.Longitude.ToString().Replace(',', '.')}")">See on the map</a>
             </div>
             -->
-            
-        
-            <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
-            <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
+            @if (IsUserExperienced || IsUserModerator)
+            {
+                <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
+            }
+            @if (IsUserModerator)
+            {
+                <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
+            }
         
             <div id="map" style="height:500px;width:100%;"></div>
          }
@@ -210,6 +214,9 @@
     private string ApproveButtonTitile = "";
     private string DisapproveButtonTitile = "";
 
+    private bool IsUserModerator = false;
+    private bool IsUserExperienced = false;
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -218,7 +225,13 @@
             //await JSRuntime.InvokeVoidAsync("googleMap", null);     //todo remove this
 
             IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
-            await SetupButtonClickability();
+            if (IsUserLoggedIn)
+            {
+                await SetupButtonClickability();    
+            }
+
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
+            IsUserExperienced = (await AuthState).User.IsInRole("experienced");
         }
         catch (Exception ex)
         {
@@ -243,6 +256,7 @@
         }
     }
 
+    // Setup Google Map
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
