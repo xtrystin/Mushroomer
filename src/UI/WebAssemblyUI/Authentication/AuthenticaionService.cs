@@ -86,4 +86,21 @@ public class AuthenticationService : IAuthenticationService
             }
         }
     }
+
+    public async Task ChangePassword(UserChangePasswordModel model)     //todo: add userId from jwt?
+    {
+        string apiEndpoint = _config["api"] + "/api/User/ChangePassword";
+
+        using (HttpResponseMessage response = await _client.PostAsJsonAsync(apiEndpoint, model))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                // Log successful call
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+    }
 }

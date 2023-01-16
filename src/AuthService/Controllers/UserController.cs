@@ -86,5 +86,30 @@ namespace AuthService.Controllers
             return BadRequest();
         }
 
+        public record UserChangePasswordModel(
+            string userId,
+            string currentPassword,
+            string newPassword);
+
+        [HttpPost]
+        [Route("ChangePassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ChangePassword(UserChangePasswordModel credentials)    //todo: add username from jwt?
+        {
+            if (ModelState.IsValid) 
+            {
+                var user = await _userManager.FindByIdAsync(credentials.userId);
+                if (user is null)
+                {
+                    return NotFound();
+                }
+
+                await _userManager.ChangePasswordAsync(user, credentials.currentPassword, credentials.newPassword);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
     }
 }

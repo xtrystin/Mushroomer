@@ -8,5 +8,6 @@ namespace WebAssemblyUI.Authentication
         Task Login(UserCredentialsModel userCredentials);
         Task Logout();
         Task Register(RegisterModel model);
+        Task ChangePassword(UserChangePasswordModel model);
     }
 }

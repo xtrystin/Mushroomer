@@ -54,5 +54,14 @@ namespace User.API.Controllers
             await _mediator.Send(request);
             return Ok();
         }
+
+        [HttpPatch("{id:guid}/profileDescription")]
+        public async Task<IActionResult> ChangeProfileDescriptuon([FromRoute]Guid id, [FromBody]string profileDescription)
+        {
+            var request = new ChangeProfileDescriptionCommand() { UserId = id, ProfileDescription = profileDescription };
+            await _mediator.Send(request);
+
+            return Ok();
+        }
     }
 }

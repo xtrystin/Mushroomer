@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text;
 using UI.ApiLibrary.Dto.User;
 
 namespace UI.ApiLibrary.ApiEndpoints;
@@ -56,6 +58,23 @@ public class UserEndpoint : IUserEndpoint
         var url = _api + $"/api/user/friend?add={add}";
 
         var response = await _httpClient.PostAsJsonAsync(url, friendId);
+        if (response.IsSuccessStatusCode)
+        {
+            // log success
+        }
+        else
+        {
+            // log error
+            throw new Exception(response.ReasonPhrase);
+        }
+    }
+
+    public async Task ChangeProfileDescription(string profileDescription)
+    {
+        var url = _api + $"/api/user/profileDescription";
+        var stringContent = new StringContent(JsonSerializer.Serialize(profileDescription), Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PatchAsync(url, stringContent);
         if (response.IsSuccessStatusCode)
         {
             // log success

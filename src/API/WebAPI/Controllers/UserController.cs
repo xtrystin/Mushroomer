@@ -87,4 +87,23 @@ public class UserController : Controller
             throw new Exception(response.ReasonPhrase);
         }
     }
+
+    [HttpPatch("profileDescription")]
+    public async Task<IActionResult> ChangeProfileDescription([FromBody]string profileDescription)
+    {
+        AddJwtToHttpClientHeader();
+
+        var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        var url = _config["MicroservicesUrl:User"] + $"/user/{userId}/profileDescription";  //todo: change to send currentUserId, profileUserId to allow mod to change someone's profile
+
+        var response = await _httpClient.PatchAsJsonAsync(url, profileDescription);
+        if (response.IsSuccessStatusCode)
+        {
+            return Ok();
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase);
+        }
+    }
 }
