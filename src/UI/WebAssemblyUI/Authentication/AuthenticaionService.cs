@@ -103,4 +103,22 @@ public class AuthenticationService : IAuthenticationService
             }
         }
     }
+
+    public async Task<bool> IsUserInRole(string userId, string roleName)
+    {
+        string apiEndpoint = _config["api"] + $"/api/User/{userId}/IsInRole?roleName={roleName}";
+
+        using (HttpResponseMessage response = await _client.GetAsync(apiEndpoint))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<bool>();
+                return result;
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+    }
 }

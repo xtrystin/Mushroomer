@@ -9,5 +9,6 @@ namespace WebAssemblyUI.Authentication
         Task Logout();
         Task Register(RegisterModel model);
         Task ChangePassword(UserChangePasswordModel model);
+        Task<bool> IsUserInRole(string userId, string roleName);
     }
 }

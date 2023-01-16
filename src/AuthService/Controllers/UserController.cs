@@ -93,7 +93,6 @@ namespace AuthService.Controllers
 
         [HttpPost]
         [Route("ChangePassword")]
-        [AllowAnonymous]
         public async Task<IActionResult> ChangePassword(UserChangePasswordModel credentials)    //todo: add username from jwt?
         {
             if (ModelState.IsValid) 
@@ -118,5 +117,33 @@ namespace AuthService.Controllers
             return BadRequest();
         }
 
+        [HttpGet]
+        [Route("{userId}/IsInRole")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IsInRole([FromRoute]string userId, [FromQuery]string roleName)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                bool isInRole = false;
+                if (user is null)
+                {
+                    return NotFound();
+                }
+                try
+                {
+                    isInRole = await _userManager.IsInRoleAsync(user, roleName);
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+                return new ObjectResult(isInRole);
+            }
+
+            return BadRequest();
+        }
     }
 }
