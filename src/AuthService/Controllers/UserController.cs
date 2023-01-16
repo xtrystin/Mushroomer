@@ -104,8 +104,15 @@ namespace AuthService.Controllers
                     return NotFound();
                 }
 
-                await _userManager.ChangePasswordAsync(user, credentials.currentPassword, credentials.newPassword);
-                return Ok();
+                var result = await _userManager.ChangePasswordAsync(user, credentials.currentPassword, credentials.newPassword);
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(result.Errors.FirstOrDefault()?.Description); //todo: better error handling
+                }
             }
 
             return BadRequest();
