@@ -16,10 +16,10 @@ public class EditPostCommandHandler : IRequestHandler<EditPostCommand>
     public async Task<Unit> Handle(EditPostCommand request, CancellationToken cancellationToken)
     {
         var post = await _postRepository.GetAsync(request.PostId);
-        if (post.IsAuthor(request.UserId) is false)
-        {
-            throw new NotAuthorizedToEditPost();
-        }
+        //if (post.IsAuthor(request.UserId) is false)
+        //{
+        //    throw new NotAuthorizedToEditPost();
+        //}
 
         post.ChangeTitle(request.Title);
         post.ChangeContent(request.Content);

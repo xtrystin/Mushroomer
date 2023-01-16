@@ -87,7 +87,7 @@
                 }
             </div>
 
-            @if (IsAuthor)
+            @if (IsAuthor || IsUserModerator)
             {
                 <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
                 <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
@@ -160,6 +160,7 @@
     private IEnumerable<CommentReadModel> Comments;
     private AddCommentDto Comment = new();
     private bool IsUserLoggedIn;
+    private bool IsUserModerator = false;
     private string UserEmail;
 
     private bool IsLikeButtonDisabled = false;
@@ -177,6 +178,7 @@
             UserEmail= (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
             IsAuthor = await CheckIfUserIsAuthor();
             IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
 
             Comments = await PostEndpoint.GetCommentsForPost(new Guid(Id));
 

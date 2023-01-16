@@ -20,7 +20,7 @@ else
                     <div class="d-flex flex-row align-items-center"> <span class="mr-2"><strong>@comment.AuthorEmail</strong></span> <small class="c-badge"></small> </div> <small>@comment.CreatedDate</small>
                 </div>
                 <p class="text-justify comment-text mb-0">@comment.Content</p>
-                @if (IsUserLoggedIn && comment.AuthorId.ToString() == CurrentUserId)
+                @if (IsUserLoggedIn && (comment.AuthorId.ToString() == CurrentUserId) || IsUserModerator)
                  {
                     <button type="button" class="btn btn-outline-primary" @onclick="() => MarkCommentEditable(comment.Id)">Edit</button>
                     <button type="button" class="btn btn-outline-danger" @onclick="async () => await Delete(comment.PostId, comment.Id)">Delete</button>
@@ -60,6 +60,7 @@ else
 
     private bool IsUserLoggedIn;
     private string CurrentUserId;
+    private bool IsUserModerator = false;
 
 
     protected override async Task OnInitializedAsync()
@@ -68,6 +69,7 @@ else
         if (IsUserLoggedIn)
         {
             CurrentUserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
         }
     }
 

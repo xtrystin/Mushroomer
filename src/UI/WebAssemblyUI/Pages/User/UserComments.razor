@@ -32,7 +32,7 @@ else
                     <div class="d-flex flex-row align-items-center"> <span class="mr-2"><strong>@comment.AuthorEmail</strong></span> <small class="c-badge"></small> </div> <small>@comment.CreatedDate</small>
                 </div>
                 <p class="text-justify comment-text mb-0">@comment.Content</p>
-                @if (IsUserLoggedIn)
+                @if (IsUserLoggedIn && (IsUserAuthor || IsUserModerator))
                 {
                     <button type="button" class="btn btn-outline-primary" @onclick="() => MarkCommentEditable(comment.Id)">Edit</button>
                     <button type="button" class="btn btn-outline-danger" @onclick="async () => await Delete(comment.PostId, comment.Id)">Delete</button>
@@ -69,20 +69,40 @@ else
     public Task<AuthenticationState> AuthState { get; set; }
 
     private bool IsUserLoggedIn;
+    private bool IsUserModerator;
+    private bool IsUserAuthor;
     List<Guid> EditableComments = new();
 
     private List<PostReadModel> Posts = new();
+
     protected override async Task OnInitializedAsync()
     {
         var uniquePostIds = CommentsList.DistinctBy(x => x.PostId).Select(x => x.PostId).ToList();
         foreach (var postId in uniquePostIds)
         {
             IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
+            IsUserAuthor = await CheckIfUserIsAuthor();
 
             var post = await PostEndpoint.Get(postId);
             Posts.Add(post);                                //todo optimalization: add endpoint that accept list of posts insted of making X single calls
         }
 
+    }
+
+    private async Task<bool> CheckIfUserIsAuthor()
+    {
+        var isUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        if (isUserLoggedIn)
+        {
+            var currentUserId = new Guid((await AuthState).User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if (currentUserId == CommentsList.FirstOrDefault()?.AuthorId)
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     private async Task Delete(Guid postId, Guid commentId)

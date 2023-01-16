@@ -15,10 +15,10 @@ public class DeletePostCommandHandler : IRequestHandler<DeletePostCommand>
     public async Task<Unit> Handle(DeletePostCommand request, CancellationToken cancellationToken)
     {
         var post = await _postRepository.GetAsync(request.PostId); //todo check if null
-        if (post.IsAuthor(request.UserId) is false)
-        {
-            throw new NotAuthorizedToEditPost();
-        }
+        //if (post.IsAuthor(request.UserId) is false)
+        //{
+        //    throw new NotAuthorizedToEditPost();
+        //}
         
         await _postRepository.DeleteAsync(post);
         return Unit.Value;
