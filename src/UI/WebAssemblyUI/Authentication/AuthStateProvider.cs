@@ -27,7 +27,7 @@ public class AuthStateProvider : AuthenticationStateProvider
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var token = await _localStorage.GetItemAsync<string>(_bearerTokenStorageKey);
-        if (string.IsNullOrWhiteSpace(token))   //todo: check if token has expired
+        if (string.IsNullOrWhiteSpace(token) || HasTokenExpired(token))   //todo: check if token has expired
         {
             return _anonymous;
         }
@@ -44,6 +44,18 @@ public class AuthStateProvider : AuthenticationStateProvider
             new ClaimsPrincipal(
                 new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(token),
                 "jwtAuthType")));
+    }
+
+    private bool HasTokenExpired(string token)
+    {
+        List<Claim> claims = JwtParser.ParseClaimsFromJwt(token).ToList();
+        var exp = long.Parse(claims.First(claim => claim.Type.Equals("exp")).Value);
+        
+        var expDate = DateTimeOffset.FromUnixTimeSeconds(exp).UtcDateTime;
+        var now = DateTime.Now.ToUniversalTime();
+
+        var isValid = expDate >= now;
+        return isValid;
     }
 
     public async Task<bool> NotifyUserAuthentication(string token)
