@@ -18,6 +18,21 @@
             </button>
         </div>
     }
+    <div class="col-auto ">
+        <button type="button" class="btn btn-outline-secondary" @onclick="SortByTitle">
+            Order alphabetically
+        </button>
+    </div>
+    <div class="col-auto ">
+        <button type="button" class="btn btn-outline-secondary" @onclick="SortByScore">
+            Order by score
+        </button>
+    </div>
+    <div class="col-auto ">
+        <button type="button" class="btn btn-outline-secondary" @onclick="SortByDate">
+            Newest first
+        </button>
+    </div>
 </div>
 <br />
 @if (posts?.Count() == 0)
@@ -127,5 +142,19 @@
     private void AddPost()
     {
         NavManager.NavigateTo("/post/add");
+    }
+    private void SortByTitle()
+    {
+        posts = posts.OrderBy(x => x.Title).ToList();
+    }
+
+    private void SortByScore()
+    {
+        posts = posts.OrderBy(x => x.LikeNumber - x.DisLikeNumber).ToList();
+    }
+
+    private void SortByDate()
+    {
+        posts = posts.OrderByDescending(x => x.CreatedDate).ToList();
     }
 }
