@@ -28,40 +28,43 @@ public class UserConfig : IEntityTypeConfiguration<Domain.Entity.User>
             value => new PhotoUrl(value));
 
         builder.Property(x => x.Id)
-            .HasConversion(id => id.Value, value => new UserId(value));
+            .HasConversion(id => id.Value, value => new UserId(value))
+            .HasColumnType("uuid")
+            .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(typeof(FirstName), "_firstName")
             .IsRequired()
             .HasConversion(firstNameConverter)
             .HasColumnName("FirstName")
-            .HasColumnType("nvarchar(100)");
+            .HasColumnType("varchar(100)");
 
         builder.Property(typeof(LastName), "_lastName")
             .IsRequired()
             .HasConversion(lastNameConverter)
             .HasColumnName("LastName")
-            .HasColumnType("nvarchar(100)");
+            .HasColumnType("varchar(100)");
 
         builder.Property(typeof(EmailAddress), "_emailAddress")
             .IsRequired()
             .HasConversion(emailAddressConverter)
             .HasColumnName("EmailAddress")
-            .HasColumnType("nvarchar(100)");
+            .HasColumnType("varchar(100)");
 
         builder.Property(typeof(ProfileDescription), "_profileDescription")
             .HasConversion(profileDescriptionConverter)
             .IsRequired(false)
             .HasColumnName("ProfileDescription")
-            .HasColumnType("nvarchar(1000)");
+            .HasColumnType("varchar(1000)");
 
         builder.Property(typeof(PhotoUrl), "_photoUrl")
             .HasConversion(photoUrlConverter)
             .IsRequired(false)
             .HasColumnName("PhotoUrl")
-            .HasColumnType("nvarchar(200)");
+            .HasColumnType("varchar(200)");
 
         builder.Property(typeof(DateTime), "_createdDate")
             .IsRequired()
+            .HasColumnType("timestamp without time zone")
             .HasColumnName("CreatedDate");
 
         builder.ToTable("User");

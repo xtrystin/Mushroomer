@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApplication1.EF;
@@ -11,9 +12,11 @@ using WebApplication1.EF;
 namespace Mushroom.API.Migrations
 {
     [DbContext(typeof(MushroomDbContext))]
-    partial class MushroomDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230130170124_ChangesDateTimeTypeToTimestampWithoutTimeZones")]
+    partial class ChangesDateTimeTypeToTimestampWithoutTimeZones
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

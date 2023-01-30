@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Mushroom.API.Migrations
 {
     /// <inheritdoc />
-    public partial class CreatesMushroomTable : Migration
+    public partial class MigratesToPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,12 +15,12 @@ namespace Mushroom.API.Migrations
                 name: "Mushroom",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newsequentialid()"),
-                    Name = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(2000)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsPoisonous = table.Column<bool>(type: "bit", nullable: false),
-                    PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    Name = table.Column<string>(type: "varchar(50)", nullable: false),
+                    Description = table.Column<string>(type: "varchar(2000)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsPoisonous = table.Column<bool>(type: "boolean", nullable: false),
+                    PhotoUrl = table.Column<string>(type: "varchar(300)", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Post.Infrastructure.EF.Context;
 
 #nullable disable
@@ -18,35 +18,35 @@ namespace Post.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Post.Domain.Entity.Comment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newsequentialid()");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<Guid>("AuthorId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("AuthorId");
 
                     b.Property<Guid>("PostId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("_content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("varchar(200)")
                         .HasColumnName("Content");
 
                     b.Property<DateTime>("_createdDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreatedDate");
 
                     b.Property<DateTime>("_lastModificationDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("LastModificationDate");
 
                     b.HasKey("Id");
@@ -62,29 +62,29 @@ namespace Post.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newsequentialid()");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<Guid>("AuthorId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("AuthorId");
 
                     b.Property<string>("_content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("Content");
 
                     b.Property<DateTime>("_createdDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreatedDate");
 
                     b.Property<DateTime>("_lastModificationDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("LaastModificationDate");
 
                     b.Property<string>("_title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("varchar(200)")
                         .HasColumnName("Title");
 
                     b.HasKey("Id");
@@ -98,18 +98,19 @@ namespace Post.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<bool>("Like")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("Like");
 
                     b.Property<Guid>("PostId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("PostId");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("UserId");
 
                     b.HasKey("Id");
@@ -125,22 +126,22 @@ namespace Post.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("Id");
 
                     b.Property<string>("_email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("EmailAddress");
 
                     b.Property<string>("_firstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("FirstName");
 
                     b.Property<string>("_lastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("LastName");
 
                     b.HasKey("Id");

@@ -8,7 +8,8 @@ using User.Infrastructure.Ef.Repository;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddMSSqlServer(builder.Configuration);
+//builder.Services.AddMSSqlServer(builder.Configuration);
+builder.Services.AddPostgres(builder.Configuration);
 builder.Services.AddMediatR(typeof(GetUserQueryHandler), typeof(GetUserQuery));
 
 // Register repo

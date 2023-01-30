@@ -20,27 +20,32 @@ public class PostConfig : IEntityTypeConfiguration<Domain.Entity.Post>
 
         builder.Property(x => x.Id)
             .HasConversion(id => id.Value, id => new PostId(id))
-            .HasDefaultValueSql("newsequentialid()");
+            .HasColumnType("uuid")
+            .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(typeof(PostTitle), "_title")
             .HasConversion(titleConvverter)
-            .HasColumnName("Title");
-        //.HasColumnType("nvarchar(10000)") //todo: optimalization, now is nvarchar(unlimited)
+            .HasColumnName("Title")
+        .HasColumnType("varchar(200)");
 
         builder.Property(typeof(PostContent), "_content")
             .HasConversion(contentConvverter)
-            .HasColumnName("Content");
+            .HasColumnName("Content")
+            .HasColumnType("text");
 
         builder.Property(typeof(DateTime), "_createdDate")
-            .HasColumnName("CreatedDate");
+            .HasColumnName("CreatedDate")
+            .HasColumnType("timestamp without time zone");
 
         builder.Property(typeof(DateTime), "_lastModificationDate")
-            .HasColumnName("LaastModificationDate");
+            .HasColumnName("LaastModificationDate")
+            .HasColumnType("timestamp without time zone");
 
         builder.HasMany(typeof(Comment), "_comments");
 
         builder.Property<Guid>("AuthorId")
-            .HasColumnName("AuthorId");
+            .HasColumnName("AuthorId")
+            .HasColumnType("uuid");
         builder.HasOne("_author")
             .WithMany("_posts")
             .HasForeignKey("AuthorId");

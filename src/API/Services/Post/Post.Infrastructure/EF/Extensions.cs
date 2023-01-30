@@ -17,5 +17,16 @@ namespace Post.Infrastructure.EF
 
             return services;
         }
+
+        public static IServiceCollection AddPostgres(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<PostDbContext>(options =>
+                options.UseNpgsql(configuration.GetConnectionString("PostgresResourceDb")));
+
+            services.AddDbContext<ReadPostDbContext>(options =>
+                options.UseNpgsql(configuration.GetConnectionString("PostgresResourceDb")));
+
+            return services;
+        }
     }
 }

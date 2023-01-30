@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Post.Infrastructure.EF.Context;
 
 #nullable disable
@@ -12,8 +12,8 @@ using Post.Infrastructure.EF.Context;
 namespace Post.Infrastructure.Migrations
 {
     [DbContext(typeof(PostDbContext))]
-    [Migration("20221231192756_AddsAuthorToPost")]
-    partial class AddsAuthorToPost
+    [Migration("20230129202536_MigratesToPostgres")]
+    partial class MigratesToPostgres
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,34 +21,40 @@ namespace Post.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Post.Domain.Entity.Comment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newsequentialid()");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("AuthorId");
 
                     b.Property<Guid>("PostId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("_content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("varchar(200)")
                         .HasColumnName("Content");
 
                     b.Property<DateTime>("_createdDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("CreatedDate");
 
                     b.Property<DateTime>("_lastModificationDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("LastModificationDate");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("PostId");
 
@@ -59,29 +65,29 @@ namespace Post.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newsequentialid()");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<Guid>("AuthorId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("AuthorId");
 
                     b.Property<string>("_content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("Content");
 
                     b.Property<DateTime>("_createdDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("CreatedDate");
 
                     b.Property<DateTime>("_lastModificationDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("LaastModificationDate");
 
                     b.Property<string>("_title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("varchar(200)")
                         .HasColumnName("Title");
 
                     b.HasKey("Id");
@@ -91,25 +97,54 @@ namespace Post.Infrastructure.Migrations
                     b.ToTable("Post", (string)null);
                 });
 
+            modelBuilder.Entity("Post.Domain.Entity.PostUserReaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<bool>("Like")
+                        .HasColumnType("boolean")
+                        .HasColumnName("Like");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("PostId");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PostUserReaction", (string)null);
+                });
+
             modelBuilder.Entity("Post.Domain.Entity.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("Id");
 
-                    b.Property<string>("_emailAddress")
-                        .HasColumnType("nvarchar(max)")
+                    b.Property<string>("_email")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("EmailAddress");
 
                     b.Property<string>("_firstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("FirstName");
 
                     b.Property<string>("_lastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("LastName");
 
                     b.HasKey("Id");
@@ -119,6 +154,12 @@ namespace Post.Infrastructure.Migrations
 
             modelBuilder.Entity("Post.Domain.Entity.Comment", b =>
                 {
+                    b.HasOne("Post.Domain.Entity.User", "_author")
+                        .WithMany("_comments")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Post.Domain.Entity.Post", "Post")
                         .WithMany("_comments")
                         .HasForeignKey("PostId")
@@ -126,6 +167,8 @@ namespace Post.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+
+                    b.Navigation("_author");
                 });
 
             modelBuilder.Entity("Post.Domain.Entity.Post", b =>
@@ -139,13 +182,38 @@ namespace Post.Infrastructure.Migrations
                     b.Navigation("_author");
                 });
 
+            modelBuilder.Entity("Post.Domain.Entity.PostUserReaction", b =>
+                {
+                    b.HasOne("Post.Domain.Entity.Post", "Post")
+                        .WithMany("_reactions")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Post.Domain.Entity.User", "User")
+                        .WithMany("_postReactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Post.Domain.Entity.Post", b =>
                 {
                     b.Navigation("_comments");
+
+                    b.Navigation("_reactions");
                 });
 
             modelBuilder.Entity("Post.Domain.Entity.User", b =>
                 {
+                    b.Navigation("_comments");
+
+                    b.Navigation("_postReactions");
+
                     b.Navigation("_posts");
                 });
 #pragma warning restore 612, 618

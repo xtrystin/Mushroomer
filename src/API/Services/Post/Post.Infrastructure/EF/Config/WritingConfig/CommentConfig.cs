@@ -11,24 +11,28 @@ public class CommentConfig : IEntityTypeConfiguration<Comment>
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id)
-            .HasDefaultValueSql("newsequentialid()");
+            .HasColumnType("uuid")
+            .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(typeof(string), "_content")
-            .HasColumnType("nvarchar(200)")
+            .HasColumnType("varchar(200)")
             .HasColumnName("Content");
 
         builder.Property(typeof(DateTime), "_createdDate")
-            .HasColumnName("CreatedDate");
+            .HasColumnName("CreatedDate")
+            .HasColumnType("timestamp without time zone");
 
         builder.Property(typeof(DateTime), "_lastModificationDate")
-            .HasColumnName("LastModificationDate");
+            .HasColumnName("LastModificationDate")
+            .HasColumnType("timestamp without time zone");
 
         builder.HasOne(p => p.Post)
             .WithMany("_comments")
             .HasForeignKey(p => p.PostId);
 
         builder.Property<Guid>("AuthorId")
-            .HasColumnName("AuthorId");
+            .HasColumnName("AuthorId")
+            .HasColumnType("uuid");
         builder.HasOne("_author")
             .WithMany("_comments")
             .OnDelete(DeleteBehavior.NoAction)

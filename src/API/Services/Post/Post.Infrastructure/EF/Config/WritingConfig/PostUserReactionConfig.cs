@@ -11,16 +11,23 @@ public class PostUserReactionConfig : IEntityTypeConfiguration<PostUserReaction>
     {
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.Id)
+            .HasColumnType("uuid")
+            .HasDefaultValueSql("gen_random_uuid()");
+
         builder.Property(x => x.Like)
             .IsRequired()
-            .HasColumnName("Like");
+            .HasColumnName("Like")
+            .HasColumnType("boolean");
 
         builder.Property(x => x.UserId)
-            .HasColumnName("UserId");
+            .HasColumnName("UserId")
+            .HasColumnType("uuid");
         
         builder.Property(x => x.PostId)
             .HasConversion(id => id.Value, id => new PostId(id))
-            .HasColumnName("PostId");
+            .HasColumnName("PostId")
+            .HasColumnType("uuid");
 
         builder.HasOne(x => x.Post)
             .WithMany("_reactions")

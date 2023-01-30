@@ -22,7 +22,8 @@ builder.Services.AddCors(policy =>
         .AllowAnyMethod());
 });
 
-builder.Services.AddMSSqlServer(builder.Configuration);
+//builder.Services.AddMSSqlServer(builder.Configuration);
+builder.Services.AddPostgres(builder.Configuration);
 builder.Services.AddScoped<IWarningRepository, WarningRepository>();    //todo: move it to extension method?
 builder.Services.AddScoped<IUserRepository, UserRepository>();    //todo: move it to extension method?
 

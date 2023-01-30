@@ -11,18 +11,25 @@ public class UserFriendConfig : IEntityTypeConfiguration<UserFriend>
     {
         builder.HasKey(x => x.Id);
         
+        builder.Property(x => x.Id)
+            .HasColumnType("uuid")
+            .HasDefaultValueSql("gen_random_uuid()");
+
         builder.Property(x => x.UserId)
             .HasConversion(id => id.Value, value => new UserId(value))
             .IsRequired(false)                                              //todo 223: this is hack for problems with deleting row in many to self many relation, EF wants to set null to foreign key column isntead of deleting the whole row
+            .HasColumnType("uuid")
             .HasColumnName("UserId");
 
         builder.Property(x => x.FriendId)
             .HasConversion(id => id.Value, value => new UserId(value))
             .IsRequired(false)                                             //todo 223: this is hack for problems with deleting row in many to self many relation, EF wants to set null to foreign key column isntead of deleting the whole row
+            .HasColumnType("uuid")
             .HasColumnName("FriendId");
 
         builder.Property(x => x.CreatedDate)
-            .HasColumnName("CreatedDate");
+            .HasColumnName("CreatedDate")
+            .HasColumnType("timestamp without time zone");
 
         builder.HasOne(x => x.User)
             .WithMany("_friends")

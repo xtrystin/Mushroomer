@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<MushroomDbContext>(options => 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MSSqlServer")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresResourceDb")));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

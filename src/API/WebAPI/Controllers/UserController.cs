@@ -19,7 +19,7 @@ public class UserController : Controller
         _config = config;
     }
 
-    private void AddJwtToHttpClientHeader()
+    private void AddJwtToHttpClientHeader()     // todo: replace with [FromHeader]
     {
         var jwtBearer = HttpContext.Request.Headers.Authorization;
         if (jwtBearer.Count == 0)

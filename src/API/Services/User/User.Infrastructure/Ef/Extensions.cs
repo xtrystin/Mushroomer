@@ -17,4 +17,15 @@ public static class Extensions
 
         return services;
     }
+
+    public static IServiceCollection AddPostgres(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddDbContext<UserDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("PostgresResourceDb")));
+
+        services.AddDbContext<ReadUserDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("PostgresResourceDb")));
+
+        return services;
+    }
 }

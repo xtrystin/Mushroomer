@@ -6,19 +6,19 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CreatesWarningUserReactionTable : Migration
+    public partial class MigratesToPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            /// USER TABLE IS MANAGED IN USER MICROSERVICE
+            /// User table was created in User Service
             /// 
             //migrationBuilder.CreateTable(
             //    name: "User",
             //    columns: table => new
             //    {
-            //        Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-            //        EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false)
+            //        Id = table.Column<Guid>(type: "uuid", nullable: false),
+            //        EmailAddress = table.Column<string>(type: "text", nullable: false)
             //    },
             //    constraints: table =>
             //    {
@@ -26,13 +26,32 @@ namespace Infrastructure.Migrations
             //    });
 
             migrationBuilder.CreateTable(
+                name: "Warning",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    Title = table.Column<string>(type: "varchar(200)", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Province = table.Column<string>(type: "varchar(100)", nullable: false),
+                    MushroomName = table.Column<string>(type: "varchar(100)", nullable: false),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Warning", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WarningUserReaction",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Approve = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    WarningId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    Approve = table.Column<bool>(type: "boolean", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    WarningId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,11 +85,12 @@ namespace Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "WarningUserReaction");
-            
-            /// USER TABLE IS MANAGED IN USER MICROSERVICE
-            /// 
+
             //migrationBuilder.DropTable(
             //    name: "User");
+
+            migrationBuilder.DropTable(
+                name: "Warning");
         }
     }
 }

@@ -9,24 +9,28 @@ public class MushroomConfig : IEntityTypeConfiguration<Mushroom.API.Model.Mushro
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)
-            .HasDefaultValueSql("newsequentialid()");
+            .HasColumnType("uuid")
+            .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(x => x.Name)
             .HasColumnName("Name")
-            .HasColumnType("nvarchar(50)");
+            .HasColumnType("varchar(50)");
 
         builder.Property(x => x.Description)
             .HasColumnName("Description")
-            .HasColumnType("nvarchar(2000)");
+            .HasColumnType("varchar(2000)");
 
         builder.Property(x => x.CreatedDate)
-            .HasColumnName("CreatedDate");
+            .HasColumnName("CreatedDate")
+            .HasColumnType("timestamp without time zone");
 
         builder.Property(x => x.IsPoisonous)
-            .HasColumnName("IsPoisonous");
+            .HasColumnName("IsPoisonous")
+            .HasColumnType("boolean");
        
         builder.Property(x => x.PhotoUrl)
             .HasColumnName("PhotoUrl")
+            .HasColumnType("varchar(300)")
             .IsRequired(false);
 
         builder.ToTable("Mushroom");

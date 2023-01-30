@@ -6,19 +6,36 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace User.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddsUserFriendManyToManyTable : Migration
+    public partial class ChangedToPostgresDateTypes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    EmailAddress = table.Column<string>(type: "varchar(100)", nullable: false),
+                    FirstName = table.Column<string>(type: "varchar(100)", nullable: false),
+                    LastName = table.Column<string>(type: "varchar(100)", nullable: false),
+                    PhotoUrl = table.Column<string>(type: "varchar(200)", nullable: true),
+                    ProfileDescription = table.Column<string>(type: "varchar(1000)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserFriend",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FriendId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    FriendId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -51,6 +68,9 @@ namespace User.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "UserFriend");
+
+            migrationBuilder.DropTable(
+                name: "User");
         }
     }
 }
