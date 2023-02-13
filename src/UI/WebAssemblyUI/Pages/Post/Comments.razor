@@ -20,8 +20,8 @@ else
                     <div class="d-flex flex-row align-items-center"> <span class="mr-2"><strong>@comment.AuthorEmail</strong></span> <small class="c-badge"></small> </div> <small>@comment.CreatedDate</small>
                 </div>
                 <p class="text-justify comment-text mb-0">@comment.Content</p>
-                @if (IsUserLoggedIn && comment.AuthorId.ToString() == CurrentUserId)
-                 {
+                @if (IsUserLoggedIn && (comment.AuthorId.ToString() == CurrentUserId) || IsUserModerator)
+                {
                     <button type="button" class="btn btn-outline-primary" @onclick="() => MarkCommentEditable(comment.Id)">Edit</button>
                     <button type="button" class="btn btn-outline-danger" @onclick="async () => await Delete(comment.PostId, comment.Id)">Delete</button>
                     @if (EditableComments.Any(x => x == comment.Id))
@@ -42,7 +42,7 @@ else
                         </EditForm>
                     }
                 }
-            @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
+                @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
             </div>
         </div>
     }
@@ -60,6 +60,7 @@ else
 
     private bool IsUserLoggedIn;
     private string CurrentUserId;
+    private bool IsUserModerator = false;
 
 
     protected override async Task OnInitializedAsync()
@@ -68,6 +69,7 @@ else
         if (IsUserLoggedIn)
         {
             CurrentUserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
         }
     }
 
@@ -85,14 +87,14 @@ else
         }
     }
 
-    private void MarkCommentEditable(Guid commentId) 
+    private void MarkCommentEditable(Guid commentId)
         => EditableComments.Add(commentId);
 
     private async Task ExecuteEdit(Guid postId, string newContent, Guid commentId)
     {
         try
         {
-            await PostEndpoint.ModifyComment(postId, newContent, commentId); 
+            await PostEndpoint.ModifyComment(postId, newContent, commentId);
 
             var comment = CommentsList.First(x => x.Id == commentId);
             comment.Content = newContent;

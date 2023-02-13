@@ -6,33 +6,33 @@
 
 @if (CommentsList.ToList().Count == 0 || CommentsList is null)
 {
-        <p>No Comments found</p>
+    <p>No Comments found</p>
 }
 else
 {
     @foreach (var comment in CommentsList.OrderByDescending(x => x.CreatedDate))
-    {          
+    {
         <div class="row">
             <div class="col-auto">
                 <strong>Post </strong>
                 <a href="/post/@comment.PostId" style="text-decoration: none; color: darkviolet">
-                   <i>@Posts.FirstOrDefault(x => x.Id == comment.PostId)?.Title</i>    
+                    <i>@Posts.FirstOrDefault(x => x.Id == comment.PostId)?.Title</i>
                 </a>
                 <strong>by </strong>@Posts.FirstOrDefault(x => x.Id == comment.PostId)?.AuthorEmail
             </div>
-@*            <div class="col-auto">
-                <a href="/post/67bc7bf9-f179-47a6-a2e5-0566b10db4ed">Open</a>
-            </div>*@
-            
+            @*            <div class="col-auto">
+    <a href="/post/67bc7bf9-f179-47a6-a2e5-0566b10db4ed">Open</a>
+    </div>*@
+
         </div>
-         <div class="d-flex flex-row p-3">
+        <div class="d-flex flex-row p-3">
             <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" width="40" height="40" class="rounded-circle mr-3">
             <div class="w-100 ms-2">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex flex-row align-items-center"> <span class="mr-2"><strong>@comment.AuthorEmail</strong></span> <small class="c-badge"></small> </div> <small>@comment.CreatedDate</small>
                 </div>
                 <p class="text-justify comment-text mb-0">@comment.Content</p>
-                @if (IsUserLoggedIn)
+                @if (IsUserLoggedIn && (IsUserAuthor || IsUserModerator))
                 {
                     <button type="button" class="btn btn-outline-primary" @onclick="() => MarkCommentEditable(comment.Id)">Edit</button>
                     <button type="button" class="btn btn-outline-danger" @onclick="async () => await Delete(comment.PostId, comment.Id)">Delete</button>
@@ -54,10 +54,10 @@ else
                         </EditForm>
                     }
                 }
-        @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
+                @*  <div class="d-flex flex-row user-feed"> <span class="wish"><i class="fa fa-heartbeat mr-2"></i>Likes: 24</span> <span class="ml-3"><i class="fa fa-comments-o mr-2"></i>Reply</span> </div>*@
             </div>
         </div>
-        <br/>
+        <br />
     }
 }
 
@@ -69,20 +69,40 @@ else
     public Task<AuthenticationState> AuthState { get; set; }
 
     private bool IsUserLoggedIn;
+    private bool IsUserModerator;
+    private bool IsUserAuthor;
     List<Guid> EditableComments = new();
 
     private List<PostReadModel> Posts = new();
+
     protected override async Task OnInitializedAsync()
     {
         var uniquePostIds = CommentsList.DistinctBy(x => x.PostId).Select(x => x.PostId).ToList();
         foreach (var postId in uniquePostIds)
         {
             IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
+            IsUserAuthor = await CheckIfUserIsAuthor();
 
             var post = await PostEndpoint.Get(postId);
             Posts.Add(post);                                //todo optimalization: add endpoint that accept list of posts insted of making X single calls
         }
 
+    }
+
+    private async Task<bool> CheckIfUserIsAuthor()
+    {
+        var isUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        if (isUserLoggedIn)
+        {
+            var currentUserId = new Guid((await AuthState).User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if (currentUserId == CommentsList.FirstOrDefault()?.AuthorId)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private async Task Delete(Guid postId, Guid commentId)

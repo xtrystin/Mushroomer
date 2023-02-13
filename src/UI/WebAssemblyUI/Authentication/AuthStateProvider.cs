@@ -27,7 +27,7 @@ public class AuthStateProvider : AuthenticationStateProvider
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var token = await _localStorage.GetItemAsync<string>(_bearerTokenStorageKey);
-        if (string.IsNullOrWhiteSpace(token) || HasTokenExpired(token))   //todo: check if token has expired
+        if (string.IsNullOrWhiteSpace(token) || HasTokenExpired(token))
         {
             return _anonymous;
         }
@@ -54,8 +54,8 @@ public class AuthStateProvider : AuthenticationStateProvider
         var expDate = DateTimeOffset.FromUnixTimeSeconds(exp).UtcDateTime;
         var now = DateTime.Now.ToUniversalTime();
 
-        var isValid = expDate >= now;
-        return isValid;
+        var hasExpired = expDate <= now;
+        return hasExpired;
     }
 
     public async Task<bool> NotifyUserAuthentication(string token)
