@@ -6,4 +6,5 @@ public class DeleteCommentCommand : IRequest
 {
     public Guid PostId { get; set;}
     public Guid CommentId { get; set;}
+    public Guid UserId { get; set;}
 }

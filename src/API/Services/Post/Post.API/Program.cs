@@ -2,10 +2,12 @@ using MediatR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Post.Application.Query;
+using Post.Application.Service;
 using Post.Domain.Repository;
 using Post.Infrastructure.EF;
 using Post.Infrastructure.EF.Query;
 using Post.Infrastructure.EF.Repository;
+using Post.Infrastructure.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddMSSqlServer(builder.Configuration);
 builder.Services.AddPostgres(builder.Configuration);
 builder.Services.AddMediatR(typeof(GetPostQueryHandler), typeof(GetPostQuery));
+
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Register repo
 builder.Services.AddScoped<IPostRepository, PostRepository>();    //todo: move it to extension method?
@@ -80,6 +85,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

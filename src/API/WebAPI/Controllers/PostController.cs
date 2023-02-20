@@ -207,8 +207,8 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> DeleteComment([FromRoute] Guid id, [FromRoute] Guid commentId)
         {
             AddJwtToHttpClientHeader();
-            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
-            var url = _config["MicroservicesUrl:Post"] + $"/post/{id}/comment/{commentId}";
+            var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var url = _config["MicroservicesUrl:Post"] + $"/post/{id}/comment/{commentId}?userId={userId}";
 
             var response = await _httpClient.DeleteAsync(url);
             if (response.IsSuccessStatusCode)

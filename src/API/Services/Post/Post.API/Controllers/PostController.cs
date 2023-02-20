@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Post.API.Dto;
 using Post.Application.Command;
@@ -11,6 +12,7 @@ namespace Post.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PostController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -21,7 +23,8 @@ namespace Post.API.Controllers
         }
 
         [HttpGet("{id:guid}")]
-       // [ProducesResponseType(typeof(PostReadModel), 200)]
+        [AllowAnonymous]
+        // [ProducesResponseType(typeof(PostReadModel), 200)]
         //[ProducesResponseType(404)]
         public async Task<PostReadModel> Get([FromRoute]Guid id)
         {
@@ -33,6 +36,7 @@ namespace Post.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IEnumerable<PostReadModel>> Get()
         {
             var request = new GetAllPostsQuery();
@@ -80,6 +84,7 @@ namespace Post.API.Controllers
         }
 
         [HttpGet("{id:guid}/comment")]
+        [AllowAnonymous]
         public async Task<IEnumerable<CommentReadModel>> GetComments([FromRoute] Guid id)
         {
             var request = new GetCommentsForPostQuery { PostId = id };
@@ -89,6 +94,7 @@ namespace Post.API.Controllers
         }
 
         [HttpGet("comment/user/{id:guid}")]
+        [AllowAnonymous]
         public async Task<IEnumerable<CommentReadModel>> GetCommentsForUser([FromRoute] Guid id)
         {
             var request = new GetCommentsForUserQuery { UserId = id };
@@ -105,9 +111,9 @@ namespace Post.API.Controllers
         }
 
         [HttpDelete("{id:guid}/comment/{commentId:guid}")]
-        public async Task DeleteComment([FromRoute] Guid id, [FromRoute] Guid commentId)
+        public async Task DeleteComment([FromRoute] Guid id, [FromRoute] Guid commentId, Guid userId)
         {
-            var request = new DeleteCommentCommand { PostId = id, CommentId = commentId };
+            var request = new DeleteCommentCommand { PostId = id, CommentId = commentId, UserId = userId };
             await _mediator.Send(request);
         }
 
@@ -122,6 +128,7 @@ namespace Post.API.Controllers
         }
 
         [HttpGet("{id:guid}/reactionForUser")]
+        [AllowAnonymous]
         public async Task<bool?> GetReactionForUser([FromRoute] Guid id, Guid userId)   //todo: can return true, false or 204 for no reaction
         {
             //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
