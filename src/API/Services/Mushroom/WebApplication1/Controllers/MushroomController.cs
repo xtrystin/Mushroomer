@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common.Const;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Mushroom.API.Model;
+using System.Data;
 using WebApplication1.EF;
 
 namespace Mushroom.API.Controllers;
@@ -29,6 +32,7 @@ public class MushroomController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = AuthUserRole.Moderator)]
     public async Task<IActionResult> Create([FromBody] MushroomDto request)
     {
         Model.Mushroom newMushroom = new()
@@ -48,6 +52,7 @@ public class MushroomController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = AuthUserRole.Moderator)]
     public async Task Delete([FromRoute]Guid id)
     {
         var mushroom = await _dbContext.Mushrooms.FirstOrDefaultAsync(_ => _.Id == id);
@@ -57,6 +62,7 @@ public class MushroomController : ControllerBase
     }
 
     [HttpPatch("{id:guid}")]
+    [Authorize(Roles = AuthUserRole.Moderator)]
     public async Task Update([FromRoute]Guid id, [FromBody] MushroomDto request)
     {
         var mushroom = await _dbContext.Mushrooms.FirstOrDefaultAsync(_ => _.Id == id);

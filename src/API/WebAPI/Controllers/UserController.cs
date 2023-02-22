@@ -33,7 +33,7 @@ public class UserController : Controller
 
     [HttpGet]
     public async Task<IEnumerable<UserReadModel>> GetAll()     //todo: do not return friends for getAll
-    {
+    {                                                           //todo: pagination
         AddJwtToHttpClientHeader();
         var url = _config["MicroservicesUrl:User"] + $"/user";
 
@@ -68,6 +68,7 @@ public class UserController : Controller
     }
 
     [HttpPost("Friend")]
+    [Authorize]
     [EndpointDescription("Add or remove friend to/from friend list. Set add to true if you want to add. For removing set add to false")]
     public async Task<IActionResult> AddFriend([FromBody]Guid friendId, [FromQuery]bool add = true)
     {
@@ -88,6 +89,7 @@ public class UserController : Controller
         }
     }
 
+    [Authorize]
     [HttpPatch("profileDescription")]
     public async Task<IActionResult> ChangeProfileDescription([FromBody]string profileDescription)
     {

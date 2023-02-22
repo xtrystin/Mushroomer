@@ -2,6 +2,6 @@
 
 public static class AuthUserRole
 {
-    public static readonly string Moderator = "Moderator";
-    public static readonly string Experienced = "Experienced";
+    public const string Moderator = "moderator";
+    public const string Experienced = "experienced";
 }
