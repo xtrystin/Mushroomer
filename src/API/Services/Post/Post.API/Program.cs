@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddMSSqlServer(builder.Configuration);
 builder.Services.AddPostgres(builder.Configuration);
 builder.Services.AddMediatR(typeof(GetPostQueryHandler), typeof(GetPostQuery));
+//builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());   //todo: test it
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAuthService, AuthService>();

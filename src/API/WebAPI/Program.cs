@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
 using WebAPI.Controllers;
+using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,56 +28,14 @@ builder.Services.AddPostgres(builder.Configuration);
 builder.Services.AddScoped<IWarningRepository, WarningRepository>();    //todo: move it to extension method?
 builder.Services.AddScoped<IUserRepository, UserRepository>();    //todo: move it to extension method?
 
-builder.Services.AddMediatR(typeof(GetAllWarningsQueryHandler), typeof(GetAllWarningsQuery)); //todo: make it more generic
+builder.Services.AddMediatR(typeof(GetAllWarningsQueryHandler), typeof(GetAllWarningsQuery));
+//builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());   //todo: test it
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c => {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "API Gateway",
-        Version = "v1"
-    });
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
-        {
-            new OpenApiSecurityScheme {
-                Reference = new OpenApiReference {
-                    Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-});
+builder.Services.AddSwaggerWithJwtAuth();
 
-//todo: move to Extension method  AddJwtAuth()
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = "JwtBearer";
-    options.DefaultChallengeScheme = "JwtBearer";
-})
-                .AddJwtBearer("JwtBearer", jwtBearerOptions =>
-                {
-                    jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Secrets:SecurityKey"))),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromMinutes(5)
-                    };
-    });
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 // Register httpClients
 builder.Services.AddHttpClient<PostController>(client =>

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Common.Const;
+using MediatR;
 using User.Application.Exception;
 using User.Domain.Repository;
 
@@ -14,6 +15,11 @@ public class ChangeProfileDescriptionCommandHandler : IRequestHandler<ChangeProf
     }
     public async Task<Unit> Handle(ChangeProfileDescriptionCommand request, CancellationToken cancellationToken)
     {
+        if (request.UserId != request.ActionAuthorId && request.ActionAuthorRole != AuthUserRole.Moderator)
+        {
+            throw new NotAuthorizedException("You are not authorized to change this user description");
+        }
+
         var user = await _userRepository.GetAsync(request.UserId);
         if (user is null)
         {

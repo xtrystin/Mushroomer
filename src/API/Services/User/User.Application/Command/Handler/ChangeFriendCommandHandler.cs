@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using Common.Const;
+using MediatR;
+using User.Application.Exception;
 using User.Domain.Repository;
 
 namespace User.Application.Command.Handler;
@@ -14,7 +16,12 @@ public class ChangeFriendCommandHandler : IRequestHandler<ChangeFriendCommand>
 
     public async Task<Unit> Handle(ChangeFriendCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetAsync(request.UserId);
+        if (request.UserId != request.ActionAuthorId && request.ActionAuthorRole != AuthUserRole.Moderator)
+        {
+            throw new NotAuthorizedException("You are not authorized to add user to friend list");
+        }
+
+        var user = await _userRepository.GetAsync(request.UserId);      
         var friend = await _userRepository.GetAsync(request.FriendId);
 
         if (request.Add)
