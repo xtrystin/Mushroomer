@@ -1,4 +1,3 @@
-﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
@@ -11,13 +10,11 @@ namespace WebAPI.Controllers
     [ApiController]
     public class PostController : ControllerBase
     {
-        private readonly IMediator _mediator;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public PostController(IMediator mediator, HttpClient httpClient, IConfiguration config)
+        public PostController(HttpClient httpClient, IConfiguration config)
         {
-            _mediator = mediator;
             _httpClient = httpClient;
             _config = config;
         }

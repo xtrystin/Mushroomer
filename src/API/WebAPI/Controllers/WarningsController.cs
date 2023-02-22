@@ -1,10 +1,9 @@
-﻿using Application.Commands;
-using Application.Dto;
-using Application.Queries;
-using MediatR;
+﻿using Common.Const;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 using System.Security.Claims;
+using WebAPI.Model.Warning;
 
 namespace WebAPI.Controllers;
 
@@ -12,83 +11,160 @@ namespace WebAPI.Controllers;
 [ApiController]
 public class WarningsController : ControllerBase
 {
-    private readonly IMediator _mediator;
+    private readonly HttpClient _httpClient;
+    private readonly IConfiguration _config;
 
-    public WarningsController(IMediator mediator)
+    public WarningsController(HttpClient httpClient, IConfiguration config)
     {
-        _mediator = mediator;
+        _httpClient = httpClient;
+        _config = config;
+    }
+
+    private void AddJwtToHttpClientHeader()
+    {
+        var jwtBearer = HttpContext.Request.Headers.Authorization;
+        if (jwtBearer.Count == 0)
+        {
+            return;
+        }
+
+        var jwt = jwtBearer.ToString().Replace("bearer ", "");
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", jwt); // todo: use middleware to set authorization header
     }
 
     // GET: api/<WarningsController>
     [HttpGet]
     public async Task<IEnumerable<WarningDto>> Get()
     {
-        var request = new GetAllWarningsQuery();
+        AddJwtToHttpClientHeader();
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings";
 
-        var result = await _mediator.Send(request);
-
-        return result;
+        var response = await _httpClient.GetAsync(url);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<WarningDto>>();
+            return result;
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase); //todo: error handling with proper message //todo return BadRequest();    
+        }
     }
 
     // GET api/<WarningsController>/5
     [HttpGet("{id}")]
     public async Task<WarningDto> Get(Guid id)
     {
-        var request = new GetWarningQuery { Id = id };
+        AddJwtToHttpClientHeader();
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings/{id}";
 
-        var result = await _mediator.Send(request);
-
-        return result;
+        var response = await _httpClient.GetAsync(url);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var result = await response.Content.ReadFromJsonAsync<WarningDto>();
+            return result;
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase); //todo: error handling with proper message //todo return BadRequest();    
+        }
     }
 
     // POST api/<WarningsController>
     [HttpPost]
+    [Authorize(Roles = $"{AuthUserRole.Moderator}, {AuthUserRole.Experienced}")]
     public async Task<IActionResult> Post([FromBody] AddWarningCommand request)    //todo: set id to be nullable in post and not in put
     {
-        await _mediator.Send(request);
+        AddJwtToHttpClientHeader();
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings";
 
-        return Ok();
+        var response = await _httpClient.PostAsJsonAsync(url, request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return Ok();
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase); //todo: error handling with proper message //todo return BadRequest();    
+        }
     }
 
     // PUT api/<WarningController>/5
     //todo: [HttpPut("{id}")]
     [HttpPut]
+    [Authorize(Roles = $"{AuthUserRole.Moderator}, {AuthUserRole.Experienced}")]
     public async Task<IActionResult> Put([FromBody] UpdateWarningCommand request)
     {
-        await _mediator.Send(request);
+        AddJwtToHttpClientHeader();
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings";
 
-        return Ok();
+        var response = await _httpClient.PutAsJsonAsync(url, request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return Ok();
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase); //todo: error handling with proper message //todo return BadRequest();    
+        }
     }
 
     // DELETE api/<WarningController>/5
     [HttpDelete("{id}")]
+    [Authorize(Roles = $"{AuthUserRole.Moderator}, {AuthUserRole.Experienced}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var request = new DeleteWarningCommand { Id = id };
+        AddJwtToHttpClientHeader();
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings/{id}";
 
-        var result = await _mediator.Send(request);
-
-        return Ok();
+        var response = await _httpClient.DeleteAsync(url);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return Ok();
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase); //todo: error handling with proper message //todo return BadRequest();    
+        }
     }
 
     [HttpPost("{id:guid}/reaction")]
     [Authorize]
     public async Task<IActionResult> PostReaction([FromRoute] Guid id, bool approve)
     {
-        var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-        var request = new AddReactionToWarningCommand { WarningId = id, UserId = userId, Approve = approve };
-        await _mediator.Send(request);
+        AddJwtToHttpClientHeader();
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings/{id}/reaction?approve={approve}";
 
-        return Ok();
+        var response = await _httpClient.PostAsync(url, null);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return Ok();
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase); //todo: error handling with proper message //todo return BadRequest();    
+        }
     }
 
     [HttpGet("{id:guid}/userReaction")]
     public async Task<bool?> GetReactionForUser([FromRoute] Guid id)   //todo: can return true, false or 204 for no reaction
     {
-        var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-        var request = new GetReactionQuery { WarningId = id, UserId = userId };
-        var result = await _mediator.Send(request);
+        AddJwtToHttpClientHeader();
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings/{id}/userReaction";
 
-        return result;
+        var response = await _httpClient.GetAsync(url);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var result = await response.Content.ReadFromJsonAsync<bool?>();
+            return result;
+        }
+        else if (response.StatusCode is System.Net.HttpStatusCode.NoContent or System.Net.HttpStatusCode.Unauthorized)  //todo: why unauthorized?
+        {
+            return null;
+        }
+        else
+        {
+            throw new Exception(response.ReasonPhrase);
+        }
     }
 }

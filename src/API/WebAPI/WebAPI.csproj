@@ -16,8 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Services\Warning\Application\Application.csproj" />
-    <ProjectReference Include="..\Services\Warning\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Services\Common\Common.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>
