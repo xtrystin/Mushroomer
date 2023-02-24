@@ -46,17 +46,21 @@ namespace Post.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]AddPostCommand request)
+        public async Task<IActionResult> Post([FromBody]AddPostCommand request) //todo: remove unnecessary authorId input property
         {
-            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
+            var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            request.AuthorId = userId;
+
             await _mediator.Send(request);
             
             return Ok();
         }
 
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> EditPost([FromRoute]Guid id, EditPostCommandDto requestDto, Guid userId)
+        public async Task<IActionResult> EditPost([FromRoute]Guid id, EditPostCommandDto requestDto, Guid userId)   //todo: remove unnecessary authorId input property
         {
+            userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
             var request = new EditPostCommand() { PostId = id, Title = requestDto.Title, 
                 Content = requestDto.Content, UserId = userId};
             await _mediator.Send(request);
@@ -67,6 +71,8 @@ namespace Post.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete([FromRoute]Guid id, Guid userId)
         {
+            userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
             var request = new DeletePostCommand() { PostId = id, UserId = userId };
             await _mediator.Send(request);
 
@@ -76,7 +82,8 @@ namespace Post.API.Controllers
         [HttpPost("{id:guid}/comment")]
         public async Task<IActionResult> PostComment([FromRoute]Guid id, [FromBody]string content, Guid authorId)
         {
-            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
+            authorId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
             var request = new AddCommentCommand { PostId = id, Content = content, AuthorId = authorId };
             await _mediator.Send(request);
 
@@ -106,6 +113,8 @@ namespace Post.API.Controllers
         [HttpPatch("{id:guid}/comment/{commentId:guid}")]
         public async Task ModifyComment([FromRoute] Guid id, [FromBody]string content, [FromRoute]Guid commentId, [FromQuery]Guid userId)
         {
+            userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
             var request = new ModifyCommentCommand { PostId = id, CommentId = commentId, Content = content, UserId = userId };
             await _mediator.Send(request);
         }
@@ -113,6 +122,8 @@ namespace Post.API.Controllers
         [HttpDelete("{id:guid}/comment/{commentId:guid}")]
         public async Task DeleteComment([FromRoute] Guid id, [FromRoute] Guid commentId, Guid userId)
         {
+            userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
             var request = new DeleteCommentCommand { PostId = id, CommentId = commentId, UserId = userId };
             await _mediator.Send(request);
         }
@@ -120,7 +131,8 @@ namespace Post.API.Controllers
         [HttpPost("{id:guid}/reaction")]
         public async Task<IActionResult> PostReaction([FromRoute] Guid id, bool like, Guid userId)
         {
-            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
+            userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
             var request = new AddReactionToPostCommand { PostId = id, UserId = userId, Like = like };
             await _mediator.Send(request);
 
@@ -131,7 +143,6 @@ namespace Post.API.Controllers
         [AllowAnonymous]
         public async Task<bool?> GetReactionForUser([FromRoute] Guid id, Guid userId)   //todo: can return true, false or 204 for no reaction
         {
-            //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);   //todo
             var request = new GetReactionQuery { PostId = id, UserId= userId };
             var result = await _mediator.Send(request);
 
