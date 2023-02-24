@@ -40,7 +40,7 @@
 
     private void RegisterUser()
     {
-        NavManager.NavigateTo("/register");
+        NavManager.NavigateTo("register");
     }
 
     private async Task ExecuteLogin()
@@ -50,7 +50,7 @@
         try
         {
             await AuthService.Login(model);
-            NavManager.NavigateTo("/");
+            NavManager.NavigateTo("");
         }
         catch (Exception ex)
         {
