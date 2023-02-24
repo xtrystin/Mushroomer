@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>WebAssemblyUI</title>
+    <base href="/Mushroomer/" />
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="WebAssemblyUI.styles.css" rel="stylesheet" />
+
+     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+</head>
+
+<body>
+    <div id="app">Loading...</div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
+
+    <script>
+        const defLatLng = new google.maps.LatLng(50.061066, 19.9107044);
+
+        var warningCircle = new google.maps.Circle({
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#FF0000",
+            fillOpacity: 0.35,
+            center: defLatLng,
+            radius: 5000,
+        });
+
+        function googleMapShow(latitude = defLatLng.lat(), longitude = defLatLng.lng()) {
+            var latlng = new google.maps.LatLng(latitude, longitude);
+            var options = {
+                zoom: 10, center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("map"), options);
+
+            warningCircle.setMap(map);
+            warningCircle.setCenter(latlng);
+        }
+
+        function googleMapSelect(latitude = defLatLng.lat(), longitude = defLatLng.lng(), startWithCircle = false, zoomLevel = 6) {
+            const latlng = new google.maps.LatLng(latitude, longitude);
+            var options = {
+                zoom: zoomLevel, center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("map"), options);
+
+            let infoWindow = new google.maps.InfoWindow({
+                content: "Click the map to get Lat/Lng!",
+                position: latlng,
+            });
+
+            if (startWithCircle) {
+                warningCircle.setMap(map);
+                warningCircle.setCenter(latlng);
+            }
+
+            infoWindow.open(map);
+            // Configure the click listener.
+            map.addListener("click", (mapsMouseEvent) => {
+                // Close the current InfoWindow.
+                infoWindow.close();
+                // Create a new InfoWindow.
+                var event = new Event('change');
+                var latitudeInput = document.getElementById("Latitude");
+                var longitudeInput = document.getElementById("Longitude");
+                latitudeInput.value = mapsMouseEvent.latLng.lat();
+                longitudeInput.value = mapsMouseEvent.latLng.lng();
+                latitudeInput.dispatchEvent(event);
+                longitudeInput.dispatchEvent(event);
+
+                warningCircle.setMap(map);
+                warningCircle.setCenter(mapsMouseEvent.latLng);
+
+            });
+        }
+    </script>
+</body>
+
+</html>
