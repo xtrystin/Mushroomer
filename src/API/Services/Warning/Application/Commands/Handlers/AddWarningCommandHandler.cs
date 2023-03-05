@@ -16,7 +16,8 @@ public class AddWarningCommandHandler : IRequestHandler<AddWarningCommand>
     public async Task<Unit> Handle(AddWarningCommand request, CancellationToken cancellationToken)
     {
         //todo create factory method in doamin to create
-        
+        //todo: only mod and experienced can add
+
         var warning = new Warning(Guid.NewGuid(), request.Description, request.Province,
             request.MushroomName, request.Latitude, request.Longitude, request.Date,
             request.IsActive, request.Title);

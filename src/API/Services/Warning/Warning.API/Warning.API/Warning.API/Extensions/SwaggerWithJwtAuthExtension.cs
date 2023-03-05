@@ -1,19 +1,18 @@
 ﻿using Microsoft.OpenApi.Models;
 
-namespace User.API.Extensions;
+namespace Warning.API.Extensions;
 
 public static class SwaggerWithJwtAuthExtension
 {
     public static IServiceCollection AddSwaggerWithJwtAuth(this IServiceCollection services)
     {
-        services.AddSwaggerGen(c =>
-        {
+        services.AddSwaggerGen(c => {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "User API",
+                Title = "Warning API",
                 Version = "v1"
             });
-
+            
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
             {
                 Name = "Authorization",
@@ -23,7 +22,7 @@ public static class SwaggerWithJwtAuthExtension
                 In = ParameterLocation.Header,
                 Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
             });
-
+            
             c.AddSecurityRequirement(new OpenApiSecurityRequirement {
                 {
                     new OpenApiSecurityScheme {

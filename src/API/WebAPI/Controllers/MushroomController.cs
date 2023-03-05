@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Common.Const;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using WebAPI.Model.Mushroom;
 
@@ -66,6 +67,7 @@ public class MushroomController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = AuthUserRole.Moderator)]
     public async Task<IActionResult> Create([FromBody] MushroomDto request)
     {
         AddJwtToHttpClientHeader();
@@ -83,6 +85,7 @@ public class MushroomController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = AuthUserRole.Moderator)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
         AddJwtToHttpClientHeader();
@@ -100,6 +103,7 @@ public class MushroomController : ControllerBase
     }
 
     [HttpPatch("{id:guid}")]
+    [Authorize(Roles = AuthUserRole.Moderator)]
     public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] MushroomDto request)
     {
         AddJwtToHttpClientHeader();

@@ -1,6 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 
-namespace User.API.Extensions;
+namespace Mushroom.API.Extensions;
 
 public static class SwaggerWithJwtAuthExtension
 {
@@ -10,7 +10,7 @@ public static class SwaggerWithJwtAuthExtension
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "User API",
+                Title = "Warning API",
                 Version = "v1"
             });
 

@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -11,13 +10,11 @@ namespace WebAPI.Controllers
     [ApiController]
     public class PostController : ControllerBase
     {
-        private readonly IMediator _mediator;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public PostController(IMediator mediator, HttpClient httpClient, IConfiguration config)
+        public PostController(HttpClient httpClient, IConfiguration config)
         {
-            _mediator = mediator;
             _httpClient = httpClient;
             _config = config;
         }
@@ -73,6 +70,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] AddPostDto request)
         {
             AddJwtToHttpClientHeader();
@@ -130,6 +128,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("{id:guid}/comment")]
+        [Authorize]
         public async Task<IActionResult> PostComment([FromRoute] Guid id, [FromBody] string content)
         {
             AddJwtToHttpClientHeader();
@@ -185,6 +184,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPatch("{id:guid}/comment/{commentId:guid}")]
+        [Authorize]
         public async Task<IActionResult> ModifyComment([FromRoute] Guid id, [FromBody] string content, [FromRoute] Guid commentId)
         {
             AddJwtToHttpClientHeader();
@@ -204,6 +204,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id:guid}/comment/{commentId:guid}")]
+        [Authorize]
         public async Task<IActionResult> DeleteComment([FromRoute] Guid id, [FromRoute] Guid commentId)
         {
             AddJwtToHttpClientHeader();
@@ -222,6 +223,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("{id:guid}/reaction")]
+        [Authorize]
         public async Task<IActionResult> PostReaction([FromRoute] Guid id, bool like)
         {
             AddJwtToHttpClientHeader();

@@ -76,7 +76,7 @@
             await AuthService.Register(model);
             await AuthService.Login(new() { Email = model.EmailAddress, Password = model.Password });
 
-            NavManager.NavigateTo("/");
+            NavManager.NavigateTo("");
         }
         catch (Exception ex)
         {
