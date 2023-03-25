@@ -18,7 +18,7 @@ public class PostEndpoint : IPostEndpoint
         _config = config;
         _api = _config["apiGateway"];
     }
-
+    //
     public async Task<PostReadModel> Get(Guid id)
     {
         var url = _api + $"/api/Post/{id}";
