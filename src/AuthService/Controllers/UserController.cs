@@ -43,7 +43,7 @@ namespace AuthService.Controllers
             string Password);
 
         [HttpPost]
-        [Route("Register")] a
+        [Route("Register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(UserRegistrationModel user)
         {
