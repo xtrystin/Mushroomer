@@ -16,16 +16,19 @@ namespace AuthService.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<UserController> _logger;
         private readonly IUserMicroservice _userMicroservice;
+        private readonly IConfiguration _configuration;
 
         public UserController(ApplicationDbContext context,
             UserManager<IdentityUser> userManager,
             ILogger<UserController> logger,
-            IUserMicroservice userMicroservice)
+            IUserMicroservice userMicroservice,
+            IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
             _logger = logger;
             _userMicroservice = userMicroservice;
+            _configuration = configuration;
         }
 
         //[HttpGet]
@@ -47,6 +50,11 @@ namespace AuthService.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(UserRegistrationModel user)
         {
+            if (bool.Parse(_configuration["Flags:RegistrationEnabled"]) is false)
+            {
+                return BadRequest("Registration is not currently open. Come back later :)");
+            }
+
             if (ModelState.IsValid)
             {
                 var existingUser = await _userManager.FindByEmailAsync(user.EmailAddress);

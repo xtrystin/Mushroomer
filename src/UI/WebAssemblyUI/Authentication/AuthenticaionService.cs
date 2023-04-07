@@ -82,7 +82,7 @@ public class AuthenticationService : IAuthenticationService
             }
             else
             {
-                throw new Exception(response.ReasonPhrase);
+                throw new Exception(await response.Content.ReadAsStringAsync());
             }
         }
     }
