@@ -55,7 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.Infrastructure", "src\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mushroom", "Mushroom", "{82F1266C-EBA5-433B-A193-D84A3B16A993}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mushroom.API", "src\API\Services\Mushroom\WebApplication1\Mushroom.API.csproj", "{A7144770-EBC3-4E5B-B3FB-B8B070C3CB48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mushroom.API", "src\API\Services\Mushroom\Mushroom.API\Mushroom.API.csproj", "{A7144770-EBC3-4E5B-B3FB-B8B070C3CB48}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{E00ABF01-B2A5-42B0-B1FB-7FA95BCD49D1}"
 EndProject
