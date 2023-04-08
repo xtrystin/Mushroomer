@@ -59,7 +59,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mushroom.API", "src\API\Ser
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{E00ABF01-B2A5-42B0-B1FB-7FA95BCD49D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warning.API", "src\API\Services\Warning\Warning.API\Warning.API\Warning.API\Warning.API.csproj", "{56F72114-3E6E-4EE1-B4B4-DC30209D842E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warning.API", "src\API\Services\Warning\Warning.API\Warning.API.csproj", "{56F72114-3E6E-4EE1-B4B4-DC30209D842E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
