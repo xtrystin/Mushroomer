@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-# Run workflow on every push to the main branch & pull request
+# Run workflow on every push to the FB_0 branch & pull request
 on:
   push:
     branches:
