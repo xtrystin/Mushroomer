@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - FB_0
+  pull_request:
+    types: [closed]
+    branches:
+      - FB_0
 
 jobs:
   deploy-to-github-pages:
