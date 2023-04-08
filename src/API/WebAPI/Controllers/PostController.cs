@@ -54,8 +54,9 @@ namespace WebAPI.Controllers
         {
             var jwt = HttpContext.Request.Headers.Authorization;    //todo refactor
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", jwt); // todo: use middleware to set authorization header
+            var url = _config["MicroservicesUrl:Post"] + $"/post";
 
-            var response = await _httpClient.GetAsync("https://localhost:7174/api/Post");     //todo: dispatcher
+            var response = await _httpClient.GetAsync(url);     //todo: dispatcher
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<IEnumerable<PostReadModel>>();
