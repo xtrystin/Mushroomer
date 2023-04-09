@@ -73,9 +73,11 @@
 
         try
         {
+            errorMessage = "Please wait, we are creating a new account for you";
             await AuthService.Register(model);
             await AuthService.Login(new() { Email = model.EmailAddress, Password = model.Password });
-
+            
+            errorMessage = "";
             NavManager.NavigateTo("");
         }
         catch (Exception ex)
