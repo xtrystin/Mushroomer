@@ -52,7 +52,7 @@ namespace User.API.Controllers
         public async Task<IActionResult> AddFriend([FromBody]ChangeFriendCommandDto requestDto, [FromQuery]bool add = true)
         {
             var actionAuthorId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);     // todo: move to middleware: ActionContext?
-            var actionAuthorRole = User.FindFirst(ClaimTypes.Role).Value;
+            var actionAuthorRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             var request = new ChangeFriendCommand() { UserId = requestDto.UserId, FriendId = requestDto.FriendId, Add = add,
                 ActionAuthorId = actionAuthorId, ActionAuthorRole = actionAuthorRole };
@@ -66,7 +66,7 @@ namespace User.API.Controllers
         public async Task<IActionResult> ChangeProfileDescriptuon([FromRoute]Guid id, [FromBody]string profileDescription)
         {
             var actionAuthorId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);     // todo: move to middleware: ActionContext?
-            var actionAuthorRole = User.FindFirst(ClaimTypes.Role).Value;
+            var actionAuthorRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             var request = new ChangeProfileDescriptionCommand() { UserId = id, ProfileDescription = profileDescription,
                 ActionAuthorId = actionAuthorId, ActionAuthorRole = actionAuthorRole};
