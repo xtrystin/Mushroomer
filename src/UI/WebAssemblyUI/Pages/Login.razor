@@ -49,7 +49,12 @@
 
         try
         {
+            authenticationErrorText = "Please wait. We are creating a new account for you";
+            showAuthenticationError = true;
+
             await AuthService.Login(model);
+            
+            showAuthenticationError = false;
             NavManager.NavigateTo("");
         }
         catch (Exception ex)
