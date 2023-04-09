@@ -51,7 +51,7 @@ public class AuthenticationService : IAuthenticationService
         }
         else
         {
-            throw new Exception("Incorrect usernmae or password.");
+            throw new Exception("Incorrect username or password.");
         }
     }
 
