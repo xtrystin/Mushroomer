@@ -56,6 +56,14 @@
         {
             authenticationErrorText = ex.Message;
             showAuthenticationError = true;
+            HideErrorMessageAfterDelay(2000);
         }
+    }
+
+    private async Task HideErrorMessageAfterDelay(int millisecondsDelay)
+    {
+        await Task.Delay(millisecondsDelay);
+        showAuthenticationError = false;
+        StateHasChanged();
     }
 }
