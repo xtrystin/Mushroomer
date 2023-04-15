@@ -43,10 +43,10 @@ else
                         <small>Joined: @user.CreatedDate</small>
                         @if (IsUserLoggedIn && user.Id != CurrentUserId)
                         {
-                            <div class="col-auto ms-4">
+                            <div class="ms-4 col-sm-2 col-md-auto">
                                 <button type="button" class="btn btn-outline-primary" disabled="@(IsFriendOfCurrentUser(user.Id))" @onclick="() => AddToFriends(user.Id)">Add to friends</button>
                              </div>
-                              <div class="col-auto ms-4">
+                              <div class="ms-4 col-sm-2 col-md-auto">
                                 <button type="button" class="btn btn-outline-danger" disabled="@(!IsFriendOfCurrentUser(user.Id))" @onclick="() => RemoveFromFriends(user.Id)">Remove from friends</button>
                              </div>
                         }
