@@ -57,7 +57,7 @@
       "System.Text.RegularExpressions.dll": "sha256-j+LIQ7Dg+8ehW4ZCHVAmCC7xS+yMFeiHlUoHerxfwVY=",
       "System.Threading.dll": "sha256-wO16JqseC8hnun0CtsLpIWbS5Bk071xCrDYVoiPmtgc=",
       "UI.ApiLibrary.dll": "sha256-1h5IIM1xQT\/KJSBKk5LwATStXpFECzFigENTZqta3LQ=",
-      "WebAssemblyUI.dll": "sha256-jNvtQQRFIrzRjQwFGUqWiFITTb4SQqlzA3N80anKP9w="
+      "WebAssemblyUI.dll": "sha256-o2iSNyWGNDr9rqBR8lwBsRQcBSjtk57M5uRAy5Y1BJw="
     },
     "extensions": null,
     "lazyAssembly": null,
