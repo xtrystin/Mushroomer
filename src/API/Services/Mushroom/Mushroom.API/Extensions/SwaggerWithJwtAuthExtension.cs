@@ -10,7 +10,7 @@ public static class SwaggerWithJwtAuthExtension
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Warning API",
+                Title = "Mushroom API",
                 Version = "v1"
             });
 

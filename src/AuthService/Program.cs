@@ -1,10 +1,11 @@
+using AuthService.Data;
+using AuthService.Microserives;
+using AuthService.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using AuthService.Data;
-using AuthService.Microserives;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -104,6 +105,7 @@ app.UseCors("OpenCorsPolicy");
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseRequestLoggingMiddleware();
 
 app.UseAuthentication();
 app.UseAuthorization();

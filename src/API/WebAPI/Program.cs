@@ -1,5 +1,6 @@
 using WebAPI.Controllers;
 using WebAPI.Extensions;
+using WebAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("OpenCorsPolicy");
+
+app.UseRequestLoggingMiddleware();
 
 app.UseAuthentication();
 app.UseAuthorization();
