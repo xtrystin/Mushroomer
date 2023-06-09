@@ -3,6 +3,14 @@
 <https://xtrystin.github.io/Mushroomer/>\
 _Services are hosted on shared servers. First app load every few hours can take up to 1 minute_
 
+### Walk-through Video
+https://github.com/xtrystin/Mushroomer/assets/33805319/8245b08b-9aa4-4b69-9da6-ffb1268286f7
+
+
+
+
+
+
 ### Główne funkcje produktu
 1. Lista grzybów i informacje o nich
     - Dodanie nowego grzyba
