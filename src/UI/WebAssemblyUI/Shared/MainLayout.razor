@@ -9,7 +9,7 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    Welcom @context.User.FindFirst(ClaimTypes.Name).Value
+                    Welcome @context.User.FindFirst(ClaimTypes.Name).Value
                     <NavLink class="nav-link" href="logout" title="Log Out">
                         <span class="oi oi-account-logout"></span> Log Out
                     </NavLink>
@@ -28,3 +28,8 @@
         </article>
     </main>
 </div>
+
+<RadzenDialog/>
+<RadzenNotification Style="top: unset !important; position:fixed !important;z-index:1002 !important;bottom:0px !important;float:right !important;right:10px !important;" />
+<RadzenContextMenu/>
+<RadzenTooltip/>

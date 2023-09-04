@@ -1,5 +1,6 @@
 ﻿@inject IAuthenticationService AuthService
 @inject NavigationManager NavManager
+@inject NotificationService NotificationService
 
 <EditForm Model="model" OnValidSubmit="ExecuteLogin" class="">
 
@@ -22,21 +23,10 @@
             <button type="button" class="btn alert-primary mb-3" @onclick="RegisterUser">Register</button>
         </div>
     </div>
-    @if (showAuthenticationError)
-    { 
-        <div class="row">
-            <div class="text-danger">
-                @authenticationErrorText
-            </div>
-        </div>
-    }
 </EditForm>
 
 @code {
     private UserCredentialsModel model = new();
-
-    private bool showAuthenticationError = false;
-    private string authenticationErrorText = "";
 
     private void RegisterUser()
     {
@@ -45,8 +35,6 @@
 
     private async Task ExecuteLogin()
     {
-        showAuthenticationError = false;
-
         try
         {
             await AuthService.Login(model);
@@ -54,16 +42,16 @@
         }
         catch (Exception ex)
         {
-            authenticationErrorText = ex.Message;
-            showAuthenticationError = true;
-            HideErrorMessageAfterDelay(2000);
+            var message = new NotificationMessage
+            {
+                
+                Severity = NotificationSeverity.Error,
+                Summary = "Log In Error", 
+                Detail = ex.Message, Duration = 4000
+            };
+
+            NotificationService.Notify(message);
         }
     }
-    
-    private async Task HideErrorMessageAfterDelay(int millisecondsDelay)
-    {
-        await Task.Delay(millisecondsDelay);
-        showAuthenticationError = false;
-        StateHasChanged();
-    }
+
 }

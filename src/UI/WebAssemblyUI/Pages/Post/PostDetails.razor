@@ -26,13 +26,7 @@
                         <ValidationMessage For="@(() => Post.Title)" />
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="Content" class="col-sm-2 col-form-label">Content: </label>
-                    <div class="col-sm-10">
-                        <InputText id="Content" class="form-control" @bind-Value="EditPostModel.Content" />
-                        <ValidationMessage For="@(() => Post.Content)" />
-                    </div>
-                </div>
+                <RadzenHtmlEditor @bind-Value=@EditPostModel.Content UploadUrl="https://localhost:7231/upload/image" style="height: 400px;" />
                 <br />
                 <div class="col-md-12 text-rigth">
                     <button type="submit" class="btn btn-outline-success">Save Changes</button>
@@ -43,7 +37,7 @@
         {
             <h2>@Post.Title</h2>
             <br />
-            <p>@Post.Content</p>
+           @((MarkupString)Post.Content)
             <div class="row">
                 <label for="Province" class="col-sm-2 col-form-label">Created Date</label>
                 <div class="col-sm-10">
@@ -175,6 +169,7 @@
         try
         {
             Post = await PostEndpoint.Get(new Guid(Id));
+            Post.Content = Post.Content.Sanitize();
             (EditPostModel.Title, EditPostModel.Content) = (Post.Title, Post.Content);
 
             UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
@@ -238,6 +233,7 @@
         //todo: add error message box
         try
         {
+            EditPostModel.Content = EditPostModel.Content.Sanitize();
             await PostEndpoint.Edit(Post.Id, EditPostModel);
 
             Editable = false;

@@ -2,6 +2,7 @@
 using Post.Domain.Entity;
 using Post.Domain.Repository;
 using Post.Domain.ValueObject;
+using Common.Helpers;
 
 namespace Post.Application.Command.Handler;
 
@@ -19,7 +20,7 @@ public class AddPostCommandHandler : IRequestHandler<AddPostCommand>
     {
         PostId postId = new(Guid.NewGuid());
         PostTitle postTitle = new(request.Title);
-        PostContent postContent= new(request.Content);
+        PostContent postContent = new(request.Content.Sanitize());
         var user = await _userRepository.GetAsync(request.AuthorId);
 
         var post = new Domain.Entity.Post(postId, postTitle, postContent, null, user);   //todo: factory method

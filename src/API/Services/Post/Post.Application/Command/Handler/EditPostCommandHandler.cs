@@ -1,4 +1,5 @@
 ﻿using Common.Const;
+using Common.Helpers;
 using MediatR;
 using Post.Application.Exception;
 using Post.Application.Service;
@@ -27,7 +28,7 @@ public class EditPostCommandHandler : IRequestHandler<EditPostCommand>
         else if (post.IsAuthor(request.UserId) || await _authService.IsUserInRole(request.UserId, AuthUserRole.Moderator))
         {
             post.ChangeTitle(request.Title);
-            post.ChangeContent(request.Content);
+            post.ChangeContent(request.Content.Sanitize());
 
             await _postRepository.UpdateAsync(post);
             return Unit.Value;

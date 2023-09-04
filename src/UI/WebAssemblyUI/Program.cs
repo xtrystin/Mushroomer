@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Radzen;
 using UI.ApiLibrary.ApiEndpoints;
 using WebAssemblyUI;
 using WebAssemblyUI.Authentication;
@@ -13,6 +14,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //builder.Services.AddOptions();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
+builder.Services.AddRadzenComponents();
 
 builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
