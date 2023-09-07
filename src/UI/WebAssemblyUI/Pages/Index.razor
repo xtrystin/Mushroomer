@@ -1,10 +1,13 @@
 ﻿@page "/"
+@using WebAssemblyUI.Pages.Warning;
 
 @inject IJSRuntime JSRuntime
+@inject IWarningsEndpoint WarningsEndpoint
+@inject DialogService DialogService
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, today is @DateTime.Now.ToShortDateString()</h1>
+<h3>Hello, today is @DateTime.Now.ToShortDateString()</h3>
 
 <p>
     Welcome to Mushroomer App <br/>
@@ -13,21 +16,85 @@
 
 <SurveyPrompt Title="Do you want to learn about mushrooms?" />
 
-<!--
-<h1>Display Google Map</h1>
-<div id="map" style="height:500px;width:100%;">
+<div style="margin-top: 80px">
+    <h3>Mushrooms Locations</h3>
+    <div class="container-fluid">
+        <div class="row p-3">
+            <div class="col">
+                @if (Warnings is null)
+                {
+                    <p class="card-text placeholder-glow">
+                    <p>Loading Google Map...</p>
+                    <span class="placeholder col-12" style="height: 45rem"></span>
+                    </p>
+                }
+                else
+                {
+                    <RadzenCard class="mb-4">
+                        <RadzenCheckBox @bind-Value=@showOnlyApproved Name="showMarker" @onclick="ChangeMarkersVisibility" />
+                        <RadzenLabel Text="Show only community approved" Component="showMarker" Style="margin-left: 8px; vertical-align: middle;" />
+                    </RadzenCard>
+                    <RadzenGoogleMap @ref=map style="height: 45rem" Options=@(new Dictionary<string, object> { { "disableDoubleClickZoom", true } })
+                                    Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 }) 
+                                    MapClick=@OnMapClick MarkerClick=@OnMarkerClick Data=@MapMarkersToShow>
+                    </RadzenGoogleMap>
+                }
+            </div>
+        </div>
+    </div>
 </div>
--->
+
+
+
+<Modal @ref="@Modal" Title=@Title Content=@Content>
+</Modal>
 
 @code{
-    /*
-     protected override async Task OnAfterRenderAsync(bool firstRender)
+    private int zoom = 3;
+    private bool showOnlyApproved;
+    private RadzenGoogleMap map;
+    private Modal Modal {get;set;}
+    string Title = "";
+    string Content = "";
+
+    private List<WarningDto> Warnings;
+    private List<RadzenGoogleMapMarker> MapMarkers;
+    private List<RadzenGoogleMapMarker> MapMarkersToShow;
+
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
+        Warnings = await WarningsEndpoint.GetAll();
+        MapMarkers = new List<RadzenGoogleMapMarker>();
+
+        foreach (var warning in Warnings)
         {
-            await JSRuntime.InvokeVoidAsync("googleMap", null); 
+            bool isApprovedByCommunity = warning.ApproveNumber - warning.DisapproveNumber > 1 ? true : false;
+            var marker = new RadzenGoogleMapMarker { Position = new GoogleMapPosition { Lat = warning.Latitude, Lng = warning.Longitude }, 
+                UniqueID = warning.Id.ToString(), Title = warning.Id.ToString(), Label = warning.MushroomName + $" {(isApprovedByCommunity ? 'a' : 'd')}" };
+            MapMarkers.Add(marker);
         }
-    } 
-     */
-    
+
+        MapMarkersToShow = MapMarkers;
+    }
+
+    void OnMapClick(GoogleMapClickEventArgs args)
+    {
+        //Console.WriteLine($"Map clicked at Lat: {args.Position.Lat}, Lng: {args.Position.Lng}");
+    }
+
+    async Task OnMarkerClick(RadzenGoogleMapMarker marker)
+    {
+        await DialogService.OpenSideAsync<WarningDetails>("Side Panel", 
+        options: new SideDialogOptions { CloseDialogOnOverlayClick = false, Position = DialogPosition.Top, ShowMask = false, Height = "40vh", Width = "100vw" }, 
+        parameters: new() { { "Id", marker.Title }, { "isModalView", true } });
+    }
+
+
+    private void ChangeMarkersVisibility()
+    {
+        if (showOnlyApproved)
+            MapMarkersToShow = MapMarkersToShow.Where(x => x.Label[x.Label.Length - 1] == 'a').ToList();
+        else
+            MapMarkersToShow = MapMarkers;
+    }
 }

@@ -161,8 +161,10 @@
                     </div>
                 }
             </div>
+            @if (IsModalView is null or false || Editable)
+            {
             <div id="map" style="height:500px;width:100%;"></div>
-
+            }
             <div class="mb-3 row">
                 <label for="Latitude" class="col-sm-2 col-form-label">Latitude</label>
                 <div class="col-sm-10">
@@ -180,16 +182,18 @@
 			<a href="@($"https://www.google.com/maps/place/{Warning.Latitude.ToString().Replace(',', '.')},{Warning.Longitude.ToString().Replace(',', '.')}")">See on the map</a>
             </div>
             -->
-            @if (IsUserExperienced || IsUserModerator)
+            @if ((IsUserExperienced || IsUserModerator) && (IsModalView is null or false))
             {
                 <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
             }
-            @if (IsUserModerator)
+            @if (IsUserModerator && (IsModalView is null or false))
             {
                 <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
             }
-        
-            <div id="map" style="height:500px;width:100%;"></div>
+            if (IsModalView is not null and true)
+            {
+                <button type="button" class="btn btn-outline-primary" @onclick='() => NavManager.NavigateTo($"warning/{Id}")'>Go to details</button>
+         }
          }
         
     }
@@ -200,6 +204,8 @@
 @code {
     [Parameter]
     public string Id { get; set; }
+    [Parameter]
+    public bool? IsModalView { get; set; }
 
     [CascadingParameter]
     public Task<AuthenticationState> AuthState { get; set; }
@@ -259,17 +265,19 @@
     // Setup Google Map
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (!firstRender && (IsModalView is null or false || Editable))
         {
-        if (Editable){
-            if (!wasEditable)
+            if (Editable)
+            {
+                if (!wasEditable || IsModalView.Value)
             {
                 wasEditable = true;
-                object[] latLon = { Warning.Latitude, Warning.Longitude, true, 10};
+                    object[] latLon = { Warning.Latitude, Warning.Longitude, true, 10 };
                 await JSRuntime.InvokeVoidAsync("googleMapSelect", latLon); 
             }
         }
-        else{
+            else
+            {
             if (wasEditable)
             {
                 wasEditable = false;
