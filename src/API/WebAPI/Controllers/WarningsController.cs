@@ -146,11 +146,11 @@ public class WarningsController : ControllerBase
         }
     }
 
-    [HttpGet("{id:guid}/userReaction")]
-    public async Task<bool?> GetReactionForUser([FromRoute] Guid id)   //todo: can return true, false or 204 for no reaction
+    [HttpGet("{id:guid}/userReaction/{userId:guid}")]
+    public async Task<bool?> GetReactionForUser([FromRoute] Guid id, [FromRoute] Guid userId)   //todo: can return true, false or 204 for no reaction
     {
         AddJwtToHttpClientHeader();
-        var url = _config["MicroservicesUrl:Warning"] + $"/warnings/{id}/userReaction";
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings/{id}/userReaction/{userId}";
 
         var response = await _httpClient.GetAsync(url);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)

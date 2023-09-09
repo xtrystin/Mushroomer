@@ -189,6 +189,14 @@
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
+        IsUserModerator = (await AuthState).User.IsInRole("moderator");
+        StateHasChanged();
+    }
+
     private async Task SetupButtonClickability()
     {
         //if (IsUserLoggedIn)

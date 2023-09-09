@@ -73,6 +73,14 @@ else
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        CurrentUserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        IsUserModerator = (await AuthState).User.IsInRole("moderator");
+        StateHasChanged();
+    }
+
     private async Task Delete(Guid postId, Guid commentId)
     {
         try

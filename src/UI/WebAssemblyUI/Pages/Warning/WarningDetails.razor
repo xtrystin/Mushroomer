@@ -2,17 +2,17 @@
 @using UI.ApiLibrary.ApiEndpoints
 @using UI.ApiLibrary.Dto
 @inject IWarningsEndpoint WarningsEndpoint
-@inject IJSRuntime JSRuntime    
+@inject IJSRuntime JSRuntime
 @inject NavigationManager NavManager
 @inject IWarningsEndpoint WarningEndpoint;
 
 <h3>Warning Details</h3>
-    
+
 <div class="container-fluid">
     @if (Warning is null)
     {
         <div class="row">
-            <p>Please wait, loading...</p>  <!-- todo: skeleton loading-->    
+            <p>Please wait, loading...</p>  <!-- todo: skeleton loading-->
         </div>
     }
     else
@@ -20,9 +20,9 @@
         if (Editable)
         {
             <EditForm Model="Warning" OnValidSubmit="ExecuteEdit" class="">
-                 <DataAnnotationsValidator />
+                <DataAnnotationsValidator />
 
-                  <div class="mb-3 row">
+                <div class="mb-3 row">
                     <label for="Id" class="col-sm-2 col-form-label">Id</label>
                     <div class="col-sm-10">
                         <p class="form-control-plaintext" id="Id">@Id</p>
@@ -104,37 +104,37 @@
             <div class="mb-3 row">
                 <label for="Title" class="col-sm-2 col-form-label">Title</label>
                 <div class="col-sm-10">
-                <p class="form-control-plaintext" id="Title">@Warning.Title</p>
+                    <p class="form-control-plaintext" id="Title">@Warning.Title</p>
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="Description" class="col-sm-2 col-form-label">Description</label>
                 <div class="col-sm-10">
-                <p class="form-control-plaintext" id="Description">@Warning.Description</p>
+                    <p class="form-control-plaintext" id="Description">@Warning.Description</p>
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="MushroomName" class="col-sm-2 col-form-label">MushroomName</label>
                 <div class="col-sm-10">
-                <p class="form-control-plaintext" id="MushroomName">@Warning.MushroomName</p>
+                    <p class="form-control-plaintext" id="MushroomName">@Warning.MushroomName</p>
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="Province" class="col-sm-2 col-form-label">Province</label>
                 <div class="col-sm-10">
-                <p class="form-control-plaintext" id="Province">@Warning.Province</p>
+                    <p class="form-control-plaintext" id="Province">@Warning.Province</p>
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="Date" class="col-sm-2 col-form-label">Date</label>
                 <div class="col-sm-10">
-                <p class="form-control-plaintext" id="Date">@Warning.Date</p>
+                    <p class="form-control-plaintext" id="Date">@Warning.Date</p>
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="IsActive" class="col-sm-2 col-form-label">IsActive</label>
                 <div class="col-sm-10">
-                <p class="form-control-plaintext" id="IsActive">@Warning.IsActive</p>
+                    <p class="form-control-plaintext" id="IsActive">@Warning.IsActive</p>
                 </div>
             </div>
             <div class="form-group row">
@@ -163,23 +163,23 @@
             </div>
             @if (IsModalView is null or false || Editable)
             {
-            <div id="map" style="height:500px;width:100%;"></div>
+                <div id="map" style="height:500px;width:100%;"></div>
             }
             <div class="mb-3 row">
                 <label for="Latitude" class="col-sm-2 col-form-label">Latitude</label>
                 <div class="col-sm-10">
-                <p class="form-control-plaintext" id="Latitude">@Warning.Latitude</p>
+                    <p class="form-control-plaintext" id="Latitude">@Warning.Latitude</p>
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="Longitude" class="col-sm-2 col-form-label">Longitude</label>
                 <div class="col-sm-10">
-                <p class="form-control-plaintext" id="Longitude">@Warning.Longitude</p>
+                    <p class="form-control-plaintext" id="Longitude">@Warning.Longitude</p>
                 </div>
             </div>
             <!--
-			<div class="mb-3 row">
-			<a href="@($"https://www.google.com/maps/place/{Warning.Latitude.ToString().Replace(',', '.')},{Warning.Longitude.ToString().Replace(',', '.')}")">See on the map</a>
+            <div class="mb-3 row">
+            <a href="@($"https://www.google.com/maps/place/{Warning.Latitude.ToString().Replace(',', '.')},{Warning.Longitude.ToString().Replace(',', '.')}")">See on the map</a>
             </div>
             -->
             @if ((IsUserExperienced || IsUserModerator) && (IsModalView is null or false))
@@ -193,9 +193,9 @@
             if (IsModalView is not null and true)
             {
                 <button type="button" class="btn btn-outline-primary" @onclick='() => NavManager.NavigateTo($"warning/{Id}")'>Go to details</button>
-         }
-         }
-        
+            }
+        }
+
     }
 </div>
 
@@ -233,7 +233,8 @@
             IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
             if (IsUserLoggedIn)
             {
-                await SetupButtonClickability();    
+                string currentUserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                await SetupButtonClickability(currentUserId);
             }
 
             IsUserModerator = (await AuthState).User.IsInRole("moderator");
@@ -245,6 +246,17 @@
         }
     }
 
+    // Updates IsUserLogginIn on AuthState change
+    protected override async Task OnParametersSetAsync()
+    {
+        IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        IsUserModerator = (await AuthState).User.IsInRole("moderator");
+        IsUserExperienced = (await AuthState).User.IsInRole("experienced");
+        string currentUserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        SetupButtonClickability(currentUserId);
+        StateHasChanged();
+    }
+
     private void Edit() => Editable = true;
 
     private void ExecuteEdit()
@@ -254,7 +266,7 @@
         try
         {
             WarningsEndpoint.Update(Warning);
-            Editable = false;    
+            Editable = false;
         }
         catch (Exception ex)
         {
@@ -270,29 +282,29 @@
             if (Editable)
             {
                 if (!wasEditable || IsModalView.Value)
-            {
-                wasEditable = true;
+                {
+                    wasEditable = true;
                     object[] latLon = { Warning.Latitude, Warning.Longitude, true, 10 };
-                await JSRuntime.InvokeVoidAsync("googleMapSelect", latLon); 
+                    await JSRuntime.InvokeVoidAsync("googleMapSelect", latLon);
+                }
             }
-        }
             else
             {
-            if (wasEditable)
-            {
-                wasEditable = false;
-                object[] latLon = { Warning.Latitude, Warning.Longitude };
-                await JSRuntime.InvokeVoidAsync("googleMapShow", latLon);
+                if (wasEditable)
+                {
+                    wasEditable = false;
+                    object[] latLon = { Warning.Latitude, Warning.Longitude };
+                    await JSRuntime.InvokeVoidAsync("googleMapShow", latLon);
+                }
             }
         }
-        }
-        
+
     }
 
-    private async Task SetupButtonClickability()
+    private async Task SetupButtonClickability(string userId)
     {
         //if (IsUserLoggedIn)
-        var hasliked = await WarningsEndpoint.GetReactionForUser(Warning.Id);
+        var hasliked = await WarningsEndpoint.GetReactionForUser(Warning.Id, new Guid(userId));
         if (hasliked is true)
         {
             IsApproveButtonDisabled = true;
@@ -313,6 +325,7 @@
 
             (ApproveButtonTitile, DisapproveButtonTitile) = ("Approve", "Disapprove");
         }
+        StateHasChanged();  // necessary when invoked by OnParametersSetAsync
     }
 
     private async Task Delete()

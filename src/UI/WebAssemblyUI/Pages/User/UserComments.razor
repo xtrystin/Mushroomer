@@ -90,6 +90,14 @@ else
 
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        IsUserModerator = (await AuthState).User.IsInRole("moderator");
+        IsUserAuthor = await CheckIfUserIsAuthor();
+        StateHasChanged();
+    }
+
     private async Task<bool> CheckIfUserIsAuthor()
     {
         var isUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;

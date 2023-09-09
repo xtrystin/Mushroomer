@@ -86,10 +86,10 @@ public class WarningsController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("{id:guid}/userReaction")]
-    public async Task<bool?> GetReactionForUser([FromRoute] Guid id)   //todo: can return true, false or 204 for no reaction
+    [HttpGet("{id:guid}/userReaction/{userId:guid}")]
+    public async Task<bool?> GetReactionForUser([FromRoute] Guid id, [FromRoute] Guid userId)   //todo: can return true, false or 204 for no reaction
     {
-        var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        //var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
         var request = new GetReactionQuery { WarningId = id, UserId = userId };
         var result = await _mediator.Send(request);
 

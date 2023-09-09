@@ -94,9 +94,9 @@ public class WarningsEndpoint : IWarningsEndpoint
         }
     }
 
-    public async Task<bool?> GetReactionForUser(Guid warningId)
+    public async Task<bool?> GetReactionForUser(Guid warningId, Guid userId)
     {
-        var url = _api + $"/api/warnings/{warningId}/userReaction";
+        var url = _api + $"/api/warnings/{warningId}/userReaction/{userId}";
 
         var response = await _httpClient.GetAsync(url);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)

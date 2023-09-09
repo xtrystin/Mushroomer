@@ -10,12 +10,7 @@
             <AuthorizeView>
                 <Authorized>
                     Welcome @context.User.FindFirst(ClaimTypes.Name).Value
-                    <NavLink class="nav-link" href="logout" title="Log Out">
-                        <span class="oi oi-account-logout"></span> Log Out
-                    </NavLink>
-                    <NavLink class="nav-link" href="changePassword" title="Change password">
-                        <span class="oi oi-list-rich"></span>
-                    </NavLink>
+                    <Logout />
                 </Authorized>
                 <NotAuthorized>
                     <Login />

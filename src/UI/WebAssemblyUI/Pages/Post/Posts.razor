@@ -134,6 +134,12 @@
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        StateHasChanged();
+    }
+
     private void AddPost()
     {
         NavManager.NavigateTo("post/add");

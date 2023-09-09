@@ -2,8 +2,15 @@
 @inject NavigationManager NavManager
 @inject IAuthenticationService AuthService
 
+<NavLink class="nav-link" style="cursor: pointer" @onclick="LogOut" title="Log out">
+    <span class="oi oi-account-logout"></span>
+</NavLink>
+<NavLink class="nav-link" href="changePassword" title="Change password">
+    <span class="oi oi-list-rich"></span>
+</NavLink>
+
 @code {
-    protected override async Task OnInitializedAsync()
+    protected async Task LogOut()
     {
         await AuthService.Logout();
     }

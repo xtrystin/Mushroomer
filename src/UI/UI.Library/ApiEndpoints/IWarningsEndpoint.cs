@@ -9,6 +9,6 @@ public interface IWarningsEndpoint
     Task<WarningDto> Get(string id);
     Task<List<WarningDto>> GetAll();
     Task Update(WarningDto warning);
-    Task<bool?> GetReactionForUser(Guid warningId);
+    Task<bool?> GetReactionForUser(Guid warningId, Guid userId);
     public Task PostReaction(Guid warningId, bool approve);
 }

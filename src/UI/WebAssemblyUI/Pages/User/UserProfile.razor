@@ -141,6 +141,12 @@ else
         IsUserExperienced = await AuthService.IsUserInRole(User.Id.ToString(), "experienced");      //todo: move const to appsettings
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        IsUserAuthor = await CheckIfUserIsAuthor();
+        StateHasChanged();
+    }
+
     private async Task<bool> CheckIfUserIsAuthor()
     {
         var isUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;

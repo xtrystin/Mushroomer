@@ -140,6 +140,13 @@
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        IsUserModerator = (await AuthState).User.IsInRole("moderator");
+        IsUserExperienced = (await AuthState).User.IsInRole("experienced");
+        StateHasChanged();
+    }
+
     private void AddWarning()
     {
         NavManager.NavigateTo("warnings/add");

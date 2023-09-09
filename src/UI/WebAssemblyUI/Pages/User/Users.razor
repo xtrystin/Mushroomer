@@ -84,6 +84,16 @@ else
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        if (IsUserLoggedIn)
+        {
+            CurrentUserId = new Guid((await AuthState).User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        }
+        StateHasChanged();
+    }
+
     private void ExecuteSearch()
     {
         if(string.IsNullOrEmpty(SearchText))
