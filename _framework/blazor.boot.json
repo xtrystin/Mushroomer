@@ -80,8 +80,8 @@
       "System.Threading.dll": "sha256-Kre9BBfzwLxjb\/5JrGFDG2z\/EBqvcoIPXnxmTE5G+9w=",
       "System.Web.HttpUtility.dll": "sha256-sKsPSXCJefQweS0pLswU1fP8wFMPP9ykFuSlViKKmKQ=",
       "System.Xml.XDocument.dll": "sha256-F\/upASrkKuxKYEwuf3IL\/CcrLcOZUJqfXf4a2eD\/T3o=",
-      "UI.ApiLibrary.dll": "sha256-8c4nyJBgZdzeRoBLXfwHOvgFVkEVSX0cwv1LLCrvIfk=",
-      "WebAssemblyUI.dll": "sha256-vBVIh11q6uBVLEtFvIGocdXjR\/fbdLooPn0Pg45eLkw="
+      "UI.ApiLibrary.dll": "sha256-5YqY9GF1mEIge+WRQ77gc8RLgymjhHsjp1WwUD7Xgus=",
+      "WebAssemblyUI.dll": "sha256-MjdQd4mUnKApRAbdqY0YZtMTZ95Rt8Wjd14vULY9ceo="
     },
     "extensions": null,
     "lazyAssembly": null,
