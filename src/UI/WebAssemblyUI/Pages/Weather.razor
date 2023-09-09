@@ -1,0 +1,186 @@
+﻿@page "/weather"
+@using System.Globalization
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
+
+<PageTitle>Weather forecast</PageTitle>
+
+<h1>Weather forecast</h1>
+<p>Daily max and min temperatures for the next 16 days. Hover over point on graph to display details</p>
+@if (weatherForecasts is null)
+{
+    <p>Loading Weather Forecast Graph...</p>
+}
+else
+{
+    <div class="container">
+        
+        <div class="row">
+            <div class="col-sm-12 my-5">
+                <RadzenCard class="w-100 mb-4" Style="display: flex; align-items: center; gap: 0.5rem">
+                    <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
+                    <RadzenLabel Text="Show Data Labels" For="dataLabels" />
+                    <RadzenCheckBox @bind-Value="@smooth" Name="smooth"></RadzenCheckBox>
+                    <RadzenLabel Text="Smooth" For="smooth" Style="margin-right: 1rem;" />
+                </RadzenCard>
+                <RadzenChart>
+                    <RadzenLineSeries Smooth="@smooth" Data="@weatherForecasts" CategoryProperty="Date" Title="Max Temperatures" ValueProperty="MaxTemperature">
+                        <ChildContent>
+                            <RadzenMarkers MarkerType="MarkerType.Circle" />
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </ChildContent>
+                    </RadzenLineSeries>
+                    <RadzenLineSeries Smooth="@smooth" Data="@weatherForecasts" CategoryProperty="Date" Title="Mean Temperatures" ValueProperty="MeanTemperature">
+                        <ChildContent>
+                            <RadzenMarkers MarkerType="MarkerType.Circle" />
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </ChildContent>
+                        <TooltipTemplate Context="data">
+                            <table id="vertical-1">
+                                <tr>
+                                    <th>Date</th>
+                                    <td>@data.Date.ToShortDateString()</td>
+                                </tr>
+                                <tr>
+                                    <th>MinTempC</th>
+                                    <td>@data.MinTemperature</td>
+                                </tr>
+                                <tr>
+                                    <th>MaxTempC</th>
+                                    <td>@data.MaxTemperature</td>
+                                </tr>
+                                <tr>
+                                    <th>MeanTempC</th>
+                                    <td>@data.MeanTemperature</td>
+                                </tr>
+                                <tr>
+                                    <th>Snow cm</th>
+                                    <td>@data.SnowfallSum</td>
+                                </tr>
+                                <tr>
+                                    <th>Rain mm</th>
+                                    <td>@data.RainSum</td>
+                                </tr>
+                                <tr>
+                                    <th>Rain h</th>
+                                    <td>@data.PrecipitationHours</td>
+                                </tr>
+                                <tr>
+                                    <th>Rain %</th>
+                                    <td>@data.PrecipitationProbabilityMean</td>
+                                </tr>
+                            </table>
+                        </TooltipTemplate>
+                    </RadzenLineSeries>
+                    <RadzenLineSeries Smooth="@smooth" Data="@weatherForecasts" CategoryProperty="Date" Title="Min Temperatures" LineType="LineType.Dashed" ValueProperty="MinTemperature">
+                        <ChildContent>
+                            <RadzenMarkers MarkerType="MarkerType.Square" />
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </ChildContent>
+                    </RadzenLineSeries>
+                    <RadzenCategoryAxis Padding="20" />
+                    <RadzenValueAxis>
+                        <RadzenGridLines Visible="true" />
+                        <RadzenAxisTitle Text="Temperature (C)" />
+                    </RadzenValueAxis>
+                </RadzenChart>
+            </div>
+        </div>
+    </div>
+}
+
+@if (InitMarker is null)
+{
+    <p>Loading Google Map...</p>
+}
+else
+{
+    <p> Choose location on the map </p>
+    <RadzenGoogleMap @ref=map style="height: 30rem" Options=@(new Dictionary<string, object> { { "disableDoubleClickZoom", true } })
+                 Zoom=@zoom Center=@(InitMarker.Position)
+                 MapClick=@OnMapClick Data="@MapMarkers">
+    </RadzenGoogleMap>
+}
+
+
+@code {
+    // Graph Properties
+    private DataItem[] weatherForecasts;
+    bool smooth = false;
+    bool showDataLabels = false;
+    private HttpClient httpClient;
+
+    // Map Properties
+    private int zoom = 7;
+    private bool showOnlyApproved;
+    private RadzenGoogleMap map;
+    private List<RadzenGoogleMapMarker> MapMarkers;
+    private RadzenGoogleMapMarker InitMarker;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        MapMarkers = new();
+        httpClient = new HttpClient();
+
+        (double lat, double lng) = await GetClientGeolocation();
+        InitMarker = new RadzenGoogleMapMarker { Position = new GoogleMapPosition { Lat = lat, Lng = lng } };
+        MapMarkers.Add(InitMarker);
+        await GetWeather(InitMarker.Position.Lat, InitMarker.Position.Lng);
+    }
+
+    async Task OnMapClick(GoogleMapClickEventArgs mapClick)
+    {
+        MapMarkers.Clear();
+        var marker = new RadzenGoogleMapMarker { Position = mapClick.Position };
+        MapMarkers.Add(marker);
+
+        await GetWeather(mapClick.Position.Lat, mapClick.Position.Lng);
+    }
+
+    async Task<(double lat, double lng)> GetClientGeolocation()
+    {
+        string url = "https://geolocation-db.com/json/";
+        HttpRequestMessage request = new(HttpMethod.Get, url);
+        request.Headers.Add("Accept", "application/json");
+
+        var response = await httpClient.SendAsync(request);
+        GeoLocation result = (GeoLocation) await response.Content.ReadFromJsonAsync(typeof(GeoLocation));
+
+        return (result.Latitude, result.Longitude);
+    }
+
+    async Task GetWeather(double lat, double lng)
+    {
+        string url = @$"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,rain_sum,snowfall_sum,precipitation_hours,precipitation_probability_mean&timezone=auto&forecast_days=16";
+        HttpRequestMessage request = new(HttpMethod.Get, url);
+
+        var response = await httpClient.SendAsync(request);
+        var result = await response.Content.ReadFromJsonAsync(typeof(WeatherForecast));
+        var forecast = (WeatherForecast)result;
+
+        MapToDateItems(forecast.DailyWeather);
+    }
+
+    void MapToDateItems(DailyWeather dailyWeathers)
+    {
+        List<DataItem> temps = new();
+        for (int i = 0; i < dailyWeathers.Dates.Count; i++)
+        {
+            temps.Add(new DataItem
+            {
+                Date = dailyWeathers.Dates[i],
+                MinTemperature = dailyWeathers.MinTemperatures[i],
+                MaxTemperature = dailyWeathers.MaxTemperatures[i],
+                MeanTemperature = dailyWeathers.MeanTemperatures[i],
+                PrecipitationHours = dailyWeathers.PrecipitationHours[i],
+                PrecipitationProbabilityMean = dailyWeathers.PrecipitationProbabilityMean[i],
+                RainSum = dailyWeathers.RainSum[i],
+                SnowfallSum = dailyWeathers.SnowfallSum[i]
+            });
+        }
+
+        weatherForecasts = temps.ToArray();
+    }
+}
+
