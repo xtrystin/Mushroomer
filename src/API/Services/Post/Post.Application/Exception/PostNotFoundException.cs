@@ -1,9 +1,11 @@
-﻿namespace Post.Application.Exception;
+﻿using Common.Exception;
+using System.Net;
 
-public class PostNotFoundException : System.Exception
+namespace Post.Application.Exception;
+
+public class PostNotFoundException : ApiException
 {
-    public PostNotFoundException() : base("Post was not found")
+    public PostNotFoundException() : base(HttpStatusCode.NotFound, "Post was not found")
     {
-
     }
 }

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Common.Const;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using WebAPI.Helpers;
 using WebAPI.Model.Post;
 
 namespace WebAPI.Controllers
@@ -32,42 +34,28 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<PostReadModel> Get([FromRoute] Guid id)
+        [ProducesResponseType(200, Type = typeof(PostReadModel))]
+        public async Task Get([FromRoute] Guid id)
         {
-            AddJwtToHttpClientHeader();
             var url = _config["MicroservicesUrl:Post"] + $"/post/{id}";
 
-            var response = await _httpClient.GetAsync(url);     //todo: dispatcher
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<PostReadModel>();
-                return result;
-            }
-            else
-            {
-                throw new Exception(response.ReasonPhrase); //todo: error handling with proper message //todo return BadRequest();    
-            }
+            var request = HttpMessageHelper.CreateProxyHttpRequest(HttpContext, new Uri(url));
+            var response = await _httpClient.SendAsync(request);
+            await HttpMessageHelper.CopyProxyHttpResponse(HttpContext, response);
+            return;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<PostReadModel>> Get()
+        [ProducesResponseType(200, Type = typeof(IEnumerable<PostReadModel>))]
+        public async Task Get([FromQuery] bool onlyInactive = false,
+            [FromQuery] bool onlyInactiveForUser = false)
         {
-            var jwt = HttpContext.Request.Headers.Authorization;    //todo refactor
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", jwt); // todo: use middleware to set authorization header
-            var url = _config["MicroservicesUrl:Post"] + $"/post";
+            var url = _config["MicroservicesUrl:Post"] + $"/post?onlyInactive={onlyInactive}&onlyInactiveForUser={onlyInactiveForUser}";
 
-            var response = await _httpClient.GetAsync(url);     //todo: dispatcher
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<IEnumerable<PostReadModel>>();
-                return result;
-            }
-            else
-            {
-                //return BadRequest();    
-                throw new Exception(response.ReasonPhrase); //todo: error handling with proper message
-            }
-
+            var request = HttpMessageHelper.CreateProxyHttpRequest(HttpContext, new Uri(url));
+            var response = await _httpClient.SendAsync(request);
+            await HttpMessageHelper.CopyProxyHttpResponse(HttpContext, response);
+            return;
         }
 
         [HttpPost]
@@ -126,6 +114,18 @@ namespace WebAPI.Controllers
             {
                 throw new Exception(response.ReasonPhrase);
             }
+        }
+
+        [HttpPatch("{id:guid}/changeStatus")]
+        [Authorize(Roles = AuthUserRole.Moderator)]
+        public async Task ChangePostStatus([FromRoute] Guid id, [FromQuery] bool changeToActive)
+        {
+            var url = _config["MicroservicesUrl:Post"] + $"/post/{id}/changeStatus?changeToActive={changeToActive}";
+            
+            var request = HttpMessageHelper.CreateProxyHttpRequest(HttpContext, new Uri(url));
+            var response = await _httpClient.SendAsync(request);
+            await HttpMessageHelper.CopyProxyHttpResponse(HttpContext, response);
+            return;
         }
 
         [HttpPost("{id:guid}/comment")]

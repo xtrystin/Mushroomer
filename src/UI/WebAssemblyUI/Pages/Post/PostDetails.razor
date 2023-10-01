@@ -4,6 +4,7 @@
 @using UI.ApiLibrary.Dto.Post;
 @inject IPostEndpoint PostEndpoint
 @inject NavigationManager NavManager
+@inject NotificationService NotificationService
 
 <div class="container-fluid">
     @if (Post is null)
@@ -81,13 +82,36 @@
                     </div>
                 }
             </div>
-
-            @if (IsAuthor || IsUserModerator)
-            {
-                <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
-                <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
-
-            }
+            <div class="row g-2">
+                @if (IsAuthor || IsUserModerator)
+                {
+                    <div class="col-auto ">
+                        <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
+                    </div>
+                    <div class="col-auto ">
+                        <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
+                    </div>
+                }
+                @if (IsUserModerator)
+                {
+                    @if (Post.IsActive)
+                    {
+                        <div class="col-auto ">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="ChangeIsActive">Deactivate</button>
+                            <i>Post is active</i>
+                        </div>
+                    
+                    }
+                    else
+                    {
+                        <div class="col-auto ">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="ChangeIsActive">Activate</button>
+                            <i>Post is not active</i>
+                        </div>
+                    }
+                
+                }
+            </div>
 
             <br />
 
@@ -143,191 +167,220 @@
 
 
 
-@code {
-    [Parameter]
-    public string Id { get; set; }
+    @code {
+        [Parameter]
+        public string Id { get; set; }
 
-    [CascadingParameter]
-    public Task<AuthenticationState> AuthState { get; set; }
+        [CascadingParameter]
+        public Task<AuthenticationState> AuthState { get; set; }
 
-    private PostReadModel Post;
-    private EditPostCommandDto EditPostModel = new();
-    private bool Editable;
-    private bool IsAuthor;
-    private IEnumerable<CommentReadModel> Comments;
-    private AddCommentDto Comment = new();
-    private bool IsUserLoggedIn;
-    private bool IsUserModerator = false;
-    private string UserEmail;
+        private PostReadModel Post;
+        private EditPostCommandDto EditPostModel = new();
+        private bool Editable;
+        private bool IsAuthor;
+        private IEnumerable<CommentReadModel> Comments;
+        private AddCommentDto Comment = new();
+        private bool IsUserLoggedIn;
+        private bool IsUserModerator = false;
+        private string UserEmail;
 
-    private bool IsLikeButtonDisabled = false;
-    private bool IsDislikeButtonDisabled = false;
-    private string LikeButtonTitile = "";
-    private string DislikeButtonTitile = "";
+        private bool IsLikeButtonDisabled = false;
+        private bool IsDislikeButtonDisabled = false;
+        private string LikeButtonTitile = "";
+        private string DislikeButtonTitile = "";
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
+        protected override async Task OnInitializedAsync()
         {
-            Post = await PostEndpoint.Get(new Guid(Id));
-            Post.Content = Post.Content.Sanitize();
-            (EditPostModel.Title, EditPostModel.Content) = (Post.Title, Post.Content);
+            try
+            {
+                Post = await PostEndpoint.Get(new Guid(Id));
+                Post.Content = Post.Content.Sanitize();
+                (EditPostModel.Title, EditPostModel.Content) = (Post.Title, Post.Content);
 
-            UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
-            IsAuthor = await CheckIfUserIsAuthor();
+                UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
+                IsAuthor = await CheckIfUserIsAuthor();
+                IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+                IsUserModerator = (await AuthState).User.IsInRole("moderator");
+
+                Comments = await PostEndpoint.GetCommentsForPost(new Guid(Id));
+
+                await SetupButtonClickability();
+
+            }
+            catch (Exception ex)
+            {
+                var message = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Getting Post error",
+                    Detail = ex.Message,
+                    Duration = 4000
+                };
+
+                NotificationService.Notify(message);
+            }
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
             IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+            UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
             IsUserModerator = (await AuthState).User.IsInRole("moderator");
-
-            Comments = await PostEndpoint.GetCommentsForPost(new Guid(Id));
-
-            await SetupButtonClickability();
-
+            StateHasChanged();
         }
-        catch (Exception ex)
+
+        private async Task SetupButtonClickability()
         {
-            //todo
-        }
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
-        UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
-        IsUserModerator = (await AuthState).User.IsInRole("moderator");
-        StateHasChanged();
-    }
-
-    private async Task SetupButtonClickability()
-    {
-        //if (IsUserLoggedIn)
-        var hasliked = await PostEndpoint.GetReactionForUser(Post.Id);
-        if (hasliked is true)
-        {
-            IsLikeButtonDisabled = true;
-            IsDislikeButtonDisabled = false;
-
-            (LikeButtonTitile, DislikeButtonTitile) = ("You have already liked this post", "Dislike");
-        }
-        else if (hasliked is false)
-        {
-            IsLikeButtonDisabled = false;
-            IsDislikeButtonDisabled = true;
-            (LikeButtonTitile, DislikeButtonTitile) = ("Like", "You have already disliked this post");
-        }
-        else
-        {
-            IsLikeButtonDisabled = false;
-            IsDislikeButtonDisabled = false;
-
-            (LikeButtonTitile, DislikeButtonTitile) = ("Like", "Dislike");
-        }
-    }
-
-    private async Task<bool> CheckIfUserIsAuthor()
-    {
-        if (UserEmail is not null && UserEmail == Post.AuthorEmail)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    private void Edit() => Editable = true;
-
-    private async Task ExecuteEdit()
-    {
-        //todo: add error message box
-        try
-        {
-            EditPostModel.Content = EditPostModel.Content.Sanitize();
-            await PostEndpoint.Edit(Post.Id, EditPostModel);
-
-            Editable = false;
-            (Post.Title, Post.Content, Post.LastModificationDate) = (EditPostModel.Title, EditPostModel.Content, DateTime.Now);
-
-        }
-        catch (Exception ex)
-        {
-            //todo errpr message
-            Console.WriteLine(ex.Message);
-        }
-    }
-
-    private async Task Delete()
-    {
-        try
-        {
-            await PostEndpoint.Delete(Post.Id);
-            //todo: inform about success
-            NavManager.NavigateTo("posts");
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-    }
-
-    private async Task ExecuteAddComment()
-    {
-        try
-        {
-            Comment.PostId = Post.Id;
-            await PostEndpoint.AddCommentToPost(Comment);
-
-            Comments = await PostEndpoint.GetCommentsForPost(new Guid(Id));
-            Comment = new();
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-    }
-
-    private async Task Like()
-    {
-        try
-        {
-            await PostEndpoint.PostReaction(Post.Id, true);
-
-            if (IsDislikeButtonDisabled)
+            //if (IsUserLoggedIn)
+            var hasliked = await PostEndpoint.GetReactionForUser(Post.Id);
+            if (hasliked is true)
             {
-                Post.DisLikeNumber--;
+                IsLikeButtonDisabled = true;
+                IsDislikeButtonDisabled = false;
+
+                (LikeButtonTitile, DislikeButtonTitile) = ("You have already liked this post", "Dislike");
             }
-
-            Post.LikeNumber++;
-            IsLikeButtonDisabled = true;
-            IsDislikeButtonDisabled = false;
-            (LikeButtonTitile, DislikeButtonTitile) = ("You have already liked this post", "Dislike");
-        }
-        catch (Exception ex)
-        {
-        }
-    }
-
-    private async Task Dislike()
-    {
-        try
-        {
-            await PostEndpoint.PostReaction(Post.Id, false);
-
-            if (IsLikeButtonDisabled)
+            else if (hasliked is false)
             {
-                Post.LikeNumber--;
+                IsLikeButtonDisabled = false;
+                IsDislikeButtonDisabled = true;
+                (LikeButtonTitile, DislikeButtonTitile) = ("Like", "You have already disliked this post");
             }
+            else
+            {
+                IsLikeButtonDisabled = false;
+                IsDislikeButtonDisabled = false;
 
-            Post.DisLikeNumber++;
-            IsDislikeButtonDisabled = true;
-            IsLikeButtonDisabled = false;
-            (LikeButtonTitile, DislikeButtonTitile) = ("Like", "You have already disliked this post");
+                (LikeButtonTitile, DislikeButtonTitile) = ("Like", "Dislike");
+            }
         }
-        catch (Exception ex)
+
+        private async Task<bool> CheckIfUserIsAuthor()
         {
-            //todo: log error, display error message
+            if (UserEmail is not null && UserEmail == Post.AuthorEmail)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-    }
+
+        private void Edit() => Editable = true;
+
+        private async Task ExecuteEdit()
+        {
+            //todo: add error message box
+            try
+            {
+                EditPostModel.Content = EditPostModel.Content.Sanitize();
+                await PostEndpoint.Edit(Post.Id, EditPostModel);
+
+                Editable = false;
+                (Post.Title, Post.Content, Post.LastModificationDate) = (EditPostModel.Title, EditPostModel.Content, DateTime.Now);
+
+            }
+            catch (Exception ex)
+            {
+                //todo errpr message
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private async Task Delete()
+        {
+            try
+            {
+                await PostEndpoint.Delete(Post.Id);
+                //todo: inform about success
+                NavManager.NavigateTo("posts");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private async Task ExecuteAddComment()
+        {
+            try
+            {
+                Comment.PostId = Post.Id;
+                await PostEndpoint.AddCommentToPost(Comment);
+
+                Comments = await PostEndpoint.GetCommentsForPost(new Guid(Id));
+                Comment = new();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private async Task Like()
+        {
+            try
+            {
+                await PostEndpoint.PostReaction(Post.Id, true);
+
+                if (IsDislikeButtonDisabled)
+                {
+                    Post.DisLikeNumber--;
+                }
+
+                Post.LikeNumber++;
+                IsLikeButtonDisabled = true;
+                IsDislikeButtonDisabled = false;
+                (LikeButtonTitile, DislikeButtonTitile) = ("You have already liked this post", "Dislike");
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private async Task Dislike()
+        {
+            try
+            {
+                await PostEndpoint.PostReaction(Post.Id, false);
+
+                if (IsLikeButtonDisabled)
+                {
+                    Post.LikeNumber--;
+                }
+
+                Post.DisLikeNumber++;
+                IsDislikeButtonDisabled = true;
+                IsLikeButtonDisabled = false;
+                (LikeButtonTitile, DislikeButtonTitile) = ("Like", "You have already disliked this post");
+            }
+            catch (Exception ex)
+            {
+                //todo: log error, display error message
+            }
+        }
+
+        private async Task ChangeIsActive()
+        {
+            try
+            {
+                await PostEndpoint.ChangeStatus(Post.Id, !Post.IsActive);
+                Post.IsActive = !Post.IsActive;
+            }
+            catch (Exception ex)
+            {
+                var message = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Change post status error",
+                    Detail = ex.Message,
+                    Duration = 4000
+                };
+
+                NotificationService.Notify(message);
+            }
+        }
 }

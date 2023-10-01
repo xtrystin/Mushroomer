@@ -41,6 +41,9 @@ public class PostConfig : IEntityTypeConfiguration<Domain.Entity.Post>
             .HasColumnName("LaastModificationDate")
             .HasColumnType("timestamp without time zone");
 
+        builder.Property(typeof(bool), "_isActive")
+            .HasColumnName("IsActive");
+
         builder.HasMany(typeof(Comment), "_comments");
 
         builder.Property<Guid>("AuthorId")

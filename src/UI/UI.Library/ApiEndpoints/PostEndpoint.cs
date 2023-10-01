@@ -31,14 +31,14 @@ public class PostEndpoint : IPostEndpoint
         }
         else
         {
-            // log error
-            throw new Exception(response.ReasonPhrase);
+            var reasonContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(string.IsNullOrEmpty(reasonContent) ? response.ReasonPhrase : reasonContent);
         }
     }
 
-    public async Task<IEnumerable<PostReadModel>> GetAll()
+    public async Task<IEnumerable<PostReadModel>> GetAll(bool onlyInactive = false, bool onlyInactiveForUser = false)
     {
-        var url = _api + "/api/Post";
+        var url = _api + $"/api/Post?onlyInactive={onlyInactive}&onlyInactiveForUser={onlyInactiveForUser}";
 
         var response = await _httpClient.GetAsync(url);
         if (response.IsSuccessStatusCode)
@@ -91,6 +91,22 @@ public class PostEndpoint : IPostEndpoint
         var url = _api + $"/api/Post/{id}";
 
         var response = await _httpClient.DeleteAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+            // log success
+        }
+        else
+        {
+            // log error
+            throw new Exception(response.ReasonPhrase);
+        }
+    }
+
+    public async Task ChangeStatus(Guid id, bool changeToActive)
+    {
+        var url = _api + $"/api/Post/{id}/changeStatus?changeToActive={changeToActive}";
+
+        var response = await _httpClient.PatchAsync(url, default);
         if (response.IsSuccessStatusCode)
         {
             // log success

@@ -22,10 +22,12 @@ public class AddPostCommandHandler : IRequestHandler<AddPostCommand>
         PostTitle postTitle = new(request.Title);
         PostContent postContent = new(request.Content.Sanitize());
         var user = await _userRepository.GetAsync(request.AuthorId);
-
+        
         var post = new Domain.Entity.Post(postId, postTitle, postContent, null, user);   //todo: factory method
-        await _postRepository.AddAsync(post);
+        if (request.AutoActivate)
+            post.Activate();
 
+        await _postRepository.AddAsync(post);
         return Unit.Value;
     }
 }

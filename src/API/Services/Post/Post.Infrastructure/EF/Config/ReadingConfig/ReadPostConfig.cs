@@ -25,6 +25,9 @@ public class ReadPostConfig : IEntityTypeConfiguration<PostReadModel>
 
         builder.Property(x => x.LastModificationDate)
             .HasColumnName("LaastModificationDate");
+        
+        builder.Property(x => x.IsActive)
+            .HasColumnName("IsActive");
 
         builder.HasMany(x => x.Comments)
             .WithOne();

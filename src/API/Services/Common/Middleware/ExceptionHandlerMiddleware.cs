@@ -34,8 +34,8 @@ public class ExceptionHandlerMiddleware
                 ApiException apiEx = ex as ApiException;
                 response.StatusCode = (int)apiEx.StatusCode;
 
-                response.WriteAsync(apiEx.Message);
                 response.ContentType = "text/plain";
+                response.WriteAsync(apiEx.Message);
             }
             else
             {

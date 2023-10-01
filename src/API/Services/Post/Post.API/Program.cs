@@ -1,3 +1,4 @@
+using Common.Middleware;
 using MediatR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -78,6 +79,8 @@ builder.Services.AddAuthentication(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandlerMiddleware();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

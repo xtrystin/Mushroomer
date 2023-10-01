@@ -14,6 +14,7 @@ public class Post
     private readonly List<Comment> _comments;   // todo: move to new entity CommentList
     private User _author;
     private List<PostUserReaction> _reactions;
+    private bool _isActive;
 
 
     public Post(PostId id, PostTitle title, PostContent content, List<Comment> comments, User author)
@@ -25,12 +26,16 @@ public class Post
         _lastModificationDate = _createdDate;
         _comments = comments;
         _author = author;
+        _isActive = false;
     }
 
     public Post()
     {
 
     }
+
+    public void Activate() => _isActive = true;
+    public void Deactivate() => _isActive = false;
 
     public void ChangeTitle(PostTitle title)
     {

@@ -15,5 +15,13 @@ public class GetAllPostsQueryHandler : IRequestHandler<GetAllPostsQuery, IEnumer
         _dbReadContext = dbReadContext;
     }
     public async Task<IEnumerable<PostReadModel>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
-        => await _dbReadContext.Posts.Include(x => x.Author).Include(x => x.Reactions).ToListAsync();
+    {
+        if (request.OnlyInactiveForUser && string.IsNullOrEmpty(request.UserEmail) is false)
+            return await _dbReadContext.Posts.Where(x => x.Author.Email == request.UserEmail && x.IsActive == false)
+                .Include(x => x.Author).Include(x => x.Reactions).ToListAsync();
+        else if (request.OnlyInactive && request.IsUserMod)
+            return await _dbReadContext.Posts.Where(x => x.IsActive == false).Include(x => x.Author).Include(x => x.Reactions).ToListAsync();
+        else
+            return await _dbReadContext.Posts.Where(x => x.IsActive).Include(x => x.Author).Include(x => x.Reactions).ToListAsync();
+    }
 }

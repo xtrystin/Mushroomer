@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Common.Const;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Post.API.Dto;
@@ -28,21 +29,27 @@ namespace Post.API.Controllers
         //[ProducesResponseType(404)]
         public async Task<PostReadModel> Get([FromRoute]Guid id)
         {
-            var request = new GetPostQuery { Id = id };
+            bool isUserMod = User?.IsInRole(AuthUserRole.Moderator) ?? false;
+            Guid? userId = User.Identity.IsAuthenticated ? new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value) : null;
+
+            var request = new GetPostQuery { Id = id, UserId = userId, IsUserMod = isUserMod };
             var result = await _mediator.Send(request);
 
             return result;
-           // return result is null ? Ok(result) : NotFound();  //todo
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IEnumerable<PostReadModel>> Get()
+        public async Task<ActionResult<IEnumerable<PostReadModel>>> Get([FromQuery] bool onlyInactive = false,
+            [FromQuery] bool onlyInactiveForUser = false)
         {
-            var request = new GetAllPostsQuery();
-            var result = await _mediator.Send(request);
+            bool isUserMod = User?.IsInRole(AuthUserRole.Moderator) ?? false;
+            string? userEmail = (User?.Identity.IsAuthenticated).GetValueOrDefault() ? User.FindFirst(ClaimTypes.Name).Value : null;
 
-            return result;
+            var request = new GetAllPostsQuery() { OnlyInactive = onlyInactive, IsUserMod = isUserMod, 
+                OnlyInactiveForUser = onlyInactiveForUser, UserEmail = userEmail };
+            var result = await _mediator.Send(request);
+            return Ok(result);
         }
 
         [HttpPost]
@@ -50,9 +57,9 @@ namespace Post.API.Controllers
         {
             var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             request.AuthorId = userId;
+            request.AutoActivate = User.IsInRole(AuthUserRole.Moderator);
 
             await _mediator.Send(request);
-            
             return Ok();
         }
 
@@ -77,6 +84,15 @@ namespace Post.API.Controllers
             await _mediator.Send(request);
 
             return Ok();
+        }
+
+        [HttpPatch("{id:guid}/changeStatus")]
+        [Authorize(Roles = AuthUserRole.Moderator)]
+        public async Task<IActionResult> ChangePostStatus([FromRoute] Guid id, [FromQuery] bool changeToActive)
+        {
+            var request = new ChangePostStatusCommand { PostId = id, ChangeToActive = changeToActive };
+            await _mediator.Send(request);
+            return NoContent();
         }
 
         [HttpPost("{id:guid}/comment")]

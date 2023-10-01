@@ -28,6 +28,27 @@
             Newest first
         </button>
     </div>
+    @if (IsUserModerator)
+    {
+        <div class="col-auto ">
+            <button type="button" class="btn btn-outline-secondary" @onclick="ShowInactive">
+                Inactive Posts
+            </button>
+        </div>
+    }
+    @if (IsUserLoggedIn)
+    {
+        <div class="col-auto ">
+            <button type="button" class="btn btn-outline-secondary" @onclick="ShowInactiveForUser">
+                My Inactive
+            </button>
+        </div>
+        <div class="col-auto ">
+            <button type="button" class="btn btn-outline-secondary" @onclick="ShowAllPosts">
+                All posts
+            </button>
+        </div>
+    }
 </div>
 <br />
 @if (posts?.Count() == 0)
@@ -112,13 +133,16 @@
     //todo: move add button to the left
     //todo: move editform to standalone component
     private IEnumerable<PostReadModel> posts;
+    private IEnumerable<PostReadModel> allPosts;
     private bool IsUserLoggedIn = false;
+    private bool IsUserModerator = false;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             posts = await PostEndpoint.GetAll();
+            allPosts = posts;
 
             if (UserEmail is not null)    //todo refactor
             {
@@ -126,6 +150,7 @@
             }
 
             IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+            IsUserModerator = (await AuthState).User.IsInRole("moderator");
 
         }
         catch (Exception ex)
@@ -137,6 +162,7 @@
     protected override async Task OnParametersSetAsync()
     {
         IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        IsUserModerator = (await AuthState).User.IsInRole("moderator");
         StateHasChanged();
     }
 
@@ -152,5 +178,19 @@
     private void SortByDate()
     {
         posts = posts.OrderByDescending(x => x.CreatedDate).ToList();
+    }
+
+    private async Task ShowAllPosts()
+    {
+        posts = allPosts;
+    }
+
+    private async Task ShowInactive()
+    {
+        posts = await PostEndpoint.GetAll(onlyInactive: true);
+    }
+    private async Task ShowInactiveForUser()
+    {
+        posts = await PostEndpoint.GetAll(onlyInactiveForUser: true);
     }
 }
