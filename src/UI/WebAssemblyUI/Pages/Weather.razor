@@ -123,7 +123,7 @@ else
         MapMarkers = new();
         httpClient = new HttpClient();
 
-        (double lat, double lng) = await GetClientGeolocation();
+        (double lat, double lng) = await InitLocation();
         InitMarker = new RadzenGoogleMapMarker { Position = new GoogleMapPosition { Lat = lat, Lng = lng } };
         MapMarkers.Add(InitMarker);
         await GetWeather(InitMarker.Position.Lat, InitMarker.Position.Lng);
@@ -136,6 +136,20 @@ else
         MapMarkers.Add(marker);
 
         await GetWeather(mapClick.Position.Lat, mapClick.Position.Lng);
+    }
+
+
+    async Task<(double lat, double lng)> InitLocation()
+    {
+        try
+        {
+            return await GetClientGeolocation();
+        }
+        catch (Exception)
+        {
+            // adblock blocked request to geolocation service
+            return (52.248380, 21.066681);
+        }
     }
 
     async Task<(double lat, double lng)> GetClientGeolocation()
