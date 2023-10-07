@@ -70,7 +70,10 @@
         {
             bool isApprovedByCommunity = warning.ApproveNumber - warning.DisapproveNumber > 1 ? true : false;
             var marker = new RadzenGoogleMapMarker { Position = new GoogleMapPosition { Lat = warning.Latitude, Lng = warning.Longitude }, 
-                UniqueID = warning.Id.ToString(), Title = warning.Id.ToString(), Label = warning.MushroomName + $" {(isApprovedByCommunity ? 'a' : 'd')}" };
+                    UniqueID = warning.Id.ToString() + $" {(isApprovedByCommunity ? 'a' : 'd')}",
+                    Title = warning.Id.ToString(),
+                    Label = warning.MushroomName
+                };
             MapMarkers.Add(marker);
         }
 
@@ -93,7 +96,7 @@
     private void ChangeMarkersVisibility()
     {
         if (showOnlyApproved)
-            MapMarkersToShow = MapMarkersToShow.Where(x => x.Label[x.Label.Length - 1] == 'a').ToList();
+            MapMarkersToShow = MapMarkersToShow.Where(x => x.UniqueID[x.UniqueID.Length - 1] == 'a').ToList();
         else
             MapMarkersToShow = MapMarkers;
     }

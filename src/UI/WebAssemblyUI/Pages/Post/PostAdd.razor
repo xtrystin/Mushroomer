@@ -1,9 +1,12 @@
 ﻿@page "/post/add"
+@using Blazored.LocalStorage;
 @using UI.ApiLibrary.ApiEndpoints
 @using UI.ApiLibrary.Dto
 @using UI.ApiLibrary.Dto.Post;
 @inject IPostEndpoint PostEndpoint
 @inject NavigationManager NavManager
+@inject IConfiguration Configuration
+@inject ILocalStorageService LocalStorage
 @attribute [Authorize]
 
 <h3>Add your new post</h3>
@@ -20,7 +23,7 @@
             </div>
         </div>
         <br />
-        <RadzenHtmlEditor @bind-Value=@Post.Content UploadUrl="https://localhost:7231/upload/image" style="height: 400px;" />
+        <RadzenHtmlEditor @bind-Value=@Post.Content UploadHeaders=@uploadHeaders UploadUrl=@fileUploadApiUrl style="height: 400px;" />
         <br />
         <div class="col-md-12 text-rigth">
             <button type="submit" class="btn btn-outline-success">Save Changes</button>
@@ -28,8 +31,26 @@
     </EditForm>
 </div>
 @code {
-    private AddPostDto Post = new();
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
 
+    private AddPostDto Post = new();
+    private string fileUploadApiUrl = "";
+    private Dictionary<string, string> uploadHeaders = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        fileUploadApiUrl = Configuration["apiGateway"] + "/upload/image";
+        
+        var isUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        if (isUserLoggedIn)
+        {                
+            var bearerTokenStorageKey = Configuration["bearerTokenStorageKey"];
+            string token = await LocalStorage.GetItemAsync<string>(bearerTokenStorageKey);
+            uploadHeaders.Add("Authorization", "bearer " + token);
+        }
+    }
+    
     private async Task ExecuteAdd()
     {
         try
