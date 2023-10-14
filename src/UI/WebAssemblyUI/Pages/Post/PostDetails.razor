@@ -273,6 +273,7 @@
         private async Task SetupButtonClickability()
         {
             //if (IsUserLoggedIn)
+            await Task.Delay(1);
             var hasliked = await PostEndpoint.GetReactionForUser(Post.Id);
             if (hasliked is true)
             {
