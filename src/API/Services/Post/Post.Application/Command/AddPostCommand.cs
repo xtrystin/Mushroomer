@@ -9,4 +9,5 @@ public class AddPostCommand : IRequest
     public string Content { get; set; }
     public Guid AuthorId { get; set; }
     public bool AutoActivate { get; set; }
+    public string? ThumbnailPhotoUrl { get; set; }
 }

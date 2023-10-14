@@ -14,6 +14,7 @@ public class PostReadModel
     public string AuthorEmail => Author.Email;
     public int LikeNumber => Reactions.Count(x => x.Like == true);
     public int DisLikeNumber => Reactions.Count(x => x.Like == false);
+    public string? ThumbnailPhotoUrl { get; set; }
 
     [JsonIgnore]
     public IEnumerable<CommentReadModel> Comments { get; set; }

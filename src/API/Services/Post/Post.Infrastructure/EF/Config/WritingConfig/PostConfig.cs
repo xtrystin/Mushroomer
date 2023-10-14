@@ -16,7 +16,10 @@ public class PostConfig : IEntityTypeConfiguration<Domain.Entity.Post>
             value => new PostTitle(value));
 
         var contentConvverter = new ValueConverter<PostContent, string>(postContent => postContent.Value.ToString(),
-            value => new PostContent(value));
+            value => new PostContent(value));      
+        
+        var thumbnailPhotoUrlConvverter = new ValueConverter<ThumbnailPhotoUrl, string?>(thumbnailPhotoUrl => thumbnailPhotoUrl.Value,
+            value => new ThumbnailPhotoUrl(value));
 
         builder.Property(x => x.Id)
             .HasConversion(id => id.Value, id => new PostId(id))
@@ -26,7 +29,7 @@ public class PostConfig : IEntityTypeConfiguration<Domain.Entity.Post>
         builder.Property(typeof(PostTitle), "_title")
             .HasConversion(titleConvverter)
             .HasColumnName("Title")
-        .HasColumnType("varchar(200)");
+            .HasColumnType("varchar(200)");
 
         builder.Property(typeof(PostContent), "_content")
             .HasConversion(contentConvverter)
@@ -43,6 +46,12 @@ public class PostConfig : IEntityTypeConfiguration<Domain.Entity.Post>
 
         builder.Property(typeof(bool), "_isActive")
             .HasColumnName("IsActive");
+
+        builder.Property(typeof(ThumbnailPhotoUrl), "_thumbnailPhotoUrl")
+            .HasConversion(thumbnailPhotoUrlConvverter)
+            .HasColumnName("ThumbnailPhotoUrl")
+            .IsRequired(false)
+            .HasMaxLength(ThumbnailPhotoUrl.MaxLength);
 
         builder.HasMany(typeof(Comment), "_comments");
 

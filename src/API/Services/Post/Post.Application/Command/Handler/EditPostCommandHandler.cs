@@ -4,6 +4,7 @@ using MediatR;
 using Post.Application.Exception;
 using Post.Application.Service;
 using Post.Domain.Repository;
+using Post.Domain.ValueObject;
 
 namespace Post.Application.Command.Handler;
 
@@ -29,6 +30,7 @@ public class EditPostCommandHandler : IRequestHandler<EditPostCommand>
         {
             post.ChangeTitle(request.Title);
             post.ChangeContent(request.Content.Sanitize());
+            post.ChangeThumbnailPhotoUrl(request.ThumbnailPhotoUrl);
 
             await _postRepository.UpdateAsync(post);
             return Unit.Value;

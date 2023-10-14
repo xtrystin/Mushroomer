@@ -65,7 +65,8 @@ namespace WebAPI.Controllers
             AddJwtToHttpClientHeader();
             var url = _config["MicroservicesUrl:Post"] + $"/post";
             var authorId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            AddPostCommand post = new() { Title = request.Title, Content= request.Content, AuthorId = authorId }; 
+            AddPostCommand post = new() { Title = request.Title, Content= request.Content, 
+                AuthorId = authorId, ThumbnailPhotoUrl = request.ThumbnailPhotoUrl }; 
             
             var response = await _httpClient.PostAsJsonAsync(url, post);
             if (response.IsSuccessStatusCode)

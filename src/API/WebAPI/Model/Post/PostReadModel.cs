@@ -11,4 +11,5 @@ public class PostReadModel
     public string AuthorEmail {get; set; }
     public int LikeNumber { get; set; }
     public int DisLikeNumber { get; set; }
+    public string? ThumbnailPhotoUrl { get; set; }
 }

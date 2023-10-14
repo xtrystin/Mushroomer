@@ -15,9 +15,10 @@ public class Post
     private User _author;
     private List<PostUserReaction> _reactions;
     private bool _isActive;
+    private ThumbnailPhotoUrl _thumbnailPhotoUrl;
 
 
-    public Post(PostId id, PostTitle title, PostContent content, List<Comment> comments, User author)
+    public Post(PostId id, PostTitle title, PostContent content, List<Comment> comments, User author, ThumbnailPhotoUrl thumbnailPhotoUrl)
     {
         Id = id;
         _title = title;
@@ -27,6 +28,7 @@ public class Post
         _comments = comments;
         _author = author;
         _isActive = false;
+        _thumbnailPhotoUrl = thumbnailPhotoUrl;
     }
 
     public Post()
@@ -46,6 +48,12 @@ public class Post
     public void ChangeContent(PostContent content) 
     {
         _content = content;
+        _lastModificationDate = DateTime.Now;
+    }
+
+    public void ChangeThumbnailPhotoUrl(ThumbnailPhotoUrl thumbnailPhotoUrl)
+    {
+        _thumbnailPhotoUrl = thumbnailPhotoUrl;
         _lastModificationDate = DateTime.Now;
     }
 

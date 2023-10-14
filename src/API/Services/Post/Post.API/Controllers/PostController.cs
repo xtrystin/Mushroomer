@@ -69,7 +69,7 @@ namespace Post.API.Controllers
             userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             var request = new EditPostCommand() { PostId = id, Title = requestDto.Title, 
-                Content = requestDto.Content, UserId = userId};
+                Content = requestDto.Content, UserId = userId, ThumbnailPhotoUrl = requestDto.ThumbnailPhotoUrl};
             await _mediator.Send(request);
 
             return Ok();

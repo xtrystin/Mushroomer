@@ -30,6 +30,30 @@
                         <ValidationMessage For="@(() => Post.Title)" />
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label for="ThumbnailPhotoUrl" class="col-sm-2 col-form-label" placeholder="Leave empty when uploading own file">Thumbnail Photo Url: </label>
+                    <div class="col-sm-10">
+                        <InputText id="ThumbnailPhotoUrl" class="form-control" @bind-Value="EditPostModel.ThumbnailPhotoUrl" />
+                        <ValidationMessage For="@(() => Post.ThumbnailPhotoUrl)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="UploadThumbnailPhoto" class="col-sm-2 col-form-label">Upload Thumbnail Photo: </label>
+                    <div class="col-sm-10">
+                        <RadzenCard>
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Upload file (image ratio should be 4x3)</RadzenText>
+                            <RadzenUpload Url=@fileUploadApiUrl Complete=@ThumbnailPhotoUploaded class="w-100">
+                                <RadzenUploadHeader Name="Authorization" Value=@jwt />
+                            </RadzenUpload>
+                        </RadzenCard>
+                    </div>
+                </div>
+                @if (string.IsNullOrEmpty(EditPostModel.ThumbnailPhotoUrl) is false)
+                {
+                    <div class="ratio ratio-4x3">
+                        <img src=@EditPostModel.ThumbnailPhotoUrl class="img-fluid" alt="Thumbnail photo" />
+                    </div>
+                }
                 <RadzenHtmlEditor @bind-Value=@EditPostModel.Content UploadHeaders=@uploadHeaders UploadUrl=@fileUploadApiUrl style="height: 400px;" />
                 <br />
                 <div class="col-md-12 text-rigth">
@@ -194,6 +218,7 @@
 
         private string fileUploadApiUrl = "";
         private Dictionary<string, string> uploadHeaders = new();
+        private string jwt = "";
 
         protected override async Task OnInitializedAsync()
         {
@@ -201,7 +226,7 @@
             {
                 Post = await PostEndpoint.Get(new Guid(Id));
                 Post.Content = Post.Content.Sanitize();
-                (EditPostModel.Title, EditPostModel.Content) = (Post.Title, Post.Content);
+                (EditPostModel.Title, EditPostModel.Content, EditPostModel.ThumbnailPhotoUrl) = (Post.Title, Post.Content, Post.ThumbnailPhotoUrl);
 
                 UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
                 IsAuthor = await CheckIfUserIsAuthor();
@@ -215,6 +240,7 @@
                 {                
                     var bearerTokenStorageKey = Configuration["bearerTokenStorageKey"];
                     string token = await LocalStorage.GetItemAsync<string>(bearerTokenStorageKey);
+                    jwt = $"bearer {token}";
                     uploadHeaders.Add("Authorization", "bearer " + token);
                 }
 
@@ -377,24 +403,30 @@
             }
         }
 
-        private async Task ChangeIsActive()
+    private async Task ChangeIsActive()
+    {
+        try
         {
-            try
-            {
-                await PostEndpoint.ChangeStatus(Post.Id, !Post.IsActive);
-                Post.IsActive = !Post.IsActive;
-            }
-            catch (Exception ex)
-            {
-                var message = new NotificationMessage
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = "Change post status error",
-                    Detail = ex.Message,
-                    Duration = 4000
-                };
-
-                NotificationService.Notify(message);
-            }
+            await PostEndpoint.ChangeStatus(Post.Id, !Post.IsActive);
+            Post.IsActive = !Post.IsActive;
         }
+        catch (Exception ex)
+        {
+            var message = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = "Change post status error",
+                Detail = ex.Message,
+                Duration = 4000
+            };
+
+            NotificationService.Notify(message);
+        }
+    }
+
+    private void ThumbnailPhotoUploaded(UploadCompleteEventArgs eventArgs)
+    {
+        var result = JsonSerializer.Deserialize<ImageUploadResponse>(eventArgs.RawResponse);
+        EditPostModel.ThumbnailPhotoUrl = result.url;
+    }
 }

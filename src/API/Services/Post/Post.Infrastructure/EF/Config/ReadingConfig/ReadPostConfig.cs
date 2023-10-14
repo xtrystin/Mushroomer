@@ -29,6 +29,9 @@ public class ReadPostConfig : IEntityTypeConfiguration<PostReadModel>
         builder.Property(x => x.IsActive)
             .HasColumnName("IsActive");
 
+        builder.Property(x => x.ThumbnailPhotoUrl)
+            .HasColumnName("ThumbnailPhotoUrl");
+
         builder.HasMany(x => x.Comments)
             .WithOne();
         

@@ -1,8 +1,10 @@
-﻿namespace Post.Domain.Exception;
+﻿using Common.Exception;
 
-public class EmptyPostIdException : System.Exception
+namespace Post.Domain.Exception;
+
+public class EmptyPostIdException : ApiException
 {
-	public EmptyPostIdException() : base("PostId cannot be empty")
+	public EmptyPostIdException() : base(System.Net.HttpStatusCode.BadRequest, "PostId cannot be empty")
 	{
 	}
 }

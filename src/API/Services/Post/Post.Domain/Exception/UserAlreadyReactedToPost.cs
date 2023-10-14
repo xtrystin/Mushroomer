@@ -1,8 +1,10 @@
-﻿namespace Post.Domain.Exception;
+﻿using Common.Exception;
 
-public class UserAlreadyReactedToPost : System.Exception
+namespace Post.Domain.Exception;
+
+public class UserAlreadyReactedToPost : ApiException
 {
-    public UserAlreadyReactedToPost(string? message) : base(message)
+    public UserAlreadyReactedToPost(string? message) : base(System.Net.HttpStatusCode.BadRequest, message)
     {
     }
 }

@@ -10,4 +10,7 @@ public class AddPostDto
     
     [Required(ErrorMessage = "Content is required")]
     public string Content { get; set; }
+
+    [MaxLength(400, ErrorMessage = "Photo Url can have max 400 characters")]
+    public string? ThumbnailPhotoUrl { get; set; }
 }

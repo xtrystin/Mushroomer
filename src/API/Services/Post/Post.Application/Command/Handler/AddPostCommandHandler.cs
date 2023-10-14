@@ -21,9 +21,10 @@ public class AddPostCommandHandler : IRequestHandler<AddPostCommand>
         PostId postId = new(Guid.NewGuid());
         PostTitle postTitle = new(request.Title);
         PostContent postContent = new(request.Content.Sanitize());
+        ThumbnailPhotoUrl thumbnailPhotoUrl = new(request.ThumbnailPhotoUrl);
         var user = await _userRepository.GetAsync(request.AuthorId);
         
-        var post = new Domain.Entity.Post(postId, postTitle, postContent, null, user);   //todo: factory method
+        var post = new Domain.Entity.Post(postId, postTitle, postContent, null, user, thumbnailPhotoUrl);   //todo: factory method
         if (request.AutoActivate)
             post.Activate();
 

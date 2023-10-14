@@ -104,8 +104,16 @@
                         <div class="row">
                             <div class="col-12">
                                 <a href="@($"post/{post.Id}")">
-                                    <img src="https://dummyimage.com/1200x900/000/ffffff&text=Post" class="img-fluid" alt="Placeholder image" />
-                                    <!--- <img src="@($"{api}{product.ProductImageUrl}")" class="img-fluid" alt="@product.ProductName" />    --->
+                                    <div class="ratio ratio-4x3">
+                                        @if (string.IsNullOrEmpty(post.ThumbnailPhotoUrl))
+                                        {
+                                            <img src="https://dummyimage.com/1200x900/000/ffffff&text=Post" class="img-fluid" alt="Placeholder image" />
+                                        }
+                                        else
+                                        {
+                                            <img src="@($"{post.ThumbnailPhotoUrl}")" class="img-fluid" alt="Thumbnail photo" />
+                                        }
+                                    </div>
                                 </a>
                                 <p class="h5 mb-2 my-2 text-justify">Title: @post.Title</p>
                                 <p class="mb-1">
