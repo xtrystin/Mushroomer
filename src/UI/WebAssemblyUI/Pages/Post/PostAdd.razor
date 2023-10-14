@@ -8,6 +8,7 @@
 @inject NavigationManager NavManager
 @inject IConfiguration Configuration
 @inject ILocalStorageService LocalStorage
+@inject NotificationService NotificationService
 @attribute [Authorize]
 
 <h3>Add your new post</h3>
@@ -35,7 +36,7 @@
             <div class="col-sm-10">
                  <RadzenCard>
                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Upload file (image ratio should be 4x3)</RadzenText>
-                <RadzenUpload Url=@fileUploadApiUrl Complete=@ThumbnailPhotoUploaded class="w-100">
+                    <RadzenUpload Url=@fileUploadApiUrl Error=@ThumbnailPhotoUploadedError Complete=@ThumbnailPhotoUploaded class="w-100">
                     <RadzenUploadHeader Name="Authorization" Value=@jwt />
                 </RadzenUpload>
             </RadzenCard>
@@ -99,5 +100,18 @@
     {
         var result = JsonSerializer.Deserialize<ImageUploadResponse>(eventArgs.RawResponse);
         Post.ThumbnailPhotoUrl = result.url;
+    }
+
+    private void ThumbnailPhotoUploadedError(UploadErrorEventArgs errorArgs)
+    {
+        var message = new NotificationMessage
+        {
+            Severity = NotificationSeverity.Error,
+            Summary = "Image Upload Error",
+            Detail = errorArgs.Message,
+            Duration = 4000
+        };
+
+        NotificationService.Notify(message);
     }
 }

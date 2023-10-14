@@ -42,7 +42,7 @@
                     <div class="col-sm-10">
                         <RadzenCard>
                             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Upload file (image ratio should be 4x3)</RadzenText>
-                            <RadzenUpload Url=@fileUploadApiUrl Complete=@ThumbnailPhotoUploaded class="w-100">
+                            <RadzenUpload Url=@fileUploadApiUrl Error=@ThumbnailPhotoUploadedError Complete =@ThumbnailPhotoUploaded class="w-100">
                                 <RadzenUploadHeader Name="Authorization" Value=@jwt />
                             </RadzenUpload>
                         </RadzenCard>
@@ -266,6 +266,7 @@
             IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
             UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
             IsUserModerator = (await AuthState).User.IsInRole("moderator");
+            await SetupButtonClickability();
             StateHasChanged();
         }
 
@@ -428,5 +429,18 @@
     {
         var result = JsonSerializer.Deserialize<ImageUploadResponse>(eventArgs.RawResponse);
         EditPostModel.ThumbnailPhotoUrl = result.url;
+    }
+
+    private void ThumbnailPhotoUploadedError(UploadErrorEventArgs errorArgs)
+    {
+        var message = new NotificationMessage
+        {
+            Severity = NotificationSeverity.Error,
+            Summary = "Image Upload Error",
+            Detail = errorArgs.Message,
+            Duration = 4000
+        };
+
+        NotificationService.Notify(message);
     }
 }
