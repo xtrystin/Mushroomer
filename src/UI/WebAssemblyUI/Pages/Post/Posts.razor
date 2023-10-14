@@ -24,6 +24,11 @@
         </button>
     </div>
     <div class="col-auto ">
+        <button type="button" class="btn btn-outline-secondary" @onclick="SortByScore">
+            Order by score
+        </button>
+    </div>
+    <div class="col-auto ">
         <button type="button" class="btn btn-outline-secondary" @onclick="SortByDate">
             Newest first
         </button>
@@ -115,11 +120,12 @@
                                         }
                                     </div>
                                 </a>
-                                <p class="h5 mb-2 my-2 text-justify">Title: @post.Title</p>
+                                <p class="h5 mb-2 my-2 text-justify">@post.Title</p>
                                 <p class="mb-1">
                                     <strong>Author: </strong> @post.AuthorEmail
                                 </p>
                                 <p class="my-1 text-justify">Date: @post.CreatedDate</p>
+                                <p class="mb-1"><font color="green">Likes: @post.LikeNumber</font>  | <font color="#ff4122">Dislikes: @post.DisLikeNumber</font></p>
                             </div>
                         </div>
                     </div>
@@ -186,6 +192,11 @@
     private void SortByDate()
     {
         posts = posts.OrderByDescending(x => x.CreatedDate).ToList();
+    }
+
+    private void SortByScore()
+    {
+        posts = posts.OrderByDescending(x => x.LikeNumber - x.DisLikeNumber).ToList();
     }
 
     private async Task ShowAllPosts()
