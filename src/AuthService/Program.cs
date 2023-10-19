@@ -1,4 +1,5 @@
 using AuthService.Data;
+using AuthService.EmailSender;
 using AuthService.Microserives;
 using AuthService.Middleware;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +21,7 @@ builder.Services.AddCors(policy =>
 
 // Register custom services
 builder.Services.AddScoped<IUserMicroservice, UserMicroservice>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var connectionString = builder.Configuration.GetConnectionString("PostgresAuthDb");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

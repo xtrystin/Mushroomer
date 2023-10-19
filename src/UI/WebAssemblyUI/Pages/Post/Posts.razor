@@ -24,8 +24,8 @@
         </button>
     </div>
     <div class="col-auto ">
-        <button type="button" class="btn btn-outline-secondary" @onclick="SortByScore">
-            Order by score
+        <button type="button" class="btn btn-outline-secondary" @onclick="SortByRating">
+            Order by rating
         </button>
     </div>
     <div class="col-auto ">
@@ -194,7 +194,7 @@
         posts = posts.OrderByDescending(x => x.CreatedDate).ToList();
     }
 
-    private void SortByScore()
+    private void SortByRating()
     {
         posts = posts.OrderByDescending(x => x.LikeNumber - x.DisLikeNumber).ToList();
     }

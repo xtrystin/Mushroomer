@@ -10,5 +10,7 @@ namespace WebAssemblyUI.Authentication
         Task Register(RegisterModel model);
         Task ChangePassword(UserChangePasswordModel model);
         Task<bool> IsUserInRole(string userId, string roleName);
+        Task ForgotPassword(ForgotPasswordModel model);
+        Task ResetPassword(ResetPasswordModel model);
     }
 }

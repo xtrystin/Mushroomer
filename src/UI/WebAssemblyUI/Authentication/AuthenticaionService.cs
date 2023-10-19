@@ -104,6 +104,24 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
+    public async Task ForgotPassword(ForgotPasswordModel model)
+    {
+        string apiEndpoint = _config["api"] + "/api/User/ForgotPassword";
+
+        var response = await _client.PostAsJsonAsync(apiEndpoint, model);
+        if (response.IsSuccessStatusCode is false)
+            throw new Exception(await response.Content.ReadAsStringAsync());
+    }
+
+    public async Task ResetPassword(ResetPasswordModel model)
+    {
+        string apiEndpoint = _config["api"] + "/api/User/ResetPassword";
+
+        var response = await _client.PostAsJsonAsync(apiEndpoint, model);
+        if (response.IsSuccessStatusCode is false)
+            throw new Exception(await response.Content.ReadAsStringAsync());
+    }
+
     public async Task<bool> IsUserInRole(string userId, string roleName)
     {
         string apiEndpoint = _config["api"] + $"/api/User/{userId}/IsInRole?roleName={roleName}";
