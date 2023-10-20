@@ -1,4 +1,4 @@
-﻿@page "/warnings"
+﻿@page "/locations"
 @using UI.ApiLibrary.ApiEndpoints
 @using UI.ApiLibrary.Dto
 @using WebAssemblyUI.Models
@@ -7,7 +7,7 @@
 
 <div class="row g-3">
     <div class="col-auto">
-        <h3>Warnings</h3>
+        <h3>Locations</h3>
     </div>
     @if (IsUserExperienced || IsUserModerator)
     {
@@ -85,8 +85,8 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-12">
-                                <a href="@($"warning/{warning.Id}")">
-                                    <img src="https://dummyimage.com/1200x900/000/ffffff&text=Warning" class="img-fluid" alt="Placeholder image" />
+                                <a href="@($"locations/{warning.Id}")">
+                                    <img src="https://dummyimage.com/1200x900/000/ffffff&text=Location" class="img-fluid" alt="Placeholder image" />
                                     <!--- <img src="@($"{api}{product.ProductImageUrl}")" class="img-fluid" alt="@product.ProductName" />    --->
                                 </a>
                                 <p class="my-2 text-justify">
@@ -100,7 +100,7 @@
                         </div>
                         <div class="row">
                             <div class=col-12>
-                                <p class="h5 mb-3">IsActive: @warning.IsActive</p>
+                                <p class="mb-3">IsActive: @warning.IsActive</p>
                             </div>
                         </div>
                     </div>
@@ -149,7 +149,7 @@
 
     private void AddWarning()
     {
-        NavManager.NavigateTo("warnings/add");
+        NavManager.NavigateTo("locations/add");
     }
 
     private void ShowApprovedOnly()

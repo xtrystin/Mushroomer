@@ -17,7 +17,7 @@ public class AddWarningCommandHandler : IRequestHandler<AddWarningCommand>
     {
         //todo create factory method in doamin to create
         //todo: only mod and experienced can add
-
+        // todo remove Province from request or calc based on lat long coordinates
         var warning = new Warning(Guid.NewGuid(), request.Description, request.Province,
             request.MushroomName, request.Latitude, request.Longitude, request.Date,
             request.IsActive, request.Title);

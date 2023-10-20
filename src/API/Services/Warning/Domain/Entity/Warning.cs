@@ -61,7 +61,7 @@ public class Warning
 
         if (reaction is not null && reaction.Approve is true)
         {
-            throw new UserAlreadyReactedToWarning("You have already approved this warning");
+            throw new UserAlreadyReactedToWarning("You have already approved this location");
         }
         else if (reaction is not null)
         {
@@ -89,7 +89,7 @@ public class Warning
 
         if (reaction is not null && reaction.Approve is false)
         {
-            throw new UserAlreadyReactedToWarning("You have already disapproved this warning");
+            throw new UserAlreadyReactedToWarning("You have already disapproved this location");
         }
         else if (reaction is not null)
         {

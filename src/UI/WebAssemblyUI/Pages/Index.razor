@@ -32,7 +32,7 @@
                 {
                     <RadzenCard class="mb-4">
                         <RadzenCheckBox @bind-Value=@showOnlyApproved Name="showMarker" @onclick="ChangeMarkersVisibility" />
-                        <RadzenLabel Text="Show only community approved" Component="showMarker" Style="margin-left: 8px; vertical-align: middle;" />
+                        <RadzenLabel Text="With high rating only" Component="showMarker" Style="margin-left: 8px; vertical-align: middle;" />
                     </RadzenCard>
                     <RadzenGoogleMap @ref=map style="height: 45rem" Options=@(new Dictionary<string, object> { { "disableDoubleClickZoom", true } })
                                     Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 }) 
@@ -87,7 +87,7 @@
 
     async Task OnMarkerClick(RadzenGoogleMapMarker marker)
     {
-        await DialogService.OpenSideAsync<WarningDetails>("Side Panel", 
+        await DialogService.OpenSideAsync<LocationDetails>("Location Details", 
         options: new SideDialogOptions { CloseDialogOnOverlayClick = false, Position = DialogPosition.Top, ShowMask = false, Height = "40vh", Width = "100vw" }, 
         parameters: new() { { "Id", marker.Title }, { "isModalView", true } });
     }

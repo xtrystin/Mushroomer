@@ -25,7 +25,8 @@ public class WarningConfig : IEntityTypeConfiguration<Warning>
 
         builder.Property(x => x.Province)
             .HasColumnName("Province")
-            .HasColumnType("varchar(100)");
+            .HasColumnType("varchar(100)")
+            .IsRequired(false);
 
         builder.Property(x => x.MushroomName)
             .HasColumnName("MushroomName")

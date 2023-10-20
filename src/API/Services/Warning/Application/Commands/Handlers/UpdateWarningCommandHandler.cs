@@ -15,6 +15,7 @@ public class UpdateWarningCommandHandler : IRequestHandler<UpdateWarningCommand>
     public async Task<Unit> Handle(UpdateWarningCommand request, CancellationToken cancellationToken)
     {
         //todo: validation
+        // todo remove Province from request or calc based on lat long coordinates
 
         var warning = await _warningRepository.GetWarningAsync(request.Id);
         warning.Modify(request.Title, request.Description, request.Province,
