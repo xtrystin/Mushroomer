@@ -15,7 +15,7 @@
       "HtmlSanitizer.dll": "sha256-TNBcpQZMgYf1LB91eMFYLFjSBznVWh9C+cVomT3EahY=",
       "Microsoft.AspNetCore.Authorization.dll": "sha256-CTIsKXvkuAyU2HJ+vohauPWRANAtCHkUu3JOxkUm3C0=",
       "Microsoft.AspNetCore.Components.Authorization.dll": "sha256-B5P7H9vCJ1tZlN8osbqTx03Lv6IJUV\/EzCZQOcRZB6o=",
-      "Microsoft.AspNetCore.Components.dll": "sha256-7KRfR\/8ftRps4D5qEbiIQlpHbLLwG\/wnEeDlT7e3n+U=",
+      "Microsoft.AspNetCore.Components.dll": "sha256-j+0k3j6Vyhycr39PUh\/oMT9I1iITU33+Od0W8LkJ46k=",
       "Microsoft.AspNetCore.Components.Forms.dll": "sha256-fC2eVUlwtDUgnAxadLFd9Xi7fOLWtJ0QaNZXUfo68\/w=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-CjAeZpSzF4B8JHHF94n7VUFu0+3Ma8Le89ZX0toO\/Gg=",
       "Microsoft.AspNetCore.Components.WebAssembly.Authentication.dll": "sha256-1NtWGEOBgrxLguSNGzN15h+PPDlnF3y9RLPyKvpAv5Q=",
@@ -81,7 +81,7 @@
       "System.Web.HttpUtility.dll": "sha256-uULn7WRz+YAUI2DjzZaj5+tPn59wMYCfyRc6qrX2F\/w=",
       "System.Xml.XDocument.dll": "sha256-9sxTYGfTufWx373X4eNs9GPIjmjB56sK6zZ2DeitQns=",
       "UI.ApiLibrary.dll": "sha256-4fgV72ddv7ppl14PkNGnK1jO64JL94Ggu6EhSH1qdCc=",
-      "WebAssemblyUI.dll": "sha256-sSffL5sG74VAtkvjj66TubC4hQ4ufci9iEYwrMD\/bsE="
+      "WebAssemblyUI.dll": "sha256-fygezuiD4UEcp9Bscr3URF4Ae8TQ44Aea1wfR1uv2+w="
     },
     "extensions": null,
     "lazyAssembly": null,
