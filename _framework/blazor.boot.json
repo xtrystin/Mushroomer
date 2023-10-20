@@ -81,7 +81,7 @@
       "System.Web.HttpUtility.dll": "sha256-uULn7WRz+YAUI2DjzZaj5+tPn59wMYCfyRc6qrX2F\/w=",
       "System.Xml.XDocument.dll": "sha256-9sxTYGfTufWx373X4eNs9GPIjmjB56sK6zZ2DeitQns=",
       "UI.ApiLibrary.dll": "sha256-4fgV72ddv7ppl14PkNGnK1jO64JL94Ggu6EhSH1qdCc=",
-      "WebAssemblyUI.dll": "sha256-fygezuiD4UEcp9Bscr3URF4Ae8TQ44Aea1wfR1uv2+w="
+      "WebAssemblyUI.dll": "sha256-7QLtj2dBMRHkr9CG7EoJwglXmE3RYDL530pBRrnOyNA="
     },
     "extensions": null,
     "lazyAssembly": null,
