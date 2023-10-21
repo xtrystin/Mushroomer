@@ -135,14 +135,14 @@ public class PostEndpoint : IPostEndpoint
         }
     }
 
-    public async Task<IEnumerable<CommentReadModel>> GetCommentsForUser(Guid userId)
+    public async Task<IEnumerable<CommentDto>> GetCommentsForUser(Guid userId)
     {
         var url = _api + $"/api/Post/comment/user/{userId}";
 
         var response = await _httpClient.GetAsync(url);
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadFromJsonAsync<IEnumerable<CommentReadModel>>();
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<CommentDto>>();
             return result;
         }
         else

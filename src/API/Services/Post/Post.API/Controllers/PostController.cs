@@ -118,7 +118,7 @@ namespace Post.API.Controllers
 
         [HttpGet("comment/user/{id:guid}")]
         [AllowAnonymous]
-        public async Task<IEnumerable<CommentReadModel>> GetCommentsForUser([FromRoute] Guid id)
+        public async Task<IEnumerable<CommentDto>> GetCommentsForUser([FromRoute] Guid id)
         {
             var request = new GetCommentsForUserQuery { UserId = id };
             var result = await _mediator.Send(request);

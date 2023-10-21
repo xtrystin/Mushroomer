@@ -168,7 +168,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("comment/user/{id:guid}")]
-        public async Task<IEnumerable<CommentReadModel>> GetCommentsForUser([FromRoute] Guid id)
+        public async Task<IEnumerable<CommentDto>> GetCommentsForUser([FromRoute] Guid id)
         {
             AddJwtToHttpClientHeader();
             var url = _config["MicroservicesUrl:Post"] + $"/post/comment/user/{id}";
@@ -176,7 +176,7 @@ namespace WebAPI.Controllers
             var response = await _httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<IEnumerable<CommentReadModel>>();
+                var result = await response.Content.ReadFromJsonAsync<IEnumerable<CommentDto>>();
                 return result;
             }
             else

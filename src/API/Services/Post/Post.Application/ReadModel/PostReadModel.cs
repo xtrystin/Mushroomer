@@ -11,7 +11,7 @@ public class PostReadModel
     public DateTime CreatedDate { get; set; }
     public DateTime LastModificationDate { get; set; }
     public bool IsActive { get; set; }
-    public string AuthorEmail => Author.Email;
+    public string AuthorEmail => Author?.Email;
     public int LikeNumber => Reactions.Count(x => x.Like == true);
     public int DisLikeNumber => Reactions.Count(x => x.Like == false);
     public string? ThumbnailPhotoUrl { get; set; }

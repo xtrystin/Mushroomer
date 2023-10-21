@@ -11,7 +11,7 @@ public interface IPostEndpoint
     Task Delete(Guid id);
     Task ChangeStatus(Guid id, bool changeToActive);
     Task<IEnumerable<CommentReadModel>> GetCommentsForPost(Guid postId);
-    Task<IEnumerable<CommentReadModel>> GetCommentsForUser(Guid userId);
+    Task<IEnumerable<CommentDto>> GetCommentsForUser(Guid userId);
     Task ModifyComment(Guid postId, string content, Guid commentId);
     Task DeleteComment(Guid postId, Guid commentId);
     Task AddCommentToPost(AddCommentDto comment);

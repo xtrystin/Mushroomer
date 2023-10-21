@@ -9,10 +9,10 @@ public class CommentReadModel
     public string Content { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime LastModificationDate { get; set; }
-    public string AuthorEmail => Author.Email;
+    public string AuthorEmail => Author?.Email;
 
     [JsonPropertyName("authorId")]
-    public Guid CommentAuthorId => Author.Id;
+    public Guid? CommentAuthorId => Author?.Id;
 
     public Guid PostId { get; set; }
     [JsonIgnore]
