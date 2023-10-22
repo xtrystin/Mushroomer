@@ -8,7 +8,7 @@ public record PostTitle
 
 	public PostTitle(string value)
 	{
-		if (string.IsNullOrEmpty(value) || value.Count() > 20)
+		if (string.IsNullOrEmpty(value) || value.Count() > 200)
 		{
 			throw new InvalidPostTitleException();
 		}

@@ -4,7 +4,7 @@ namespace Post.Domain.Exception;
 
 public class InvalidPostTitleException : ApiException
 {
-	public InvalidPostTitleException() : base(System.Net.HttpStatusCode.BadRequest, "Post Title cannot be empty nor longer than 20 characters")
+	public InvalidPostTitleException() : base(System.Net.HttpStatusCode.BadRequest, "Post Title cannot be empty nor longer than 200 characters")
 	{
 
 	}
