@@ -1,8 +1,11 @@
-﻿namespace Domain.Exception;
+﻿using Common.Exception;
+using System.Net;
 
-public class UserAlreadyReactedToWarning : System.Exception
+namespace Domain.Exception;
+
+public class UserAlreadyReactedToWarning : ApiException
 {
-    public UserAlreadyReactedToWarning(string? message) : base(message)
+    public UserAlreadyReactedToWarning(string? message) : base(HttpStatusCode.BadRequest, message)
     {
     }
 }

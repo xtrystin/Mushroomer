@@ -17,9 +17,9 @@ public class WarningsEndpoint : IWarningsEndpoint
         _api = _config["apiGateway"];
     }
 
-    public async Task<List<WarningDto>> GetAll()
+    public async Task<List<WarningDto>> GetAll(bool onlyInactive = false, bool onlyInactiveForUser = false)
     {
-        string apiEndpoint = _api + "/api/Warnings";
+        string apiEndpoint = _api + $"/api/Warnings?onlyInactive={onlyInactive}&onlyInactiveForUser={onlyInactiveForUser}";
 
         using var response = await _httpClient.GetAsync(apiEndpoint);
         if (response.IsSuccessStatusCode)
@@ -29,7 +29,8 @@ public class WarningsEndpoint : IWarningsEndpoint
         }
         else
         {
-            throw new Exception(response.ReasonPhrase);
+            var reasonContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(string.IsNullOrEmpty(reasonContent) ? response.ReasonPhrase : reasonContent);
         }
     }
 
@@ -45,7 +46,8 @@ public class WarningsEndpoint : IWarningsEndpoint
         }
         else
         {
-            throw new Exception(response.ReasonPhrase);
+            var reasonContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(string.IsNullOrEmpty(reasonContent) ? response.ReasonPhrase : reasonContent);
         }
     }
 
@@ -91,6 +93,22 @@ public class WarningsEndpoint : IWarningsEndpoint
         else
         {
             throw new Exception(response.ReasonPhrase);
+        }
+    }
+
+    public async Task ChangeStatus(Guid id, bool changeToActive)
+    {
+        var url = _api + $"/api/Warnings/{id}/changeStatus?changeToActive={changeToActive}";
+
+        var response = await _httpClient.PatchAsync(url, default);
+        if (response.IsSuccessStatusCode)
+        {
+            // log success
+        }
+        else
+        {
+            var reasonContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(string.IsNullOrEmpty(reasonContent) ? response.ReasonPhrase : reasonContent);
         }
     }
 

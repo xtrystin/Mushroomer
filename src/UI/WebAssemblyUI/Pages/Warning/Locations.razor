@@ -9,7 +9,7 @@
     <div class="col-auto">
         <h3>Locations</h3>
     </div>
-    @if (IsUserExperienced || IsUserModerator)
+    @if (IsUserLoggedIn)
     {
         <div class="col-auto ">
             <button type="button" class="btn btn-outline-success" @onclick="AddWarning">
@@ -18,13 +18,8 @@
         </div>
     }
     <div class="col-md-auto ">
-        <button type="button" class="btn btn-outline-secondary" @onclick="ShowApprovedOnly">
-            Show approved only
-        </button>
-    </div>
-    <div class="col-sm-auto ">
-        <button type="button" class="btn btn-outline-secondary" @onclick="HideInactive">
-            Hide inactive
+        <button type="button" class="btn btn-outline-secondary" @onclick="ShowHighRatingOnly">
+            High rating only
         </button>
     </div>
     <div class="col-sm-auto ">
@@ -32,6 +27,22 @@
             Show all
         </button>
     </div>
+    @if (IsUserModerator)
+    {
+        <div class="col-auto ">
+            <button type="button" class="btn btn-outline-secondary" @onclick="ShowInactive">
+                Inactive Locations
+            </button>
+        </div>
+    }
+    @if (IsUserLoggedIn)
+    {
+        <div class="col-auto ">
+            <button type="button" class="btn btn-outline-secondary" @onclick="ShowInactiveForUser">
+                My Inactive
+            </button>
+        </div>
+    }
 </div>
 <br />
 <div class="container-fluid">
@@ -64,13 +75,6 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class=col-12 placeholder-glow">
-                                <p class="h5 mb-3">             
-                                    <span class="placeholder col-5"></span>
-                                </p>
-                            </div>
-                        </div>
                     </div>
                 </div>
             }
@@ -93,14 +97,10 @@
                                     @warning.Title
                                 </p>
                                 <p class="mb-1">
-                                    <strong>Date:</strong> @warning.Date
+                                    <strong>Author: </strong> @warning.AuthorEmail
                                 </p>
+                                <p class="my-1 text-justify">Date: @warning.Date</p>
                                 <p class="mb-1"><font color="green">Approves: @warning.ApproveNumber</font>  | <font color="#ff4122">Disapproves: @warning.DisapproveNumber</font></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class=col-12>
-                                <p class="mb-3">IsActive: @warning.IsActive</p>
                             </div>
                         </div>
                     </div>
@@ -123,6 +123,7 @@
 
     private bool IsUserModerator = false;
     private bool IsUserExperienced = false;
+    private bool IsUserLoggedIn = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -133,6 +134,7 @@
 
             IsUserModerator = (await AuthState).User.IsInRole("moderator");
             IsUserExperienced = (await AuthState).User.IsInRole("experienced");
+            IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
         }
         catch (Exception ex)
         {
@@ -144,6 +146,7 @@
     {
         IsUserModerator = (await AuthState).User.IsInRole("moderator");
         IsUserExperienced = (await AuthState).User.IsInRole("experienced");
+        IsUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
         StateHasChanged();
     }
 
@@ -152,7 +155,7 @@
         NavManager.NavigateTo("locations/add");
     }
 
-    private void ShowApprovedOnly()
+    private void ShowHighRatingOnly()
     {
         warnings = warnings.Where(x => x.ApproveNumber - x.DisapproveNumber >= 2).ToList();
     }
@@ -162,8 +165,12 @@
         warnings = allWarnings;
     }
 
-    private void HideInactive()
+    private async Task ShowInactive()
     {
-        warnings = warnings.Where(x => x.IsActive == true).ToList();
+        warnings = await WarningsEndpoint.GetAll(onlyInactive: true);
+    }
+    private async Task ShowInactiveForUser()
+    {
+        warnings = await WarningsEndpoint.GetAll(onlyInactiveForUser: true);
     }
 }

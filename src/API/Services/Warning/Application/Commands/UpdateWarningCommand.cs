@@ -1,5 +1,4 @@
-﻿using Application.Dto;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Commands;
 
@@ -12,7 +11,7 @@ public class UpdateWarningCommand : IRequest
     public string MushroomName { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-
+    public Guid UserId { get; set; }
+    public bool IsUserMod { get; set; }
     public DateTime Date { get; set; }
-    public bool IsActive { get; set; }
 }

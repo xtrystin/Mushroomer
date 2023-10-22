@@ -1,4 +1,5 @@
 ﻿using Application.Dto;
+using Application.Exception;
 using Application.Queries;
 using Domain.Entity;
 using Infrastructure.EF.Context;
@@ -19,9 +20,15 @@ public class GetWarningQueryHandler : IRequestHandler<GetWarningQuery, WarningDt
 
     public async Task<WarningDto> Handle(GetWarningQuery request, CancellationToken cancellationToken)
     {
-        var warning = await _warnings.Include(x => x._reactions).Where(x => x.Id == request.Id).FirstOrDefaultAsync();
-        //todoL if null return notFound
-
-        return WarningMapper.MapToDto(warning);
+        var warning = await _warnings.Include(x => x._reactions).Include(x => x.Author).Where(x => x.Id == request.Id).FirstOrDefaultAsync();
+        
+        if (warning != null && warning.IsActive)
+            return WarningMapper.MapToDto(warning);
+        else if (warning != null && warning.IsActive == false &&
+            (request.UserId != null && warning.Author.Id == request.UserId) || request.IsUserMod)
+            return WarningMapper.MapToDto(warning);
+        else
+            throw new NotAuthorizedForOperation("You are not authorized to view this location");
+        
     }
 }

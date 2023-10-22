@@ -15,6 +15,7 @@ public class WarningDto
 
     public DateTime Date { get; set; }
     public bool IsActive { get; set; }
+    public string AuthorEmail { get; set; }
 
     public int ApproveNumber => _reactions.Count(x => x.Approve == true);
     public int DisapproveNumber => _reactions.Count(x => x.Approve == false);
@@ -24,7 +25,7 @@ public class WarningDto
 
     public WarningDto(Guid id, string description, string province,
         string mushroomName, double latitude, double longitude,
-        DateTime date, bool isActive, string title, List<WarningUserReaction> reactions)
+        DateTime date, bool isActive, string title, List<WarningUserReaction> reactions, string authorEmail)
     {
         Id = id;
         Description = description;
@@ -36,6 +37,7 @@ public class WarningDto
         IsActive = isActive;
         Title = title;
         _reactions= reactions;
+        AuthorEmail = authorEmail;
     }
 
     public WarningDto()

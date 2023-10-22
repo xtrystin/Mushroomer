@@ -5,6 +5,7 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavManager
 @inject IWarningsEndpoint WarningEndpoint;
+@inject NotificationService NotificationService
 
 <div class="container-fluid">
     @if (Warning is null)
@@ -46,13 +47,6 @@
                     <div class="col-sm-10">
                         <InputDate id="Date" class="form-control" @bind-Value="Warning.Date" />
                         <ValidationMessage For="@(() => Warning.Date)" />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="IsActive" class="col-sm-2 col-form-label">IsActive: </label>
-                    <div class="col-sm-10">
-                        <InputCheckbox id="IsActive" class="form-check-input" type="checkbox" @bind-Value="Warning.IsActive" />
-                        <ValidationMessage For="@(() => Warning.IsActive)" />
                     </div>
                 </div>
                 <div id="map" style="height:500px;width:100%;"></div>
@@ -97,9 +91,9 @@
                 </div>
             </div>
             <div class="row">
-                <label for="IsActive" class="col-sm-2 col-form-label">IsActive</label>
+                <label for="AuthorEmail" class="col-sm-2 col-form-label">Author</label>
                 <div class="col-sm-10">
-                    <p class="form-control-plaintext" id="IsActive">@Warning.IsActive</p>
+                    <p class="form-control-plaintext" id="IsActive">@Warning.AuthorEmail</p>
                 </div>
             </div>
             <div class="form-group row">
@@ -122,7 +116,7 @@
                 @if (IsUserLoggedIn)
                 {
                     <div class="col-auto" title=@DisapproveButtonTitile>
-                        <button type="button" class="btn btn-outline-danger btn-sm col-auto" disabled=@IsDisApproveButtonDisabled @onclick="Dislike">Dislike</button>
+                        <button type="button" class="btn btn-outline-danger btn-sm col-auto" disabled=@IsDisApproveButtonDisabled @onclick="Disapprove">Disapprove</button>
                     </div>
                 }
             </div>
@@ -148,14 +142,37 @@
             <a href="@($"https://www.google.com/maps/place/{Warning.Latitude.ToString().Replace(',', '.')},{Warning.Longitude.ToString().Replace(',', '.')}")">See on the map</a>
             </div>
             -->
-            @if ((IsUserExperienced || IsUserModerator) && (IsModalView is null or false))
-            {
-                <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
-            }
-            @if (IsUserModerator && (IsModalView is null or false))
-            {
-                <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
-            }
+
+            <div class="row g-2">
+                @if ((IsAuthor || IsUserModerator) && (IsModalView is null or false))
+                {
+                    <div class="col-auto ">
+                        <button type="button" class="btn btn-outline-primary" @onclick="Edit">Edit</button>
+                    </div>
+                    <div class="col-auto ">
+                        <button type="button" class="btn btn-outline-danger" @onclick="Delete">Delete</button>
+                    </div>
+                }
+                @if (IsUserModerator)
+                {
+                    @if (Warning.IsActive)
+                    {
+                        <div class="col-auto ">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="ChangeIsActive">Deactivate</button>
+                            <i>Location is active</i>
+                        </div>
+                    
+                    }
+                    else
+                    {
+                        <div class="col-auto ">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="ChangeIsActive">Activate</button>
+                            <i>Location is not active</i>
+                        </div>
+                    }
+                
+                }
+            </div>
             if (IsModalView is not null and true)
             {
                 <button type="button" class="btn btn-outline-primary" @onclick='() => NavManager.NavigateTo($"locations/{Id}")'>Go to details</button>
@@ -188,11 +205,14 @@
 
     private bool IsUserModerator = false;
     private bool IsUserExperienced = false;
+    private bool IsAuthor;
+    private string UserEmail;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            await Task.Delay(1);    // when accessed via link wait for Authorization header to be added
             Warning = await WarningsEndpoint.Get(Id);
             //await JSRuntime.InvokeVoidAsync("googleMap", null);     //todo remove this
 
@@ -205,10 +225,20 @@
 
             IsUserModerator = (await AuthState).User.IsInRole("moderator");
             IsUserExperienced = (await AuthState).User.IsInRole("experienced");
+            UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
+            IsAuthor = CheckIfUserIsAuthor();
         }
         catch (Exception ex)
         {
-            //todo
+            var message = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Getting Location error",
+                    Detail = ex.Message,
+                    Duration = 4000
+                };
+
+            NotificationService.Notify(message);
         }
     }
 
@@ -219,6 +249,9 @@
         IsUserModerator = (await AuthState).User.IsInRole("moderator");
         IsUserExperienced = (await AuthState).User.IsInRole("experienced");
         string currentUserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
+        IsAuthor = CheckIfUserIsAuthor();
+
         SetupButtonClickability(currentUserId);
         StateHasChanged();
     }
@@ -243,28 +276,47 @@
     // Setup Google Map
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender && (IsModalView is null or false || Editable))
+        try
         {
-            if (Editable)
+            if (!firstRender && (IsModalView is null or false || Editable))
             {
-                if (!wasEditable || IsModalView.Value)
+                if (Editable)
                 {
-                    wasEditable = true;
-                    object[] latLon = { Warning.Latitude, Warning.Longitude, true, 10 };
-                    await JSRuntime.InvokeVoidAsync("googleMapSelect", latLon);
+                    if (!wasEditable)
+                    {
+                        wasEditable = true;
+                        object[] latLon = { Warning.Latitude, Warning.Longitude, true, 10 };
+                        await JSRuntime.InvokeVoidAsync("googleMapSelect", latLon);
+                    }
                 }
-            }
-            else
-            {
-                if (wasEditable)
+                else
                 {
-                    wasEditable = false;
-                    object[] latLon = { Warning.Latitude, Warning.Longitude };
-                    await JSRuntime.InvokeVoidAsync("googleMapShow", latLon);
+                    if (wasEditable)
+                    {
+                        wasEditable = false;
+                        object[] latLon = { Warning.Latitude, Warning.Longitude };
+                        await JSRuntime.InvokeVoidAsync("googleMapShow", latLon);
+                    }
                 }
             }
         }
+        catch (Exception)
+        {
+            
+        }
 
+    }
+
+    private bool CheckIfUserIsAuthor()
+    {
+        if (UserEmail is not null && UserEmail == Warning.AuthorEmail)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private async Task SetupButtonClickability(string userId)
@@ -331,7 +383,7 @@
         }
     }
 
-    private async Task Dislike()
+    private async Task Disapprove()
     {
         try
         {
@@ -350,6 +402,28 @@
         catch (Exception ex)
         {
             //todo: log error, display error message
+        }
+    }
+
+
+    private async Task ChangeIsActive()
+    {
+        try
+        {
+            await WarningEndpoint.ChangeStatus(Warning.Id, !Warning.IsActive);
+            Warning.IsActive = !Warning.IsActive;
+        }
+        catch (Exception ex)
+        {
+            var message = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Change location status error",
+                    Detail = ex.Message,
+                    Duration = 4000
+                };
+
+            NotificationService.Notify(message);
         }
     }
 }

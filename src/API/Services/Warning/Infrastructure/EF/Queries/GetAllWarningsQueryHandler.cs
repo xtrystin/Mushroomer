@@ -19,7 +19,14 @@ public class GetAllWarningsQueryHandler : IRequestHandler<GetAllWarningsQuery, I
 
     public async Task<IEnumerable<WarningDto>> Handle(GetAllWarningsQuery request, CancellationToken cancellationToken)
     {
-        var warnings = await _warnings.Include(x => x._reactions).Select(x => WarningMapper.MapToDto(x)).ToListAsync();
-        return warnings;
+        if (request.OnlyInactiveForUser && string.IsNullOrEmpty(request.UserEmail) is false)
+            return await _warnings.Where(x => x.Author.Email == request.UserEmail && x.IsActive == false)
+               .Include(x => x._reactions).Include(x => x.Author).Select(x => WarningMapper.MapToDto(x)).ToListAsync();
+        else if (request.OnlyInactive && request.IsUserMod)
+            return await _warnings.Where(x => x.IsActive == false).Include(x => x._reactions)
+                .Include(x => x.Author).Select(x => WarningMapper.MapToDto(x)).ToListAsync();
+        else
+            return await _warnings.Where(x => x.IsActive).Include(x => x._reactions)
+                .Include(x => x.Author).Select(x => WarningMapper.MapToDto(x)).ToListAsync();
     }
 }

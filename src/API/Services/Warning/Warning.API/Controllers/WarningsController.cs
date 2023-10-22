@@ -20,55 +20,84 @@ public class WarningsController : ControllerBase
         _mediator = mediator;
     }
 
-    // GET: api/<WarningsController>
     [HttpGet]
-    public async Task<IEnumerable<WarningDto>> Get()
+    public async Task<IEnumerable<WarningDto>> Get([FromQuery] bool onlyInactive = false, 
+        [FromQuery] bool onlyInactiveForUser = false)
     {
-        var request = new GetAllWarningsQuery();
+        bool isUserMod = User?.IsInRole(AuthUserRole.Moderator) ?? false;
+        string? userEmail = (User?.Identity.IsAuthenticated).GetValueOrDefault() ? User.FindFirst(ClaimTypes.Name).Value : null;
+        var request = new GetAllWarningsQuery
+        {
+            OnlyInactive = onlyInactive,
+            IsUserMod = isUserMod,
+            OnlyInactiveForUser = onlyInactiveForUser,
+            UserEmail = userEmail
+        };
 
         var result = await _mediator.Send(request);
 
         return result;
     }
 
-    // GET api/<WarningsController>/5
     [HttpGet("{id}")]
     public async Task<WarningDto> Get(Guid id)
     {
-        var request = new GetWarningQuery { Id = id };
+        bool isUserMod = User?.IsInRole(AuthUserRole.Moderator) ?? false;
+        Guid? userId = User.Identity.IsAuthenticated ? new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value) : null;
+
+        var request = new GetWarningQuery { Id = id, UserId = userId, IsUserMod = isUserMod };
 
         var result = await _mediator.Send(request);
 
         return result;
     }
 
-    // POST api/<WarningsController>
     [HttpPost]
-    [Authorize(Roles = $"{AuthUserRole.Moderator}, {AuthUserRole.Experienced}")]
+    [Authorize]
     public async Task<IActionResult> Post([FromBody] AddWarningCommand request)    //todo: set id to be nullable in post and not in put
     {
+        var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        request.AuthorId = userId;
+        request.AutoActivate = User.IsInRole(AuthUserRole.Moderator);
+
+        // everyone can access
         await _mediator.Send(request);
 
         return Ok();
     }
 
-    // PUT api/<WarningController>/5
     //todo: [HttpPut("{id}")]
     [HttpPut]
-    [Authorize(Roles = $"{AuthUserRole.Moderator}, {AuthUserRole.Experienced}")]
+    [Authorize]
     public async Task<IActionResult> Put([FromBody] UpdateWarningCommand request)
     {
+        var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        bool isUserMod = User?.IsInRole(AuthUserRole.Moderator) ?? false;
+        request.UserId = userId;
+        request.IsUserMod = isUserMod;
+
+        // cannot change isActive
         await _mediator.Send(request);
 
         return Ok();
     }
 
-    // DELETE api/<WarningController>/5
+    [HttpPatch("{id:guid}/changeStatus")]
+    [Authorize(Roles = AuthUserRole.Moderator)]
+    public async Task<IActionResult> ChangePostStatus([FromRoute] Guid id, [FromQuery] bool changeToActive)
+    {
+        var request = new ChangeLocationStatusCommand { LocationId = id, ChangeToActive = changeToActive };
+        await _mediator.Send(request);
+        return NoContent();
+    }
+
     [HttpDelete("{id}")]
-    [Authorize(Roles = $"{AuthUserRole.Moderator}, {AuthUserRole.Experienced}")]
+    [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var request = new DeleteWarningCommand { Id = id };
+        var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        bool isUserMod = User?.IsInRole(AuthUserRole.Moderator) ?? false;
+        var request = new DeleteWarningCommand { Id = id, UserId = userId, IsUserMod = isUserMod };
 
         var result = await _mediator.Send(request);
 

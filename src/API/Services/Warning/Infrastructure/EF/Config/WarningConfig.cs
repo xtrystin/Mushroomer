@@ -49,6 +49,14 @@ public class WarningConfig : IEntityTypeConfiguration<Warning>
             .HasColumnName("IsActive")
             .HasColumnType("boolean");
 
+        builder.Property<Guid>("AuthorId")
+        .HasColumnName("AuthorId")
+        .HasColumnType("uuid");
+        
+        builder.HasOne(x => x.Author)
+            .WithMany("_warnings")
+            .HasForeignKey("AuthorId");
+
         builder.HasMany(typeof(WarningUserReaction), "_reactions");
 
         builder.ToTable("Warning");

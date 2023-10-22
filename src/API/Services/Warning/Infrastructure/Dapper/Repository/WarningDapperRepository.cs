@@ -4,6 +4,7 @@ using Domain.Repository;
 
 namespace Infrastructure.Dapper.Repository;
 
+[Obsolete]
 public class WarningDapperRepository : IWarningRepository
 {
     public Task AddWarningAsync(Warning warning)
@@ -38,12 +39,13 @@ public class WarningDapperRepository : IWarningRepository
 
     public Task<Warning> GetWarningAsync(Guid id)
     {
-        var dbWarning = WarningsInMemoryData.Warnings.First(x => x.Id == id);
-        var output = new Warning(dbWarning.Id, dbWarning.Description, dbWarning.Province,
-            dbWarning.MushroomName, dbWarning.Latitude, dbWarning.Longitude, dbWarning.Date,
-            dbWarning.IsActive, dbWarning.Title);
+        throw new NotImplementedException();
+        //var dbWarning = WarningsInMemoryData.Warnings.First(x => x.Id == id);
+        //var output = new Warning(dbWarning.Id, dbWarning.Description, dbWarning.Province,
+        //    dbWarning.MushroomName, dbWarning.Latitude, dbWarning.Longitude, dbWarning.Date,
+        //    dbWarning.IsActive, dbWarning.Title);
 
-        return Task.FromResult(output);
+        //return Task.FromResult(output);
     }
 
     public Task UpdateWarningAsync(Warning warning)

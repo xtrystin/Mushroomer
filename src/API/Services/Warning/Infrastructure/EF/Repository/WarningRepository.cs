@@ -36,7 +36,7 @@ public class WarningRepository : IWarningRepository
 
     public async Task<Warning> GetWarningAsync(Guid id)
     {
-        return await _warnings.Include(x => x._reactions).FirstOrDefaultAsync(x => x.Id == id);
+        return await _warnings.Include(x => x._reactions).Include(x => x.Author).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task UpdateWarningAsync(Warning warning)

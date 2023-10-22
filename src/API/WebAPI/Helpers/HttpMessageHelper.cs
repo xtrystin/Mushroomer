@@ -48,8 +48,9 @@ public static class HttpMessageHelper
 
         if (response.StatusCode != (int)HttpStatusCode.NoContent)
         {
-            using var responseStream = await responseMessage.Content.ReadAsStreamAsync();
-            await responseStream.CopyToAsync(response.Body);
+            var responseString = await responseMessage.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(responseString) is false)
+                await response.WriteAsync(responseString);
         }
     }
 }

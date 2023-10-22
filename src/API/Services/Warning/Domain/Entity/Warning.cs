@@ -15,11 +15,11 @@ public class Warning
     public DateTime Date { get; private set; }
     public bool IsActive { get; private set; }
 
+    public User Author;
     public List<WarningUserReaction> _reactions;        //todo naming violation
 
-    public Warning(Guid id, string description, string province,
-    string mushroomName, double latitude, double longitude,
-    DateTime date, bool isActive, string title)
+    public Warning(Guid id, string description, string province, string mushroomName, double latitude, 
+        double longitude, string title, User author)
     {
         Id = id;
         Description = description;
@@ -27,9 +27,10 @@ public class Warning
         MushroomName = mushroomName;
         Latitude = latitude;
         Longitude = longitude;
-        Date = date;
-        IsActive = isActive;
+        Date = DateTime.Now;
+        IsActive = false;
         Title = title;
+        Author = author;
     }
 
     public Warning()
@@ -38,8 +39,7 @@ public class Warning
 
 
     public void Modify(string title, string description, string province,
-        string mushroomName, double latitude, double longitude,
-        DateTime date, List<WarningUserReaction> reactions = null)
+        string mushroomName, double latitude, double longitude, List<WarningUserReaction> reactions = null)
     {
         Title = title;
         Description = description;
@@ -47,13 +47,14 @@ public class Warning
         MushroomName = mushroomName;
         Latitude = latitude;
         Longitude = longitude;
-        Date = date;
         _reactions = reactions;
     }
 
     public void Activate() => IsActive = true;
 
     public void Deactivate() => IsActive = false;
+
+    public bool IsAuthor(Guid userId) => Author?.Id == userId;
 
     public void Approve(User user)
     {

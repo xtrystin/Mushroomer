@@ -1,4 +1,5 @@
 using Application.Queries;
+using Common.Middleware;
 using Domain.Repository;
 using Infrastructure.EF;
 using Infrastructure.EF.Queries;
@@ -28,6 +29,8 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandlerMiddleware();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

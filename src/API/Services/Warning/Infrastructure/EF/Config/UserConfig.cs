@@ -18,6 +18,8 @@ public class UserConfig : IEntityTypeConfiguration<User>
 
         builder.HasMany(typeof(WarningUserReaction), "_warningReactions");
 
+        builder.HasMany("_warnings").WithOne("Author");
+
         builder.ToTable("User");
     }
 }

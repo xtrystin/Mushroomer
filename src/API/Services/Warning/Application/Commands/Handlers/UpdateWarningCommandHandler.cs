@@ -1,4 +1,5 @@
-﻿using Domain.Repository;
+﻿using Application.Exception;
+using Domain.Repository;
 using MediatR;
 
 namespace Application.Commands.Handlers;
@@ -18,20 +19,18 @@ public class UpdateWarningCommandHandler : IRequestHandler<UpdateWarningCommand>
         // todo remove Province from request or calc based on lat long coordinates
 
         var warning = await _warningRepository.GetWarningAsync(request.Id);
-        warning.Modify(request.Title, request.Description, request.Province,
-            request.MushroomName, request.Latitude, request.Longitude,
-            request.Date);   
-
-        if (request.IsActive)
+        if (warning is null)
+            throw new ItemNotFoundException("Location has not been found");
+        else if (warning.IsAuthor(request.UserId) || request.IsUserMod)
         {
-            warning.Activate();
+            warning.Modify(request.Title, request.Description, request.Province,
+                request.MushroomName, request.Latitude, request.Longitude);
+            
+            await _warningRepository.UpdateWarningAsync(warning);
+            return Unit.Value;
         }
         else
-        {
-            warning.Deactivate();
-        }
+            throw new NotAuthorizedForOperation("You are not authorized to modify this location");
 
-        await _warningRepository.UpdateWarningAsync(warning);
-        return Unit.Value;
     }
 }

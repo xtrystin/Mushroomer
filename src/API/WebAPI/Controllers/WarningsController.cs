@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using WebAPI.Helpers;
 using WebAPI.Model.Warning;
 
 namespace WebAPI.Controllers;
@@ -34,45 +35,34 @@ public class WarningsController : ControllerBase
 
     // GET: api/<WarningsController>
     [HttpGet]
-    public async Task<IEnumerable<WarningDto>> Get()
+    [ProducesResponseType(200, Type = typeof(IEnumerable<WarningDto>))]
+    public async Task Get([FromQuery] bool onlyInactive = false,
+            [FromQuery] bool onlyInactiveForUser = false)
     {
-        AddJwtToHttpClientHeader();
-        var url = _config["MicroservicesUrl:Warning"] + $"/warnings";
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings?onlyInactive={onlyInactive}&onlyInactiveForUser={onlyInactiveForUser}";
 
-        var response = await _httpClient.GetAsync(url);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var result = await response.Content.ReadFromJsonAsync<IEnumerable<WarningDto>>();
-            return result;
-        }
-        else
-        {
-            throw new Exception(response.ReasonPhrase); //todo: error handling with proper message //todo return BadRequest();    
-        }
+        var request = HttpMessageHelper.CreateProxyHttpRequest(HttpContext, new Uri(url));
+        var response = await _httpClient.SendAsync(request);
+        await HttpMessageHelper.CopyProxyHttpResponse(HttpContext, response);
+        return;
     }
 
     // GET api/<WarningsController>/5
     [HttpGet("{id}")]
-    public async Task<WarningDto> Get(Guid id)
+    [ProducesResponseType(200, Type = typeof(WarningDto))]
+    public async Task Get(Guid id)
     {
-        AddJwtToHttpClientHeader();
         var url = _config["MicroservicesUrl:Warning"] + $"/warnings/{id}";
 
-        var response = await _httpClient.GetAsync(url);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var result = await response.Content.ReadFromJsonAsync<WarningDto>();
-            return result;
-        }
-        else
-        {
-            throw new Exception(response.ReasonPhrase); //todo: error handling with proper message //todo return BadRequest();    
-        }
+        var request = HttpMessageHelper.CreateProxyHttpRequest(HttpContext, new Uri(url));
+        var response = await _httpClient.SendAsync(request);
+        await HttpMessageHelper.CopyProxyHttpResponse(HttpContext, response);
+        return;
     }
 
     // POST api/<WarningsController>
     [HttpPost]
-    [Authorize(Roles = $"{AuthUserRole.Moderator}, {AuthUserRole.Experienced}")]
+    [Authorize]
     public async Task<IActionResult> Post([FromBody] AddWarningCommand request)    //todo: set id to be nullable in post and not in put
     {
         AddJwtToHttpClientHeader();
@@ -92,7 +82,7 @@ public class WarningsController : ControllerBase
     // PUT api/<WarningController>/5
     //todo: [HttpPut("{id}")]
     [HttpPut]
-    [Authorize(Roles = $"{AuthUserRole.Moderator}, {AuthUserRole.Experienced}")]
+    [Authorize]
     public async Task<IActionResult> Put([FromBody] UpdateWarningCommand request)
     {
         AddJwtToHttpClientHeader();
@@ -109,9 +99,21 @@ public class WarningsController : ControllerBase
         }
     }
 
+    [HttpPatch("{id:guid}/changeStatus")]
+    [Authorize(Roles = AuthUserRole.Moderator)]
+    public async Task ChangeLocationStatus([FromRoute] Guid id, [FromQuery] bool changeToActive)
+    {
+        var url = _config["MicroservicesUrl:Warning"] + $"/warnings/{id}/changeStatus?changeToActive={changeToActive}";
+
+        var request = HttpMessageHelper.CreateProxyHttpRequest(HttpContext, new Uri(url));
+        var response = await _httpClient.SendAsync(request);
+        await HttpMessageHelper.CopyProxyHttpResponse(HttpContext, response);
+        return;
+    }
+
     // DELETE api/<WarningController>/5
     [HttpDelete("{id}")]
-    [Authorize(Roles = $"{AuthUserRole.Moderator}, {AuthUserRole.Experienced}")]
+    [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
         AddJwtToHttpClientHeader();
