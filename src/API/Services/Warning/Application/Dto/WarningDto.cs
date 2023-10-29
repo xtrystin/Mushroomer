@@ -12,6 +12,7 @@ public class WarningDto
     public string MushroomName { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public string? ThumbnailPhotoUrl { get; set; }
 
     public DateTime Date { get; set; }
     public bool IsActive { get; set; }
@@ -25,7 +26,8 @@ public class WarningDto
 
     public WarningDto(Guid id, string description, string province,
         string mushroomName, double latitude, double longitude,
-        DateTime date, bool isActive, string title, List<WarningUserReaction> reactions, string authorEmail)
+        DateTime date, bool isActive, string title, List<WarningUserReaction> reactions, string authorEmail,
+        string? thumbnailPhotoUrl)
     {
         Id = id;
         Description = description;
@@ -38,6 +40,7 @@ public class WarningDto
         Title = title;
         _reactions= reactions;
         AuthorEmail = authorEmail;
+        ThumbnailPhotoUrl = thumbnailPhotoUrl;
     }
 
     public WarningDto()

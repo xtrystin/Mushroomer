@@ -24,7 +24,7 @@ public class UpdateWarningCommandHandler : IRequestHandler<UpdateWarningCommand>
         else if (warning.IsAuthor(request.UserId) || request.IsUserMod)
         {
             warning.Modify(request.Title, request.Description, request.Province,
-                request.MushroomName, request.Latitude, request.Longitude);
+                request.MushroomName, request.Latitude, request.Longitude, request.ThumbnailPhotoUrl);
             
             await _warningRepository.UpdateWarningAsync(warning);
             return Unit.Value;

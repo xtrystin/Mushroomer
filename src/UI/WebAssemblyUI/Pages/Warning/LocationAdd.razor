@@ -1,9 +1,13 @@
 ﻿@page "/locations/add"
+@using Blazored.LocalStorage;
 @using UI.ApiLibrary.ApiEndpoints
 @using UI.ApiLibrary.Dto
 @inject IWarningsEndpoint WarningsEndpoint
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
+@inject IConfiguration Configuration
+@inject NotificationService NotificationService
+@inject ILocalStorageService LocalStorage
 @attribute [Authorize]
 
 <h3>Location Add</h3>
@@ -40,6 +44,32 @@
                 <ValidationMessage For="@(() => Warning.Date)" />
             </div>
         </div>
+        <div class="form-group row">
+            <label for="ThumbnailPhotoUrl" class="col-sm-2 col-form-label" placeholder="Leave empty when uploading own file">Thumbnail Photo Url: </label>
+            <div class="col-sm-10">
+                <InputText id="ThumbnailPhotoUrl" class="form-control" @bind-Value="Warning.ThumbnailPhotoUrl" />
+                <ValidationMessage For="@(() => Warning.ThumbnailPhotoUrl)" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="UploadThumbnailPhoto" class="col-sm-2 col-form-label">Upload Thumbnail Photo: </label>
+            <div class="col-sm-10">
+                <RadzenCard>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Upload file (image ratio should be 4x3)</RadzenText>
+                    <RadzenUpload Url=@fileUploadApiUrl Error=@ThumbnailPhotoUploadedError Complete=@ThumbnailPhotoUploaded class="w-100">
+                        <RadzenUploadHeader Name="Authorization" Value=@jwt />
+                    </RadzenUpload>
+                </RadzenCard>
+            </div>
+        </div>
+        @if (string.IsNullOrEmpty(Warning.ThumbnailPhotoUrl) is false)
+        {
+            <div class="ratio ratio-4x3">
+                <img src=@Warning.ThumbnailPhotoUrl class="img-fluid" alt="Thumbnail photo" />
+            </div>
+        }
+        <br />
+        <span>Mark position</span>
         <div id="map" style="height:500px;width:100%;"></div>
 
         <div class="form-group row">
@@ -65,6 +95,26 @@
 @code {
     private WarningDto Warning = new WarningDto();
 
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
+    private string fileUploadApiUrl = "";
+    private Dictionary<string, string> uploadHeaders = new();
+    private string jwt = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isUserLoggedIn = (await AuthState).User.Identity.IsAuthenticated;
+        fileUploadApiUrl = Configuration["apiGateway"] + "/upload/image";
+        if (isUserLoggedIn)
+        {
+            var bearerTokenStorageKey = Configuration["bearerTokenStorageKey"];
+            string token = await LocalStorage.GetItemAsync<string>(bearerTokenStorageKey);
+            jwt = $"bearer {token}";
+            uploadHeaders.Add("Authorization", "bearer " + token);
+        }
+    }
+
     private async Task ExecuteAdd()
     {
         Console.WriteLine(Warning.Latitude);
@@ -81,11 +131,31 @@
             Console.WriteLine(ex.Message);
         }
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("googleMapSelect", null); 
         }
+    }
+
+    private void ThumbnailPhotoUploaded(UploadCompleteEventArgs eventArgs)
+    {
+        var result = JsonSerializer.Deserialize<ImageUploadResponse>(eventArgs.RawResponse);
+        Warning.ThumbnailPhotoUrl = result.url;
+    }
+
+    private void ThumbnailPhotoUploadedError(UploadErrorEventArgs errorArgs)
+    {
+        var message = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = "Image Upload Error",
+                Detail = errorArgs.Message,
+                Duration = 4000
+            };
+
+        NotificationService.Notify(message);
     }
 }

@@ -1,9 +1,11 @@
 ﻿@page "/locations"
+@using Blazored.LocalStorage;
 @using UI.ApiLibrary.ApiEndpoints
 @using UI.ApiLibrary.Dto
 @using WebAssemblyUI.Models
 @inject NavigationManager NavManager
 @inject IWarningsEndpoint WarningsEndpoint
+@inject ILocalStorageService LocalStorage
 
 <div class="row g-3">
     <div class="col-auto">
@@ -90,8 +92,16 @@
                         <div class="row">
                             <div class="col-12">
                                 <a href="@($"locations/{warning.Id}")">
-                                    <img src="https://dummyimage.com/1200x900/000/ffffff&text=Location" class="img-fluid" alt="Placeholder image" />
-                                    <!--- <img src="@($"{api}{product.ProductImageUrl}")" class="img-fluid" alt="@product.ProductName" />    --->
+                                    <div class="ratio ratio-4x3">
+                                        @if (string.IsNullOrEmpty(warning.ThumbnailPhotoUrl))
+                                        {
+                                            <img src="https://dummyimage.com/1200x900/000/ffffff&text=Location" class="img-fluid" alt="Placeholder image" />
+                                        }
+                                        else
+                                        {
+                                            <img src="@($"{warning.ThumbnailPhotoUrl}")" class="img-fluid" alt="Thumbnail photo" />
+                                        }
+                                    </div>
                                 </a>
                                 <p class="my-2 text-justify">
                                     @warning.Title

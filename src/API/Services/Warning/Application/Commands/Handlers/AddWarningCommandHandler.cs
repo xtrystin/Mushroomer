@@ -22,7 +22,7 @@ public class AddWarningCommandHandler : IRequestHandler<AddWarningCommand>
 
         var user = await _userRepository.GetAsync(request.AuthorId);
         var warning = new Warning(Guid.NewGuid(), request.Description, request.Province,
-            request.MushroomName, request.Latitude, request.Longitude, request.Title, user);
+            request.MushroomName, request.Latitude, request.Longitude, request.Title, user, request.ThumbnailPhotoUrl);
         if (request.AutoActivate)
             warning.Activate();
        

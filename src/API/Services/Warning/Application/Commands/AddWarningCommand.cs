@@ -11,6 +11,7 @@ public class AddWarningCommand : IRequest
     public string MushroomName { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public string? ThumbnailPhotoUrl { get; set; }
     public DateTime Date { get; set; }
     public bool AutoActivate { get; set; }
     public Guid AuthorId { get; set; }

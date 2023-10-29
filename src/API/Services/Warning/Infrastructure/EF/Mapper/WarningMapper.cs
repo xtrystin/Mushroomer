@@ -9,6 +9,6 @@ public class WarningMapper
     {
         return new WarningDto(warning.Id, warning.Description, warning.Province, warning.MushroomName,
             warning.Latitude, warning.Longitude, warning.Date, warning.IsActive, warning.Title, 
-            warning._reactions, warning.Author?.Email);
+            warning._reactions, warning.Author?.Email, warning.ThumbnailPhotoUrl);
     }
 }

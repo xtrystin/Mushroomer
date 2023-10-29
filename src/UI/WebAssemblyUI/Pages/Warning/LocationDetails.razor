@@ -1,4 +1,5 @@
 ﻿@page "/locations/{id}"
+@using Blazored.LocalStorage;
 @using UI.ApiLibrary.ApiEndpoints
 @using UI.ApiLibrary.Dto
 @inject IWarningsEndpoint WarningsEndpoint
@@ -6,6 +7,8 @@
 @inject NavigationManager NavManager
 @inject IWarningsEndpoint WarningEndpoint;
 @inject NotificationService NotificationService
+@inject IConfiguration Configuration
+@inject ILocalStorageService LocalStorage
 
 <div class="container-fluid">
     @if (Warning is null)
@@ -49,6 +52,32 @@
                         <ValidationMessage For="@(() => Warning.Date)" />
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label for="ThumbnailPhotoUrl" class="col-sm-2 col-form-label" placeholder="Leave empty when uploading own file">Thumbnail Photo Url: </label>
+                    <div class="col-sm-10">
+                        <InputText id="ThumbnailPhotoUrl" class="form-control" @bind-Value="Warning.ThumbnailPhotoUrl" />
+                        <ValidationMessage For="@(() => Warning.ThumbnailPhotoUrl)" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="UploadThumbnailPhoto" class="col-sm-2 col-form-label">Upload Thumbnail Photo: </label>
+                    <div class="col-sm-10">
+                        <RadzenCard>
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Upload file (image ratio should be 4x3)</RadzenText>
+                            <RadzenUpload Url=@fileUploadApiUrl Error=@ThumbnailPhotoUploadedError Complete=@ThumbnailPhotoUploaded class="w-100">
+                                <RadzenUploadHeader Name="Authorization" Value=@jwt />
+                            </RadzenUpload>
+                        </RadzenCard>
+                    </div>
+                </div>
+                @if (string.IsNullOrEmpty(Warning.ThumbnailPhotoUrl) is false)
+                {
+                    <div class="ratio ratio-4x3">
+                        <img src=@Warning.ThumbnailPhotoUrl class="img-fluid" alt="Thumbnail photo" />
+                    </div>
+                }
+                <br />
+                <span>Mark position</span>
                 <div id="map" style="height:500px;width:100%;"></div>
 
                 <div class="form-group row">
@@ -208,6 +237,10 @@
     private bool IsAuthor;
     private string UserEmail;
 
+    private string fileUploadApiUrl = "";
+    private Dictionary<string, string> uploadHeaders = new();
+    private string jwt = "";
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -227,6 +260,16 @@
             IsUserExperienced = (await AuthState).User.IsInRole("experienced");
             UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
             IsAuthor = CheckIfUserIsAuthor();
+
+            fileUploadApiUrl = Configuration["apiGateway"] + "/upload/image";
+            if (IsUserLoggedIn)
+            {
+                var bearerTokenStorageKey = Configuration["bearerTokenStorageKey"];
+                string token = await LocalStorage.GetItemAsync<string>(bearerTokenStorageKey);
+                jwt = $"bearer {token}";
+                uploadHeaders.Add("Authorization", "bearer " + token);
+            }
+
         }
         catch (Exception ex)
         {
@@ -251,6 +294,18 @@
         string currentUserId = (await AuthState).User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         UserEmail = (await AuthState).User.FindFirst(ClaimTypes.Name)?.Value;
         IsAuthor = CheckIfUserIsAuthor();
+
+        if (IsUserLoggedIn)
+        {
+            var bearerTokenStorageKey = Configuration["bearerTokenStorageKey"];
+            string token = await LocalStorage.GetItemAsync<string>(bearerTokenStorageKey);
+            jwt = $"bearer {token}";
+            if (uploadHeaders.ContainsKey("Authorization"))
+                uploadHeaders["Authorization"] = "bearer " + token;
+            else
+                uploadHeaders.Add("Authorization", "bearer " + token);
+
+        }
 
         SetupButtonClickability(currentUserId);
         StateHasChanged();
@@ -425,5 +480,24 @@
 
             NotificationService.Notify(message);
         }
+    }
+
+    private void ThumbnailPhotoUploaded(UploadCompleteEventArgs eventArgs)
+    {
+        var result = JsonSerializer.Deserialize<ImageUploadResponse>(eventArgs.RawResponse);
+        Warning.ThumbnailPhotoUrl = result.url;
+    }
+
+    private void ThumbnailPhotoUploadedError(UploadErrorEventArgs errorArgs)
+    {
+        var message = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = "Image Upload Error",
+                Detail = errorArgs.Message,
+                Duration = 4000
+            };
+
+        NotificationService.Notify(message);
     }
 }

@@ -40,6 +40,11 @@ public class WarningConfig : IEntityTypeConfiguration<Warning>
             .HasColumnName("Longitude")
             .HasColumnType("double precision");
 
+        builder.Property(x => x.ThumbnailPhotoUrl)
+            .HasColumnName("ThumbnailPhotoUrl")
+            .HasMaxLength(500)
+            .IsRequired(false);
+
         builder.Property(x => x.Date)
             .HasColumnName("Date")
             .HasColumnType("timestamp without time zone");

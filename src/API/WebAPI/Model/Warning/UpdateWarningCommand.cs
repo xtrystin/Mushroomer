@@ -9,6 +9,7 @@ public class UpdateWarningCommand
     public string MushroomName { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public string? ThumbnailPhotoUrl { get; set; }
 
     public DateTime Date { get; set; }
     public bool IsActive { get; set; }

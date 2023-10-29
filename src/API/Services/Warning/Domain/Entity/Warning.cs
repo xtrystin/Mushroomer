@@ -11,6 +11,7 @@ public class Warning
     public string MushroomName { get; private set; }
     public double Latitude { get; private set; }
     public double Longitude { get; private set; }
+    public string? ThumbnailPhotoUrl { get; private set; }
 
     public DateTime Date { get; private set; }
     public bool IsActive { get; private set; }
@@ -19,7 +20,7 @@ public class Warning
     public List<WarningUserReaction> _reactions;        //todo naming violation
 
     public Warning(Guid id, string description, string province, string mushroomName, double latitude, 
-        double longitude, string title, User author)
+        double longitude, string title, User author, string? thumbnailPhotoUrl)
     {
         Id = id;
         Description = description;
@@ -31,6 +32,7 @@ public class Warning
         IsActive = false;
         Title = title;
         Author = author;
+        ThumbnailPhotoUrl = thumbnailPhotoUrl;
     }
 
     public Warning()
@@ -39,7 +41,8 @@ public class Warning
 
 
     public void Modify(string title, string description, string province,
-        string mushroomName, double latitude, double longitude, List<WarningUserReaction> reactions = null)
+        string mushroomName, double latitude, double longitude, string? thumbnailPhotoUrl,
+        List<WarningUserReaction> reactions = null)
     {
         Title = title;
         Description = description;
@@ -48,6 +51,7 @@ public class Warning
         Latitude = latitude;
         Longitude = longitude;
         _reactions = reactions;
+        ThumbnailPhotoUrl = thumbnailPhotoUrl;
     }
 
     public void Activate() => IsActive = true;
