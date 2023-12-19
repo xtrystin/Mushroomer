@@ -78,7 +78,10 @@
                 }
                 <br />
                 <span>Mark position</span>
-                <div id="map" style="height:500px;width:100%;"></div>
+                <RadzenGoogleMap ApiKey=@(Configuration["googleMap"]) @ref=map style="height: 45rem" Options=@(new Dictionary<string, object> { { "disableDoubleClickZoom", true } })
+                                 Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 })
+                                 MapClick=@OnMapClick Data=@MapMarkersToShow>
+                </RadzenGoogleMap>
 
                 <div class="form-group row">
                     <label for="Latitude" class="col-sm-2 col-form-label">Latitude: </label>
@@ -152,7 +155,10 @@
             <br />
             @if (IsModalView is null or false || Editable)
             {
-                <div id="map" style="height:500px;width:100%;"></div>
+                <RadzenGoogleMap ApiKey=@(Configuration["googleMap"]) @ref=map style="height: 45rem" Options=@(new Dictionary<string, object> { { "disableDoubleClickZoom", true } })
+                                 Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 })
+                                 Data=@MapMarkersToShow>
+                </RadzenGoogleMap>
             }
             <div class="row">
                 <label for="Latitude" class="col-sm-2 col-form-label">Latitude</label>
@@ -241,6 +247,11 @@
     private Dictionary<string, string> uploadHeaders = new();
     private string jwt = "";
 
+    private RadzenGoogleMap map;
+    private int zoom = 3;
+    private List<RadzenGoogleMapMarker> MapMarkersToShow = new();
+    private RadzenGoogleMapMarker MapMarker = new();
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -269,6 +280,9 @@
                 jwt = $"bearer {token}";
                 uploadHeaders.Add("Authorization", "bearer " + token);
             }
+
+            MapMarker = new RadzenGoogleMapMarker { Position = new GoogleMapPosition { Lat = Warning.Latitude, Lng = Warning.Longitude } };
+            MapMarkersToShow = new List<RadzenGoogleMapMarker> { MapMarker };
 
         }
         catch (Exception ex)
@@ -480,6 +494,15 @@
 
             NotificationService.Notify(message);
         }
+    }
+
+    void OnMapClick(GoogleMapClickEventArgs args)
+    {
+        Warning.Latitude = args.Position.Lat;
+        Warning.Longitude = args.Position.Lng;
+
+        MapMarker.Position.Lat = args.Position.Lat;
+        MapMarker.Position.Lng = args.Position.Lng;
     }
 
     private void ThumbnailPhotoUploaded(UploadCompleteEventArgs eventArgs)

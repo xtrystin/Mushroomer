@@ -4,6 +4,7 @@
 @inject IJSRuntime JSRuntime
 @inject IWarningsEndpoint WarningsEndpoint
 @inject DialogService DialogService
+@inject IConfiguration Configuration
 
 <PageTitle>Index</PageTitle>
 
@@ -34,7 +35,7 @@
                         <RadzenCheckBox @bind-Value=@showOnlyApproved Name="showMarker" @onclick="ChangeMarkersVisibility" />
                         <RadzenLabel Text="With high rating only" Component="showMarker" Style="margin-left: 8px; vertical-align: middle;" />
                     </RadzenCard>
-                    <RadzenGoogleMap @ref=map style="height: 45rem" Options=@(new Dictionary<string, object> { { "disableDoubleClickZoom", true } })
+                    <RadzenGoogleMap ApiKey=@(Configuration["googleMap"]) @ref=map style="height: 45rem" Options=@(new Dictionary<string, object> { { "disableDoubleClickZoom", true } })
                                     Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 }) 
                                     MapClick=@OnMapClick MarkerClick=@OnMarkerClick Data=@MapMarkersToShow>
                     </RadzenGoogleMap>
