@@ -2,6 +2,7 @@
 @using System.Globalization
 @using System.Text.Json;
 @using System.Text.Json.Serialization;
+@inject IConfiguration Configuration;
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -96,7 +97,7 @@ else
 else
 {
     <p> Choose location on the map </p>
-    <RadzenGoogleMap @ref=map style="height: 30rem" Options=@(new Dictionary<string, object> { { "disableDoubleClickZoom", true } })
+    <RadzenGoogleMap ApiKey=@(Configuration["googleMap"]) @ref=map style="height: 30rem" Options=@(new Dictionary<string, object> { { "disableDoubleClickZoom", true } })
                  Zoom=@zoom Center=@(InitMarker.Position)
                  MapClick=@OnMapClick Data="@MapMarkers">
     </RadzenGoogleMap>
