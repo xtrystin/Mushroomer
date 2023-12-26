@@ -50,8 +50,9 @@ public class Warning
         MushroomName = mushroomName;
         Latitude = latitude;
         Longitude = longitude;
-        _reactions = reactions;
         ThumbnailPhotoUrl = thumbnailPhotoUrl;
+        if (reactions is not null)
+            _reactions = reactions;
     }
 
     public void Activate() => IsActive = true;
