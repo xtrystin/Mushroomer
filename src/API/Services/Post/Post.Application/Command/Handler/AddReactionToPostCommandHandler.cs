@@ -19,13 +19,9 @@ public class AddReactionToPostCommandHandler : IRequestHandler<AddReactionToPost
         var user = await _userRepository.GetAsync(request.UserId);
         
         if (request.Like is true)
-        {
             post.Like(user);
-        }
         else
-        {
             post.DisLike(user);
-        }
 
         await _postRepository.UpdateAsync(post);
         return Unit.Value;

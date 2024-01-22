@@ -21,9 +21,7 @@ public class ModifyCommentCommandHandler : IRequestHandler<ModifyCommentCommand>
     {
         var post = await _postRepository.GetAsync(request.PostId);
         if (post is null)
-        {
             throw new PostNotFoundException();
-        }
         else if (post.IsCommentAuthor(request.CommentId, request.UserId) || await _authService.IsUserInRole(request.UserId, AuthUserRole.Moderator))
         {
             post.ModifyComment(request.CommentId, request.Content);
@@ -32,8 +30,6 @@ public class ModifyCommentCommandHandler : IRequestHandler<ModifyCommentCommand>
             return Unit.Value;
         }
         else
-        {
             throw new NotAuthorizedToModifyComment();
-        }
     }
 }

@@ -20,17 +20,13 @@ public class DeletePostCommandHandler : IRequestHandler<DeletePostCommand>
     {
         var post = await _postRepository.GetAsync(request.PostId);
         if (post is null)
-        {
             throw new PostNotFoundException();
-        }
         else if (post.IsAuthor(request.UserId) || await _authService.IsUserInRole(request.UserId, AuthUserRole.Moderator))
         {
             await _postRepository.DeleteAsync(post);
             return Unit.Value;
         }
         else
-        {
             throw new NotAuthorizedToDeletePost();
-        }
     }
 }

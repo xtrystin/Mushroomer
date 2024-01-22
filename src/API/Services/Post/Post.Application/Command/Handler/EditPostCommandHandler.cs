@@ -23,9 +23,7 @@ public class EditPostCommandHandler : IRequestHandler<EditPostCommand>
     {
         var post = await _postRepository.GetAsync(request.PostId);
         if (post is null)
-        {
             throw new PostNotFoundException();
-        }
         else if (post.IsAuthor(request.UserId) || await _authService.IsUserInRole(request.UserId, AuthUserRole.Moderator))
         {
             post.ChangeTitle(request.Title);
@@ -36,8 +34,6 @@ public class EditPostCommandHandler : IRequestHandler<EditPostCommand>
             return Unit.Value;
         }
         else
-        {
             throw new NotAuthorizedToEditPost();
-        }
     }
 }

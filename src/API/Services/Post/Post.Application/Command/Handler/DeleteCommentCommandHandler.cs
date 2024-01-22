@@ -21,9 +21,7 @@ public class DeleteCommentCommandHandler : IRequestHandler<DeleteCommentCommand>
     {
         var post = await _postRepository.GetAsync(request.PostId);
         if (post is null) 
-        {
             throw new PostNotFoundException();
-        }
         else if (post.IsCommentAuthor(request.CommentId, request.UserId) || await _authService.IsUserInRole(request.UserId, AuthUserRole.Moderator))
         {
             post.RemoveComment(request.CommentId);
@@ -32,9 +30,7 @@ public class DeleteCommentCommandHandler : IRequestHandler<DeleteCommentCommand>
             return Unit.Value;
         }
         else
-        {
             throw new NotAuthorizedToDeleteComment();
-        }
 
     }
 }
