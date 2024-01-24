@@ -182,6 +182,9 @@ else
         List<DataItem> temps = new();
         for (int i = 0; i < dailyWeathers.Dates.Count; i++)
         {
+            if (dailyWeathers.MinTemperatures[i] is null || dailyWeathers.MaxTemperatures[i] is null || dailyWeathers.MeanTemperatures[i] is null)
+                break;
+
             temps.Add(new DataItem
             {
                 Date = dailyWeathers.Dates[i],
