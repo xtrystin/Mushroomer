@@ -1,14 +1,28 @@
 # Mushroomer
+The goal of this project is to create software for a mushroom pickers' community portal.
+Both functional and non-functional requirements were implemented, which were identified
+during an analysis of the project's subject. As part of the work, an analysis of available
+technologies was performed. Based on the results, the most suitable architecture and
+technology stack were chosen.\
+The system was deployed to the Azure cloud environment, making the services publicly
+available. This setup ensures easy transformation of the system into a production-ready
+state. At the end a summary of the project was presented and potential areas for future
+development were identified.
+
+### Bachelor’s thesis - Mushroom Pickers community portal
+[bachelorThesis.pdf](https://github.com/xtrystin/Mushroomer/files/14130140/bachelorThesis.pdf)
+
 ### Live Preview
 <https://xtrystin.github.io/Mushroomer/>\
 _Services are hosted on shared servers. First app load every few hours can take up to 1 minute_
 
-### Walk-through Video
-https://github.com/xtrystin/Mushroomer/assets/33805319/8245b08b-9aa4-4b69-9da6-ffb1268286f7
-
-
-
-
+### Presentation Videos
+#### Mushrooms Locations on Map
+[![Mushrooms Locations on Map](https://img.youtube.com/vi/x9MD21PKAns/0.jpg)](https://www.youtube.com/watch?v=x9MD21PKAns)
+#### Posts
+[![Posts](https://img.youtube.com/vi/qebYCD2M-Y4/0.jpg)](https://www.youtube.com/watch?v=qebYCD2M-Y4)
+#### Weatherforecast
+[![Posts](https://img.youtube.com/vi/UX2zFZoGkSE/0.jpg)](https://www.youtube.com/watch?v=UX2zFZoGkSE)
 
 
 ### Główne funkcje produktu
