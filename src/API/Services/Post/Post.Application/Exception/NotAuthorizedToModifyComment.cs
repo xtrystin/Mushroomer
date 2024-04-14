@@ -1,8 +1,10 @@
-﻿namespace Post.Application.Exception;
+﻿using Common.Exception;
 
-public class NotAuthorizedToModifyComment : System.Exception
+namespace Post.Application.Exception;
+
+public class NotAuthorizedToModifyComment : ApiException
 {
-    public NotAuthorizedToModifyComment() : base("You are not authorized to modify this comment.")
+    public NotAuthorizedToModifyComment() : base(System.Net.HttpStatusCode.Forbidden, "You are not authorized to modify this comment.")
     {
     }
 }

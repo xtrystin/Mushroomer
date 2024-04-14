@@ -25,8 +25,8 @@ namespace Post.API.Controllers
 
         [HttpGet("{id:guid}")]
         [AllowAnonymous]
-        // [ProducesResponseType(typeof(PostReadModel), 200)]
-        //[ProducesResponseType(404)]
+        [ProducesResponseType(200, Type = typeof(PostReadModel))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<PostReadModel> Get([FromRoute]Guid id)
         {
             bool isUserMod = User?.IsInRole(AuthUserRole.Moderator) ?? false;
@@ -40,6 +40,8 @@ namespace Post.API.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<PostReadModel>))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<ActionResult<IEnumerable<PostReadModel>>> Get([FromQuery] bool onlyInactive = false,
             [FromQuery] bool onlyInactiveForUser = false)
         {
@@ -53,6 +55,8 @@ namespace Post.API.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<PostReadModel>))]
+        [ProducesResponseType(401, Type = typeof(string))]
         public async Task<IActionResult> Post([FromBody]AddPostCommand request) //todo: remove unnecessary authorId input property
         {
             var userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -64,6 +68,10 @@ namespace Post.API.Controllers
         }
 
         [HttpPatch("{id:guid}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403, Type = typeof(string))]
+        [ProducesResponseType(401, Type = typeof(string))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<IActionResult> EditPost([FromRoute]Guid id, EditPostCommandDto requestDto, Guid userId)   //todo: remove unnecessary authorId input property
         {
             userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -76,6 +84,10 @@ namespace Post.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403, Type = typeof(string))]
+        [ProducesResponseType(401, Type = typeof(string))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<IActionResult> Delete([FromRoute]Guid id, Guid userId)
         {
             userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -88,6 +100,10 @@ namespace Post.API.Controllers
 
         [HttpPatch("{id:guid}/changeStatus")]
         [Authorize(Roles = AuthUserRole.Moderator)]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403, Type = typeof(string))]
+        [ProducesResponseType(401, Type = typeof(string))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<IActionResult> ChangePostStatus([FromRoute] Guid id, [FromQuery] bool changeToActive)
         {
             var request = new ChangePostStatusCommand { PostId = id, ChangeToActive = changeToActive };
@@ -96,6 +112,9 @@ namespace Post.API.Controllers
         }
 
         [HttpPost("{id:guid}/comment")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401, Type = typeof(string))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<IActionResult> PostComment([FromRoute]Guid id, [FromBody]string content, Guid authorId)
         {
             authorId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -108,6 +127,8 @@ namespace Post.API.Controllers
 
         [HttpGet("{id:guid}/comment")]
         [AllowAnonymous]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<IEnumerable<CommentReadModel>> GetComments([FromRoute] Guid id)
         {
             var request = new GetCommentsForPostQuery { PostId = id };
@@ -118,6 +139,8 @@ namespace Post.API.Controllers
 
         [HttpGet("comment/user/{id:guid}")]
         [AllowAnonymous]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<IEnumerable<CommentDto>> GetCommentsForUser([FromRoute] Guid id)
         {
             var request = new GetCommentsForUserQuery { UserId = id };
@@ -127,6 +150,10 @@ namespace Post.API.Controllers
         }
 
         [HttpPatch("{id:guid}/comment/{commentId:guid}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401, Type = typeof(string))]
+        [ProducesResponseType(403, Type = typeof(string))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task ModifyComment([FromRoute] Guid id, [FromBody]string content, [FromRoute]Guid commentId, [FromQuery]Guid userId)
         {
             userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -136,6 +163,10 @@ namespace Post.API.Controllers
         }
 
         [HttpDelete("{id:guid}/comment/{commentId:guid}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401, Type = typeof(string))]
+        [ProducesResponseType(403, Type = typeof(string))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task DeleteComment([FromRoute] Guid id, [FromRoute] Guid commentId, Guid userId)
         {
             userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -145,6 +176,9 @@ namespace Post.API.Controllers
         }
 
         [HttpPost("{id:guid}/reaction")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401, Type = typeof(string))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<IActionResult> PostReaction([FromRoute] Guid id, bool like, Guid userId)
         {
             userId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -157,6 +191,9 @@ namespace Post.API.Controllers
 
         [HttpGet("{id:guid}/reactionForUser")]
         [AllowAnonymous]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401, Type = typeof(string))]
+        [ProducesResponseType(404, Type = typeof(string))]
         public async Task<bool?> GetReactionForUser([FromRoute] Guid id, Guid userId)   //todo: can return true, false or 204 for no reaction
         {
             var request = new GetReactionQuery { PostId = id, UserId= userId };

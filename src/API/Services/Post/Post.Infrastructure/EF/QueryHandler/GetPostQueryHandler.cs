@@ -20,7 +20,9 @@ namespace Post.Infrastructure.EF.Query
         {
             var post = await _dbReadContext.Posts.Include(x => x.Author).Include(x => x.Reactions)
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
-
+            if (post is null)
+                throw new PostNotFoundException();
+            
             if (post != null && post.IsActive)
                 return post;
             else if (post is not null && post.IsActive is false &&

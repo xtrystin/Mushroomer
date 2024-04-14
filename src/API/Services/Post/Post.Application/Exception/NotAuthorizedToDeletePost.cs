@@ -1,8 +1,10 @@
-﻿namespace Post.Application.Exception;
+﻿using Common.Exception;
 
-public class NotAuthorizedToDeletePost : System.Exception
+namespace Post.Application.Exception;
+
+public class NotAuthorizedToDeletePost : ApiException
 {
-    public NotAuthorizedToDeletePost() : base("You are not authorized to delete this post.")
+    public NotAuthorizedToDeletePost() : base(System.Net.HttpStatusCode.Forbidden, "You are not authorized to delete this post.")
     {
     }
 }

@@ -1,8 +1,10 @@
-﻿namespace Post.Application.Exception;
+﻿using Common.Exception;
 
-public class NotAuthorizedToDeleteComment : System.Exception
+namespace Post.Application.Exception;
+
+public class NotAuthorizedToDeleteComment : ApiException
 {
-    public NotAuthorizedToDeleteComment() : base("You are not authorized to delete this comment.")
+    public NotAuthorizedToDeleteComment() : base(System.Net.HttpStatusCode.Forbidden, "You are not authorized to delete this comment.")
     {
     }
 }

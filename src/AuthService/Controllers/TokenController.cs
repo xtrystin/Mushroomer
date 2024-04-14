@@ -25,7 +25,7 @@ namespace AuthService.Controllers
 
         [Route("/token")]
         [HttpPost]
-        public async Task<IActionResult> Create(string username, string password, string grant_type)
+        public async Task<ActionResult<string>> Create(string username, string password, string grant_type)
         {
             if (await IsValidUsernameAndPassword(username, password))
             {

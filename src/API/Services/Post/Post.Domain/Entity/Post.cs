@@ -11,9 +11,9 @@ public class Post
     private PostContent _content;
     private DateTime _createdDate;
     private DateTime _lastModificationDate;
-    private readonly List<Comment> _comments;   // todo: move to new entity CommentList
+    private readonly List<Comment> _comments;
     private User _author;
-    private List<PostUserReaction> _reactions;
+    private List<PostUserReaction> _reactions = new();
     private bool _isActive;
     private ThumbnailPhotoUrl _thumbnailPhotoUrl;
 
@@ -65,6 +65,7 @@ public class Post
         _comments.Add(comment);
     }
 
+    [Obsolete]
     public void DeleteComment(Guid commentId)
     {
         var comment = _comments.FirstOrDefault(x => x.Id == commentId);
@@ -83,6 +84,7 @@ public class Post
         return comment.IsCommentAuthor(userId);
     }
 
+    [Obsolete]
     public void ChangeCommentContent(Guid commentId, string content)
     {
         _comments.FirstOrDefault(x => x.Id == commentId).ModifyContent(content);
@@ -94,7 +96,7 @@ public class Post
         _comments.Remove(comment);
     }
 
-    public List<Comment> GetComments()  //todo add notFound exception 
+    public List<Comment> GetComments()
         => _comments;
 
     public void Like(User user)

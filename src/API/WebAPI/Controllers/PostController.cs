@@ -35,6 +35,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("{id:guid}")]
         [ProducesResponseType(200, Type = typeof(PostReadModel))]
+        [ProducesResponseType(404)]
         public async Task Get([FromRoute] Guid id)
         {
             var url = _config["MicroservicesUrl:Post"] + $"/post/{id}";
@@ -47,6 +48,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<PostReadModel>))]
+        [ProducesResponseType(404)]
         public async Task Get([FromQuery] bool onlyInactive = false,
             [FromQuery] bool onlyInactiveForUser = false)
         {
@@ -60,6 +62,8 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Authorize]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<PostReadModel>))]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> Post([FromBody] AddPostDto request)
         {
             AddJwtToHttpClientHeader();
@@ -81,6 +85,9 @@ namespace WebAPI.Controllers
 
         [HttpPatch("{id:guid}")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> EditPost([FromRoute] Guid id, EditPostCommandDto request)
         {
             AddJwtToHttpClientHeader();
@@ -100,6 +107,9 @@ namespace WebAPI.Controllers
 
         [HttpDelete("{id:guid}")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             AddJwtToHttpClientHeader();
@@ -119,6 +129,9 @@ namespace WebAPI.Controllers
 
         [HttpPatch("{id:guid}/changeStatus")]
         [Authorize(Roles = AuthUserRole.Moderator)]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public async Task ChangePostStatus([FromRoute] Guid id, [FromQuery] bool changeToActive)
         {
             var url = _config["MicroservicesUrl:Post"] + $"/post/{id}/changeStatus?changeToActive={changeToActive}";
@@ -131,6 +144,8 @@ namespace WebAPI.Controllers
 
         [HttpPost("{id:guid}/comment")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> PostComment([FromRoute] Guid id, [FromBody] string content)
         {
             AddJwtToHttpClientHeader();
@@ -150,6 +165,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id:guid}/comment")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<IEnumerable<CommentReadModel>> GetComments([FromRoute] Guid id)
         {
             AddJwtToHttpClientHeader();
@@ -168,6 +185,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("comment/user/{id:guid}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<IEnumerable<CommentDto>> GetCommentsForUser([FromRoute] Guid id)
         {
             AddJwtToHttpClientHeader();
@@ -187,6 +206,9 @@ namespace WebAPI.Controllers
 
         [HttpPatch("{id:guid}/comment/{commentId:guid}")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public async Task<IActionResult> ModifyComment([FromRoute] Guid id, [FromBody] string content, [FromRoute] Guid commentId)
         {
             AddJwtToHttpClientHeader();
@@ -207,6 +229,9 @@ namespace WebAPI.Controllers
 
         [HttpDelete("{id:guid}/comment/{commentId:guid}")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public async Task<IActionResult> DeleteComment([FromRoute] Guid id, [FromRoute] Guid commentId)
         {
             AddJwtToHttpClientHeader();
@@ -226,6 +251,8 @@ namespace WebAPI.Controllers
 
         [HttpPost("{id:guid}/reaction")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> PostReaction([FromRoute] Guid id, bool like)
         {
             AddJwtToHttpClientHeader();
@@ -246,6 +273,8 @@ namespace WebAPI.Controllers
 
         [HttpGet("{id:guid}/reactionForUser")]
         [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public async Task<bool?> GetReactionForUser([FromRoute] Guid id)
         {
             AddJwtToHttpClientHeader();

@@ -7,16 +7,16 @@ namespace Post.Infrastructure.EF
 {
     public static class Extensions
     {
-        public static IServiceCollection AddMSSqlServer(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDbContext<PostDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("MSSqlServer")));
+        //public static IServiceCollection AddMSSqlServer(this IServiceCollection services, IConfiguration configuration)
+        //{
+        //    services.AddDbContext<PostDbContext>(options =>
+        //        options.UseSqlServer(configuration.GetConnectionString("MSSqlServer")));
 
-            services.AddDbContext<ReadPostDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("MSSqlServer")));
+        //    services.AddDbContext<ReadPostDbContext>(options =>
+        //        options.UseSqlServer(configuration.GetConnectionString("MSSqlServer")));
 
-            return services;
-        }
+        //    return services;
+        //}
 
         public static IServiceCollection AddPostgres(this IServiceCollection services, IConfiguration configuration)
         {

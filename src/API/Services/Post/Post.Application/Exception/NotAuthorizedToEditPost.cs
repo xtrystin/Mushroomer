@@ -1,8 +1,10 @@
-﻿namespace Post.Application.Exception;
+﻿using Common.Exception;
 
-public class NotAuthorizedToEditPost : System.Exception
+namespace Post.Application.Exception;
+
+public class NotAuthorizedToEditPost : ApiException
 {
-	public NotAuthorizedToEditPost() : base("You are not authorized to edit this post.")
+	public NotAuthorizedToEditPost() : base(System.Net.HttpStatusCode.Forbidden, "You are not authorized to edit this post.")
 	{
 
 	}
